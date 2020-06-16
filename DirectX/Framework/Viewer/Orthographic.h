@@ -1,4 +1,5 @@
 #pragma once
+#include "Projection.h"
 
 class Orthographic : public Projection
 {

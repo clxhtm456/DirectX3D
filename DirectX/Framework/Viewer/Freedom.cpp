@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Freedom.h"
 
-Freedom::Freedom()
+Freedom::Freedom(CameraOption option) : Camera(option)
 {
 }
 
@@ -11,16 +11,19 @@ Freedom::~Freedom()
 
 void Freedom::Update()
 {
+	Super::Update();
 	if (Mouse::Get()->Press(1) == false) return;
 
-	Vector3 f = Foward();
-	Vector3 u = Up();
-	Vector3 r = Right();
+	XMVECTOR f = Foward();
+	XMVECTOR u = Up();
+	XMVECTOR r = Right();
 
 	//이동
 	{
-		Vector3 P;
-		Position(&P);
+		XMVECTOR P;
+		XMFLOAT3 tempP;
+		Position(&tempP);
+		P = DirectX::XMLoadFloat3(&tempP);
 
 		if (Keyboard::Get()->Press('W'))
 			P = P + f * move * Time::Delta();
@@ -37,7 +40,8 @@ void Freedom::Update()
 		else if (Keyboard::Get()->Press('Q'))
 			P = P - u * move * Time::Delta();
 
-		Position(P);
+		DirectX::XMStoreFloat3(&tempP, P);
+		Position(tempP);
 	}
 
 	//회전

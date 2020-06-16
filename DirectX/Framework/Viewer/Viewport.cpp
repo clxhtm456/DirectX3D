@@ -28,7 +28,7 @@ void Viewport::Project(Vector3 * outPosition, Vector3 source, Matrix & W, Matrix
 	Vector3 position = source;
 
 	Matrix wvp = W * V * P;
-	D3DXVec3TransformCoord(outPosition, &position, &wvp);
+	XMStoreFloat3(outPosition,XMVector3TransformCoord(XMLoadFloat3(&position), wvp));
 
 	//viewport ÁÂÇ¥
 	outPosition->x = ((outPosition->x + 1.0f) * 0.5f) * width + x;
@@ -46,8 +46,8 @@ void Viewport::UnProject(Vector3 * outPosition, Vector3 source, Matrix & W, Matr
 	outPosition->z = (position.z - minDepth) / (maxDepth - minDepth);
 
 	Matrix wvp = W * V * P;
-	D3DXMatrixInverse(&wvp, NULL, &wvp);
-	D3DXVec3TransformCoord(outPosition, outPosition, &wvp);
+	wvp = XMMatrixInverse(NULL, wvp);
+	XMStoreFloat3(outPosition, XMVector3TransformCoord(XMLoadFloat3(outPosition), wvp));
 }
 
 

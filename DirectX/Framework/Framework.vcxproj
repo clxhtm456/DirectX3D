@@ -22,6 +22,8 @@
     <ClCompile Include="Framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Objects\Node.cpp" />
+    <ClCompile Include="Systems\Context.cpp" />
     <ClCompile Include="Systems\D3D.cpp" />
     <ClCompile Include="Systems\Gui.cpp" />
     <ClCompile Include="Systems\Keyboard.cpp" />
@@ -33,9 +35,17 @@
     <ClCompile Include="Utilities\Path.cpp" />
     <ClCompile Include="Utilities\String.cpp" />
     <ClCompile Include="Utilities\Xml.cpp" />
+    <ClCompile Include="Viewer\Camera.cpp" />
+    <ClCompile Include="Viewer\Freedom.cpp" />
+    <ClCompile Include="Viewer\Orthographic.cpp" />
+    <ClCompile Include="Viewer\Perspective.cpp" />
+    <ClCompile Include="Viewer\Projection.cpp" />
+    <ClCompile Include="Viewer\Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h" />
+    <ClInclude Include="Objects\Node.h" />
+    <ClInclude Include="Systems\Context.h" />
     <ClInclude Include="Systems\D3D.h" />
     <ClInclude Include="Systems\Gui.h" />
     <ClInclude Include="Systems\IExecute.h" />
@@ -48,6 +58,12 @@
     <ClInclude Include="Utilities\Path.h" />
     <ClInclude Include="Utilities\String.h" />
     <ClInclude Include="Utilities\Xml.h" />
+    <ClInclude Include="Viewer\Camera.h" />
+    <ClInclude Include="Viewer\Freedom.h" />
+    <ClInclude Include="Viewer\Orthographic.h" />
+    <ClInclude Include="Viewer\Perspective.h" />
+    <ClInclude Include="Viewer\Projection.h" />
+    <ClInclude Include="Viewer\Viewport.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

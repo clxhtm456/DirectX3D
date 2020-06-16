@@ -15,5 +15,5 @@ void Orthographic::Set(float width, float height, float zn, float zf, float fov)
 {
 	Super::Set(width, height, zn, zf, fov);
 
-	D3DXMatrixOrthoLH(&matrix, width, height, zn, zf);
+	matrix = XMMatrixOrthographicLH(width, height, zn, zf);
 }

@@ -1,16 +1,28 @@
 #include "Framework.h"
 #include "Camera.h"
+#include "Perspective.h"
+#include "Viewport.h"
 
-Camera::Camera()
+Camera::Camera(CameraOption option) :
+	Node()
 {
-	D3DXMatrixIdentity(&matView);
-	D3DXMatrixIdentity(&matRotation);
+	matView = XMMatrixIdentity();
+	matRotation = XMMatrixIdentity();
 
-	Rotation();
+	perspective = new Perspective(option.Width, option.Height,option.zn,option.zf,option.fov);
+	viewport = new Viewport(option.Width, option.Height,option.x,option.y,option.minDepth,option.maxDepth);
+
+	Rotate();
 	Move();
 }
 
 Camera::~Camera()
+{
+	delete perspective;
+	delete viewport;
+}
+
+void Camera::Update()
 {
 }
 
@@ -56,14 +68,18 @@ void Camera::RotationDegree(float x, float y, float z)
 
 void Camera::RotationDegree(Vector3 & vec)
 {
-	rotation = vec * 0.01745328f; // vec * Math::PI / 180.0f
+	rotation.x = vec.x * 0.01745328f; 
+	rotation.y = vec.y * 0.01745328f;
+	rotation.z = vec.z * 0.01745328f;// vec * Math::PI / 180.0f
 
 	Rotation();
 }
 
 void Camera::RotationDegree(Vector3 * vec)
 {
-	*vec = rotation * 57.295791f;
+	vec->x = rotation.x * 57.295791f;
+	vec->y = rotation.y * 57.295791f;
+	vec->z = rotation.z * 57.295791f;
 }
 
 void Camera::GetMatrix(Matrix * matrix)
@@ -79,16 +95,16 @@ void Camera::Move()
 void Camera::Rotation()
 {
 	Matrix X, Y, Z;
-	D3DXMatrixRotationX(&X, rotation.x);
-	D3DXMatrixRotationY(&Y, rotation.y);
-	D3DXMatrixRotationZ(&Z, rotation.z);
+	X = XMMatrixRotationX(rotation.x);
+	Y = XMMatrixRotationX(rotation.y);
+	Z = XMMatrixRotationX(rotation.z);
 
 	matRotation = X * Y * Z;
 
 	//저장될 값 <- ..의 방향 <- ..공간
-	D3DXVec3TransformNormal(&foward, &Vector3(0, 0, 1), &matRotation);
-	D3DXVec3TransformNormal(&up, &Vector3(0, 1, 0), &matRotation);
-	D3DXVec3TransformNormal(&right, &Vector3(1, 0, 0), &matRotation);
+	forward = XMVector3TransformNormal(XMVectorSet(0,0,1,0), matRotation);
+	up = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), matRotation);
+	right = XMVector3TransformNormal(XMVectorSet(1, 0, 0, 0), matRotation);
 
 	View();
 	
@@ -96,5 +112,15 @@ void Camera::Rotation()
 
 void Camera::View()
 {
-	D3DXMatrixLookAtLH(&matView, &position, &(position + foward), &up);
+	matView = XMMatrixLookAtLH(XMLoadFloat3(&position), XMLoadFloat3(&position) + (forward), up);
+}
+
+Matrix Camera::ViewMatrix()
+{
+	return Matrix();
+}
+
+Matrix Camera::ProjectionMatrix()
+{
+	return Matrix();
 }

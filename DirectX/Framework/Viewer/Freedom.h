@@ -4,7 +4,7 @@
 class Freedom : public Camera
 {
 public:
-	Freedom();
+	Freedom(CameraOption option);
 	~Freedom();
 
 	void Update() override;

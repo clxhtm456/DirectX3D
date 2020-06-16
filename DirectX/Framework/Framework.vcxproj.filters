@@ -7,6 +7,12 @@
     <Filter Include="Utilities">
       <UniqueIdentifier>{7a354729-48c6-4e06-9f57-88e33908ef89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Viewer">
+      <UniqueIdentifier>{f4032fd7-2470-4422-b71a-296c9d556d6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{e3cde560-06d3-4a8a-815f-f85f8c025e83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Keyboard.cpp">
@@ -42,6 +48,30 @@
     </ClCompile>
     <ClCompile Include="Systems\Gui.cpp">
       <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Systems\Context.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer\Camera.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer\Orthographic.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer\Perspective.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer\Viewport.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer\Projection.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer\Freedom.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Node.cpp">
+      <Filter>Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +111,30 @@
     </ClInclude>
     <ClInclude Include="Systems\Gui.h">
       <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Systems\Context.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer\Camera.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer\Orthographic.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer\Perspective.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer\Viewport.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer\Projection.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer\Freedom.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Node.h">
+      <Filter>Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

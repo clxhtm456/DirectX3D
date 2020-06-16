@@ -4,7 +4,7 @@
 Projection::Projection()
 	: width(0), height(0), zn(0), zf(0), fov(0)
 {
-	D3DXMatrixIdentity(&matrix);
+	matrix = XMMatrixIdentity();
 }
 
 Projection::Projection(float width, float height, float zn, float zf, float fov)

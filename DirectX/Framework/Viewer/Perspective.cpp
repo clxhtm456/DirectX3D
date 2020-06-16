@@ -16,5 +16,5 @@ void Perspective::Set(float width, float height, float zn, float zf, float fov)
 	Super::Set(width, height, zn, zf, fov);
 
 	aspect = width / height;
-	D3DXMatrixPerspectiveFovLH(&matrix, fov, aspect, zn, zf);
+	matrix = XMMatrixPerspectiveFovLH(fov, aspect, zn, zf);
 }
