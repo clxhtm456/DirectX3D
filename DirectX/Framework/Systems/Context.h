@@ -73,11 +73,7 @@ public:
 
 private:
 	static Context* instance;
-private:
-	vector<Node*> releaseList;
-public:
-	void AddReleaseList(Node* b);
-	void ReleasePoolClear();
+
 private:
 	class Camera* camera;
 

@@ -21,8 +21,7 @@ void Freedom::Update()
 	//이동
 	{
 		XMVECTOR P;
-		XMFLOAT3 tempP;
-		Position(&tempP);
+		XMFLOAT3 tempP = GetPosition();
 		P = DirectX::XMLoadFloat3(&tempP);
 
 		if (Keyboard::Get()->Press('W'))
@@ -41,13 +40,12 @@ void Freedom::Update()
 			P = P - u * move * Time::Delta();
 
 		DirectX::XMStoreFloat3(&tempP, P);
-		Position(tempP);
+		SetPosition(tempP);
 	}
 
 	//회전
 	{
-		Vector3 R;
-		Rotation(&R);
+		Vector3 R = GetRotation();
 
 		Vector3 val =  Mouse::Get()->GetMoveValue();
 
@@ -55,7 +53,7 @@ void Freedom::Update()
 		R.y += val.x * rotation *  0.001f;
 		R.z = 0.0f;
 
-		Rotation(R);
+		SetRotation(R);
 	}
 	
 }

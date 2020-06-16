@@ -74,6 +74,7 @@ typedef XMVECTOR Plane;
 #include "Systems/Time.h"
 #include "Systems/Gui.h"
 #include "Systems/Context.h"
+#include "Systems/Window.h"
 
 #include "Utilities/Math.h"
 

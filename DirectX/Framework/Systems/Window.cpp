@@ -3,6 +3,7 @@
 #include "IExecute.h"
 
 IExecute* Window::mainExecute = NULL;
+vector<Node*> Window::releaseList;
 
 WPARAM Window::Run(IExecute * main)
 {
@@ -19,7 +20,7 @@ WPARAM Window::Run(IExecute * main)
 	Time::Get()->Start();
 
 	Gui::Create();
-	//Context::Create();	
+	Context::Create();	
 	//DebugLine::Create();
 
 	mainExecute->Initialize();
@@ -45,7 +46,7 @@ WPARAM Window::Run(IExecute * main)
 	mainExecute->Destroy();
 
 	//DebugLine::Delete();
-	//Context::Delete();
+	Context::Delete();
 	Gui::Delete();
 	Time::Delete();
 	Mouse::Delete();
@@ -159,8 +160,8 @@ LRESULT CALLBACK Window::WndProc(HWND handle, UINT message, WPARAM wParam, LPARA
 			if (D3D::Get() != NULL)
 				D3D::Get()->ResizeScreen(width, height);
 
-			//if (Context::Get() != NULL)
-				//Context::Get()->ResizeScreen();
+			if (Context::Get() != NULL)
+				Context::Get()->ResizeScreen();
 
 			mainExecute->ResizeScreen();
 		}
@@ -187,7 +188,7 @@ void Window::MainRender()
 	}
 
 	Gui::Get()->Update();
-	//Context::Get()->Update();
+	Context::Get()->Update();
 
 	mainExecute->Update();
 
@@ -199,13 +200,31 @@ void Window::MainRender()
 	D3D::Get()->SetRenderTarget();
 	D3D::Get()->Clear(desc.Background);
 	{
-		//Context::Get()->Render();
+		Context::Get()->Render();
 		mainExecute->Render();
 		//DebugLine::Get()->Render();
 
 		mainExecute->PostRender();
 		Gui::Get()->Render();
 	}
+	ReleasePoolClear();
 	D3D::Get()->Present();
 }
 
+void Window::AddReleaseList(Node* b)
+{
+	releaseList.push_back(b);
+}
+
+void Window::ReleasePoolClear()
+{
+	if (releaseList.size() == 0)
+		return;
+
+	std::vector<Node*> releasings;
+	releasings.swap(releaseList);
+	for (const auto& obj : releasings)
+	{
+		obj->Release();
+	}
+}

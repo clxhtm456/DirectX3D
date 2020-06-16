@@ -28,6 +28,12 @@ public:
 	XMVECTOR Foward() { return forward; }
 	XMVECTOR Right() { return right; }
 	XMVECTOR Up() { return up; }
+public:
+	void SetPosition(Vector3 position) override;
+	void SetRotation(Vector3 rotation) override;
+	void SetRotationDegree(Vector3 rotation) override;
+
+	void Resize();
 
 protected :
 	virtual void Move();
@@ -50,5 +56,22 @@ protected:
 	class Perspective* perspective;
 	class Viewport* viewport;
 	Matrix matView;
+	CameraOption default;
+
+
+	// Node을(를) 통해 상속됨
+	virtual bool Init() override;
+
+	virtual void PostUpdate() override;
+
+	virtual void LateUpdate() override;
+
+	virtual void Render() override;
+
+	virtual void PreRender() override;
+
+	virtual void PostRender() override;
+
+	virtual void RemoveFromParent() override;
 
 };

@@ -44,16 +44,16 @@ void Context::Update()
 
 void Context::Render()
 {
-	viewport->RSSetViewport();
+	camera->AutoRender();
 
 	string str = string("FPS : ") + to_string(ImGui::GetIO().Framerate);
 	Gui::Get()->RenderText(5, 5, 1, 1, 1, str);
 
 	Vector3 camPos;
-	camera->Position(&camPos);
+	camPos = camera->GetPosition();
 
 	Vector3 camDir;
-	camera->RotationDegree(&camDir);
+	camDir = camera->GetRotationDegree();
 
 	str = "camera(P) : ";
 	str += to_string((int)camPos.x) + ", " + to_string((int)camPos.y) + ", " + to_string((int)camPos.z);
@@ -66,77 +66,42 @@ void Context::Render()
 
 void Context::ResizeScreen()
 {
-	camera->
-	perspective->Set(D3D::Width(), D3D::Height());
-	viewport->Set(D3D::Width(), D3D::Height());
+	camera->Resize();
 }
 
-void Context::AddReleaseList(Node* b)
-{
-	releaseList.push_back(b);
-}
-
-void Context::ReleasePoolClear()
-{
-	if (releaseList.size() == 0)
-		return;
-
-	std::vector<Node*> releasings;
-	releasings.swap(releaseList);
-	for (const auto& obj : releasings)
-	{
-		obj->Release();
-	}
-}
-
-Matrix Context::View()
-{
-	Matrix view;
-	camera->GetMatrix(&view);
-
-	return view;
-}
-
-D3DXMATRIX Context::Projection()
-{
-	D3DXMATRIX projection;
-	perspective->GetMatrix(&projection);
-
-	return projection;
-}
-
-UINT Context::PointLights(OUT PointLight * lights)
-{
-	memcpy(lights, pointLights, sizeof(PointLight) * pointLightCount);
-
-	return pointLightCount;
-}
-
-void Context::AddPointLight(PointLight & light)
-{
-	pointLights[pointLightCount] = light;
-	pointLightCount++;
-}
-
-PointLight & Context::GetPointLight(UINT index)
-{
-	return pointLights[index];
-}
-
-UINT Context::SpotLights(OUT SpotLight * lights)
-{
-	memcpy(lights, spotLights, sizeof(SpotLight) * spotLightCount);
-
-	return spotLightCount;
-}
-
-void Context::AddSpotLight(SpotLight & light)
-{
-	spotLights[spotLightCount] = light;
-	spotLightCount++;
-}
-
-SpotLight & Context::GetSpotLight(UINT index)
-{
-	return spotLights[index];
-}
+//
+//UINT Context::PointLights(OUT PointLight * lights)
+//{
+//	memcpy(lights, pointLights, sizeof(PointLight) * pointLightCount);
+//
+//	return pointLightCount;
+//}
+//
+//void Context::AddPointLight(PointLight & light)
+//{
+//	pointLights[pointLightCount] = light;
+//	pointLightCount++;
+//}
+//
+//PointLight & Context::GetPointLight(UINT index)
+//{
+//	return pointLights[index];
+//}
+//
+//UINT Context::SpotLights(OUT SpotLight * lights)
+//{
+//	memcpy(lights, spotLights, sizeof(SpotLight) * spotLightCount);
+//
+//	return spotLightCount;
+//}
+//
+//void Context::AddSpotLight(SpotLight & light)
+//{
+//	spotLights[spotLightCount] = light;
+//	spotLightCount++;
+//}
+//
+//SpotLight & Context::GetSpotLight(UINT index)
+//{
+//	return spotLights[index];
+//}

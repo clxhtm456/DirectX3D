@@ -5,13 +5,23 @@ class Node
 protected:
 	Node();
 	virtual ~Node();
+protected:
+	virtual bool Init() = 0;
+	virtual void PostUpdate() = 0;
+	virtual void Update() = 0;
+	virtual void LateUpdate() = 0;
+	virtual void Render() = 0;
+	virtual void PreRender() = 0;
+	virtual void PostRender() = 0;
+	virtual void RemoveFromParent() = 0;
 public:
-	virtual bool Init();
-	virtual void PostUpdate();
-	virtual void Update();
-	virtual void LateUpdate();
-	virtual void Render();
-	virtual void RemoveFromParent();
+	bool AutoInit();
+	void AutoPostUpdate();
+	void AutoUpdate();
+	void AutoLateUpdate();
+	void AutoRender();
+	void AutoPreRender();
+	void AutoPostRender();
 protected:
 	virtual void Draw();
 public:
@@ -20,10 +30,10 @@ public:
 	Vector3 GetRotationDegree();
 	Vector3 GetScale();
 
-	void SetPosition(Vector3 position);
-	void SetRotation(Vector3 rotation);
-	void SetRotationDegree(Vector3 rotation);
-	void SetScale(Vector3 scale);
+	virtual void SetPosition(Vector3 position);
+	virtual void SetRotation(Vector3 rotation);
+	virtual void SetRotationDegree(Vector3 rotation);
+	virtual void SetScale(Vector3 scale);
 
 	bool GetRunning() { return _running; }
 public:
@@ -33,7 +43,7 @@ public:
 	void AutoRelease();
 	void Release();
 	void Retain();
-private:
+protected:
 	XMVECTOR _position;
 	XMVECTOR _rotation;
 	XMVECTOR _scale;

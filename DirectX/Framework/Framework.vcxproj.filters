@@ -73,6 +73,9 @@
     <ClCompile Include="Objects\Node.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
+    <ClCompile Include="Systems\IExecute.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\IExecute.h">

@@ -18,7 +18,7 @@ void Main::Destroy()
 {
 	for (IExecute* exe : executes)
 	{
-		exe->Destroy();
+		exe->AutoDestroy();
 		SafeDelete(exe);
 	}
 }
@@ -26,25 +26,25 @@ void Main::Destroy()
 void Main::Update()
 {
 	for (IExecute* exe : executes)
-		exe->Update();
+		exe->AutoUpdate();
 }
 
 void Main::PreRender()
 {
 	for (IExecute* exe : executes)
-		exe->PreRender();
+		exe->AutoPreRender();
 }
 
 void Main::Render()
 {
 	for (IExecute* exe : executes)
-		exe->Render();
+		exe->AutoRender();
 }
 
 void Main::PostRender()
 {
 	for (IExecute* exe : executes)
-		exe->PostRender();
+		exe->AutoPostRender();
 }
 
 void Main::ResizeScreen()
@@ -57,7 +57,7 @@ void Main::Push(IExecute * execute)
 {
 	executes.push_back(execute);
 
-	execute->Initialize();
+	execute->AutoInitialize();
 }
 
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR param, int command)

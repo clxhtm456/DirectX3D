@@ -19,18 +19,20 @@ Node::~Node()
 		object->Release();
 }
 
-bool Node::Init()
+bool Node::AutoInit()
 {
-	return true;
+	return Init();
 }
 
-void Node::PostUpdate()
+void Node::AutoPostUpdate()
 {
+	PostUpdate();
+
 	for (auto object : _childList)
-		object->PostUpdate();
+		object->AutoPostUpdate();
 }
 
-void Node::Update()
+void Node::AutoUpdate()
 {
 	for (int i = 0; i < _eventList.size(); i++)
 	{
@@ -46,29 +48,49 @@ void Node::Update()
 		}
 	}
 
+	Update();
+
 	for (auto object : _childList)
 	{
 		if (object->GetRunning())
-			object->Update();
+			object->AutoUpdate();
 	}
 }
 
-void Node::LateUpdate()
+void Node::AutoLateUpdate()
 {
+	LateUpdate();
+
 	for (auto object : _childList)
-		object->LateUpdate();
+		object->AutoLateUpdate();
 }
 
-void Node::Render()
+void Node::AutoRender()
 {
 	if (_visible == false)
 		return;
+
+	Render();
 
 	Draw();
 
 	auto list = _childList;
 	for (auto object : list)
-		object->Render();
+		object->AutoRender();
+}
+
+void Node::AutoPreRender()
+{
+	auto list = _childList;
+	for (auto object : list)
+		object->AutoPreRender();
+}
+
+void Node::AutoPostRender()
+{
+	auto list = _childList;
+	for (auto object : list)
+		object->AutoPostRender();
 }
 
 void Node::RemoveFromParent()
@@ -78,6 +100,7 @@ void Node::RemoveFromParent()
 		_parent->DelChild(this);
 	}
 }
+
 
 void Node::Draw()
 {
@@ -174,7 +197,7 @@ void Node::DelChild(Node* child)
 
 void Node::AutoRelease()
 {
-	Context::Get()->AddReleaseList(this);
+	Window::AddReleaseList(this);
 }
 
 void Node::Release()
