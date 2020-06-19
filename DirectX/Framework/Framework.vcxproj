@@ -23,6 +23,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Objects\Node.cpp" />
+    <ClCompile Include="Renders\Buffers.cpp" />
+    <ClCompile Include="Renders\Shader.cpp" />
     <ClCompile Include="Systems\Context.cpp" />
     <ClCompile Include="Systems\D3D.cpp" />
     <ClCompile Include="Systems\Gui.cpp" />
@@ -46,6 +48,10 @@
   <ItemGroup>
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Objects\Node.h" />
+    <ClInclude Include="Renders\Buffers.h" />
+    <ClInclude Include="Renders\GlobalBuffer.h" />
+    <ClInclude Include="Renders\Shader.h" />
+    <ClInclude Include="Renders\VertexLayouts.h" />
     <ClInclude Include="Systems\Context.h" />
     <ClInclude Include="Systems\D3D.h" />
     <ClInclude Include="Systems\Gui.h" />

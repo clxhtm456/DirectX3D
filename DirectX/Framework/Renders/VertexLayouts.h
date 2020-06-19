@@ -5,10 +5,7 @@
 
 struct Vertex
 {
-	Vertex()
-		: Position(0, 0, 0) {}
-
-	D3DXVECTOR3 Position;
+	XMFLOAT3 Position;
 };
 
 //=======================================================================================
@@ -30,8 +27,8 @@ struct VertexNormal
 		Normal.z = nz;
 	}
 
-	D3DXVECTOR3 Position;
-	D3DXVECTOR3 Normal;
+	Vector3 Position;
+	Vector3 Normal;
 };
 
 //=======================================================================================
@@ -54,8 +51,8 @@ struct VertexColor
 		Color.a = 1.0f;
 	}
 
-	D3DXVECTOR3	Position;
-	D3DXCOLOR Color;
+	Vector3	Position;
+	Color Color;
 };
 
 //=======================================================================================
@@ -67,9 +64,9 @@ struct VertexColorNormal
 		, Color(0, 0, 0, 1)
 		, Normal(0, 0, 0) {}
 
-	D3DXVECTOR3 Position;
-	D3DXCOLOR Color;
-	D3DXVECTOR3 Normal;
+	Vector3 Position;
+	Color Color;
+	Vector3 Normal;
 };
 
 //=======================================================================================
@@ -86,8 +83,8 @@ struct VertexTexture
 		Position(pos),
 		Uv(uv) {}
 
-	D3DXVECTOR3	Position;
-	D3DXVECTOR2	Uv;
+	Vector3	Position;
+	Vector2	Uv;
 };
 
 //=======================================================================================
@@ -102,9 +99,9 @@ struct VertexTextureColor
 
 	}
 
-	D3DXVECTOR3 Position;
-	D3DXVECTOR2 Uv;
-	D3DXCOLOR Color;
+	Vector3 Position;
+	Vector2 Uv;
+	Color Color;
 };
 
 //=======================================================================================
@@ -120,10 +117,10 @@ struct VertexTextureColorNormal
 
 	}
 
-	D3DXVECTOR3 Position;
-	D3DXVECTOR2 Uv;
-	D3DXCOLOR Color;
-	D3DXVECTOR3 Normal;
+	Vector3 Position;
+	Vector2 Uv;
+	Color Color;
+	Vector3 Normal;
 };
 
 //=======================================================================================
@@ -137,14 +134,14 @@ struct VertexTextureNormal
 
 	VertexTextureNormal(float x, float y, float z, float u, float v, float nx, float ny, float nz)
 	{
-		Position = D3DXVECTOR3(x, y, z);
-		Uv = D3DXVECTOR2(u, v);
-		Normal = D3DXVECTOR3(nx, ny, nz);
+		Position = Vector3(x, y, z);
+		Uv = Vector2(u, v);
+		Normal = Vector3(nx, ny, nz);
 	}
 
-	D3DXVECTOR3 Position;
-	D3DXVECTOR2 Uv;
-	D3DXVECTOR3 Normal;
+	Vector3 Position;
+	Vector2 Uv;
+	Vector3 Normal;
 };
 
 //=======================================================================================
@@ -157,10 +154,10 @@ struct VertexColorTextureNormal
 		, Uv(0, 0)
 		, Normal(0, 0, 0) {}
 
-	D3DXVECTOR3 Position;
-	D3DXCOLOR Color;
-	D3DXVECTOR2 Uv;
-	D3DXVECTOR3 Normal;
+	Vector3 Position;
+	Color Color;
+	Vector2 Uv;
+	Vector3 Normal;
 };
 
 //=======================================================================================
@@ -174,11 +171,11 @@ struct VertexTextureNormalBlend
 		, BlendIndices(0, 0, 0, 0)
 		, BlendWeights(0, 0, 0, 0) {}
 
-	D3DXVECTOR3 Position;
-	D3DXVECTOR2 Uv;
-	D3DXVECTOR3 Normal;
-	D3DXVECTOR4 BlendIndices;
-	D3DXVECTOR4 BlendWeights;
+	Vector3 Position;
+	Vector2 Uv;
+	Vector3 Normal;
+	Vector4 BlendIndices;
+	Vector4 BlendWeights;
 };
 
 //=======================================================================================
@@ -194,16 +191,16 @@ struct VertexTextureNormalTangent
 
 	VertexTextureNormalTangent(float px, float py, float pz, float u, float v, float nx, float ny, float nz, float tx, float ty, float tz)
 	{
-		Position = D3DXVECTOR3(px, py, pz);
-		Uv = D3DXVECTOR2(u, v);
-		Normal = D3DXVECTOR3(nx, ny, nz);
-		Tangent = D3DXVECTOR3(tx, ty, tz);
+		Position = Vector3(px, py, pz);
+		Uv = Vector2(u, v);
+		Normal = Vector3(nx, ny, nz);
+		Tangent = Vector3(tx, ty, tz);
 	}
 
-	D3DXVECTOR3	Position;
-	D3DXVECTOR2	Uv;
-	D3DXVECTOR3	Normal;
-	D3DXVECTOR3 Tangent;
+	Vector3	Position;
+	Vector2	Uv;
+	Vector3	Normal;
+	Vector3 Tangent;
 };
 
 //=======================================================================================
@@ -219,12 +216,12 @@ struct VertexTextureNormalTangentBlend
 		, BlendWeights(0, 0, 0, 0)
 	{}
 
-	D3DXVECTOR3	Position;
-	D3DXVECTOR2	Uv;
-	D3DXVECTOR3	Normal;
-	D3DXVECTOR3 Tangent;
-	D3DXVECTOR4 BlendIndices;
-	D3DXVECTOR4 BlendWeights;
+	Vector3	Position;
+	Vector2	Uv;
+	Vector3	Normal;
+	Vector3 Tangent;
+	Vector4 BlendIndices;
+	Vector4 BlendWeights;
 };
 
 //=======================================================================================

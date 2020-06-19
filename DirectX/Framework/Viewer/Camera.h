@@ -34,7 +34,8 @@ public:
 	void SetRotationDegree(Vector3 rotation) override;
 
 	void Resize();
-
+public:
+	ViewProjectionBuffer* GetVPBuffer() { return viewProjection; }
 protected :
 	virtual void Move();
 	virtual void Rotate();
@@ -57,6 +58,9 @@ protected:
 	class Viewport* viewport;
 	Matrix matView;
 	CameraOption default;
+
+	ViewProjectionBuffer* viewProjection;
+	
 
 
 	// Node을(를) 통해 상속됨

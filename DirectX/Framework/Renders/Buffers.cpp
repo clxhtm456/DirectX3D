@@ -100,7 +100,31 @@ ConstantBuffer::~ConstantBuffer()
 	SafeRelease(buffer);
 }
 
-void ConstantBuffer::Apply()
+void ConstantBuffer::SetVSBuffer(UINT slot)
+{
+	MapData();
+	D3D::GetDC()->VSSetConstantBuffers(slot, 1, &buffer);
+}
+
+void ConstantBuffer::SetPSBuffer(UINT slot)
+{
+	MapData();
+	D3D::GetDC()->PSSetConstantBuffers(slot, 1, &buffer);
+}
+
+void ConstantBuffer::SetGSBuffer(UINT slot)
+{
+	MapData();
+	D3D::GetDC()->GSSetConstantBuffers(slot, 1, &buffer);
+}
+
+void ConstantBuffer::SetCSBuffer(UINT slot)
+{
+	MapData();
+	D3D::GetDC()->CSSetConstantBuffers(slot, 1, &buffer);
+}
+
+void ConstantBuffer::MapData()
 {
 	D3D11_MAPPED_SUBRESOURCE subResource;
 

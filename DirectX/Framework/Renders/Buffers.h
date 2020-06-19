@@ -54,7 +54,12 @@ public:
 
 	ID3D11Buffer* Buffer() { return buffer; }
 
-	void Apply(); //변경된 데이터를 갱신하는 함수
+	void SetVSBuffer(UINT slot);
+	void SetPSBuffer(UINT slot);
+	void SetGSBuffer(UINT slot);
+	void SetCSBuffer(UINT slot);
+protected:
+	void MapData(); //변경된 데이터를 갱신하는 함수
 
 private:
 	ID3D11Buffer * buffer;

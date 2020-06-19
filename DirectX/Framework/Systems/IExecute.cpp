@@ -1,8 +1,19 @@
 #include "framework.h"
 #include "IExecute.h"
+#include "Viewer/Camera.h"
 
 void IExecute::AutoInitialize()
 {
+	D3DDesc desc = D3D::GetDesc();
+
+	CameraOption option;
+	option.Width = desc.Width;
+	option.Height = desc.Height;
+
+	_mainCamera = new Camera(option);
+
+	Context::Get()->SetMainCamera(_mainCamera);
+
 	Initialize();
 
 	for (auto object : _childList)
@@ -14,6 +25,8 @@ void IExecute::AutoInitialize()
 
 void IExecute::AutoDestroy()
 {
+	delete _mainCamera;
+
 	Destroy();
 
 	for (auto object : _childList)

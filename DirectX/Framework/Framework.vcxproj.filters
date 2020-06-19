@@ -13,6 +13,9 @@
     <Filter Include="Objects">
       <UniqueIdentifier>{e3cde560-06d3-4a8a-815f-f85f8c025e83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render">
+      <UniqueIdentifier>{30d63c54-e300-43eb-8c94-8ab0fb8b2782}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Keyboard.cpp">
@@ -76,6 +79,12 @@
     <ClCompile Include="Systems\IExecute.cpp">
       <Filter>Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Renders\Shader.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\Buffers.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\IExecute.h">
@@ -138,6 +147,18 @@
     </ClInclude>
     <ClInclude Include="Objects\Node.h">
       <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\Shader.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\VertexLayouts.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\Buffers.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\GlobalBuffer.h">
+      <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

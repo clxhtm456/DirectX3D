@@ -68,8 +68,10 @@ public:
 	float& FogDensity() { return fogDensity; }
 	UINT& FogType() { return fogType; }*/
 
+	void SetMainCamera(class Camera* camera);
+
 	
-	class Camera* GetCamera() { return camera; }
+	class Camera* GetMainCamera() { return camera; }
 
 private:
 	static Context* instance;
@@ -88,8 +90,8 @@ private:
 	UINT fogType = 2;
 
 	UINT pointLightCount = 0;
-	PointLight pointLights[MAX_POINT_LIGHT];
+	PointLight pointLights[MAX_POINT_LIGHT] = {0};
 
 	UINT spotLightCount = 0;
-	SpotLight spotLights[MAX_SPOT_LIGHT];
+	SpotLight spotLights[MAX_SPOT_LIGHT] = { 0 };
 };

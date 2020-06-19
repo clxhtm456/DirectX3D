@@ -18,9 +18,9 @@ Projection::~Projection()
 
 }
 
-void Projection::GetMatrix(Matrix * matrix)
+Matrix Projection::GetMatrix()
 {
-	memcpy(matrix, &this->matrix, sizeof(Matrix));
+	return matrix;
 }
 
 void Projection::Set(float width, float height, float zn, float zf, float fov)

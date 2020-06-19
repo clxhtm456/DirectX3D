@@ -29,19 +29,30 @@ using namespace std;
 #define SafeDelete(p){ if(p){ delete (p); (p) = NULL; } }
 #define SafeDeleteArray(p){ if(p){ delete [] (p); (p) = NULL; } }
 
+#define MAX_MODEL_BONE 256
+#define MAX_POINTLIGHT 32
+
 //Direct3D
 #include <d3d11.h>
 #include <DirectXPackedVector.h>
 #include <dxgi1_4.h>
-
 #include <d3d12.h>
-#include <D3Dcompiler.h>
 #include <DirectXMath.h>
+#include <D3Dcompiler.h>
 
-
-#pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"d3d11.lib")
+#pragma comment(lib,"d3dcompiler.lib")
+#pragma comment(lib,"DirectXTex.lib")
+#pragma comment(lib, "dxguid.lib")
+
+
+
+//fxShader
+//#include <d3dx11effect.h>
+//#pragma comment(lib, "Effects11d.lib")
+
+
 
 using namespace std;
 using namespace DirectX;
@@ -76,6 +87,13 @@ typedef XMVECTOR Plane;
 #include "Systems/Context.h"
 #include "Systems/Window.h"
 
+#include "Renders/Shader.h"
+#include "Renders/VertexLayouts.h"
+#include "Renders/Buffers.h"
+#include "Renders/GlobalBuffer.h"
+
 #include "Utilities/Math.h"
+#include "Utilities/Path.h"
+#include "Utilities/String.h"
 
 #include "Objects/Node.h"

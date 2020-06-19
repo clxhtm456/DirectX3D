@@ -23,50 +23,54 @@ void Context::Delete()
 
 Context::Context()
 {
-	D3DDesc desc = D3D::GetDesc();
-
-	CameraOption option;
-	option.Width = desc.Width;
-	option.Height = desc.Height;
-
-	camera = new Camera(option);
+	ZeroMemory(pointLights, sizeof(PointLight) * MAX_POINT_LIGHT);
+	ZeroMemory(spotLights, sizeof(SpotLight) * MAX_POINT_LIGHT);
 }
 
 Context::~Context()
 {
-	SafeDelete(camera);
 }
 
 void Context::Update()
 {
-	camera->Update();
+	if (camera != nullptr)
+		camera->Update();
 }
 
 void Context::Render()
 {
-	camera->AutoRender();
-
 	string str = string("FPS : ") + to_string(ImGui::GetIO().Framerate);
 	Gui::Get()->RenderText(5, 5, 1, 1, 1, str);
 
-	Vector3 camPos;
-	camPos = camera->GetPosition();
+	if (camera != nullptr)
+	{
+		camera->AutoRender();
 
-	Vector3 camDir;
-	camDir = camera->GetRotationDegree();
+		Vector3 camPos;
+		camPos = camera->GetPosition();
 
-	str = "camera(P) : ";
-	str += to_string((int)camPos.x) + ", " + to_string((int)camPos.y) + ", " + to_string((int)camPos.z);
-	Gui::Get()->RenderText(5, 20, 1, 1, 1, str);
+		Vector3 camDir;
+		camDir = camera->GetRotationDegree();
 
-	str = "camera(R) : ";
-	str += to_string((int)camDir.x) + ", " + to_string((int)camDir.y);
-	Gui::Get()->RenderText(5, 35, 1, 1, 1, str);
+		str = "camera(P) : ";
+		str += to_string((int)camPos.x) + ", " + to_string((int)camPos.y) + ", " + to_string((int)camPos.z);
+		Gui::Get()->RenderText(5, 20, 1, 1, 1, str);
+
+		str = "camera(R) : ";
+		str += to_string((int)camDir.x) + ", " + to_string((int)camDir.y);
+		Gui::Get()->RenderText(5, 35, 1, 1, 1, str);
+	}
 }
 
 void Context::ResizeScreen()
 {
-	camera->Resize();
+	if(camera != nullptr)
+		camera->Resize();
+}
+
+void Context::SetMainCamera(Camera* camera)
+{
+	this->camera = camera;
 }
 
 //

@@ -73,10 +73,14 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR param, int 
 	desc.Background = Color(0.3f, 0.3f, 0.3f, 1.0f);	
 	D3D::SetDesc(desc);
 
+	//_CrtSetBreakAlloc(258);
 	Main* main = new Main();
 	WPARAM wParam = Window::Run(main);
 
+
 	SafeDelete(main);
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	return wParam;
 }

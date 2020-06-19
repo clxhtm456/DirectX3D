@@ -263,6 +263,9 @@ void D3D::CreateSwapChainAndDevice()
 		, &deviceContext
 	);
 	assert(SUCCEEDED(hr));
+
+	for (auto info : apapterInfos)
+		delete info;
 }
 
 void D3D::CreateBackBuffer(float width, float height)

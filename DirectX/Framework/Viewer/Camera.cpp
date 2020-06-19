@@ -12,6 +12,9 @@ Camera::Camera(CameraOption option) :
 
 	perspective = new Perspective(option.Width, option.Height,option.zn,option.zf,option.fov);
 	viewport = new Viewport(option.Width, option.Height,option.x,option.y,option.minDepth,option.maxDepth);
+	viewProjection = new ViewProjectionBuffer();
+
+	viewProjection->SetProjection(perspective->GetMatrix());
 
 	Rotate();
 	Move();
@@ -21,6 +24,7 @@ Camera::~Camera()
 {
 	delete perspective;
 	delete viewport;
+	delete viewProjection;
 }
 
 void Camera::Update()
@@ -101,10 +105,7 @@ Matrix Camera::ViewMatrix()
 
 Matrix Camera::ProjectionMatrix()
 {
-	Matrix projection;
-	perspective->GetMatrix(&projection);
-
-	return projection;
+	return perspective->GetMatrix();
 }
 
 bool Camera::Init()
@@ -123,6 +124,9 @@ void Camera::LateUpdate()
 void Camera::Render()
 {
 	viewport->RSSetViewport();
+
+	GetVPBuffer()->SetView(ViewMatrix());
+	GetVPBuffer()->SetProjection(ProjectionMatrix());
 }
 
 void Camera::PreRender()

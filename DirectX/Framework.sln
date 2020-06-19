@@ -12,76 +12,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4E435F7-7118-4E13-901B-39445234D64D}"
 	ProjectSection(SolutionItems) = preProject
-		_Shaders\41_MRT.fx = _Shaders\41_MRT.fx
-		_Shaders\42_Projector.fx = _Shaders\42_Projector.fx
-		_Shaders\43_Shadow.fx = _Shaders\43_Shadow.fx
-		_Shaders\44_CubeMap.fx = _Shaders\44_CubeMap.fx
-		_Shaders\46_TessDistance.fx = _Shaders\46_TessDistance.fx
-		_Shaders\46_TessQuad.fx = _Shaders\46_TessQuad.fx
-		_Shaders\46_TessTriangle.fx = _Shaders\46_TessTriangle.fx
-		_Shaders\47_CPUFrustum.fx = _Shaders\47_CPUFrustum.fx
-		_Shaders\47_GPUFrustum.fx = _Shaders\47_GPUFrustum.fx
-		_Shaders\48_Defferd.fx = _Shaders\48_Defferd.fx
-		_Shaders\49_PointLights.fx = _Shaders\49_PointLights.fx
-		_Shaders\50_PointLightArray.fx = _Shaders\50_PointLightArray.fx
-		_Shaders\50_PointLightArray.hlsl = _Shaders\50_PointLightArray.hlsl
-		_Shaders\51_SpotLightArray.fx = _Shaders\51_SpotLightArray.fx
-		_Shaders\52_DefferedShadow.fx = _Shaders\52_DefferedShadow.fx
-		_Shaders\54_Water.fx = _Shaders\54_Water.fx
-		_Shaders\55_LoD.fx = _Shaders\55_LoD.fx
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00", "00", "{9850716F-03E9-4E44-B02E-6EC2651A59EA}"
-	ProjectSection(SolutionItems) = preProject
-		_Shaders\00_Deffered.fx = _Shaders\00_Deffered.fx
-		_Shaders\00_Global.fx = _Shaders\00_Global.fx
-		_Shaders\00_Light.fx = _Shaders\00_Light.fx
-		_Shaders\00_Model.fx = _Shaders\00_Model.fx
-		_Shaders\00_Sky.fx = _Shaders\00_Sky.fx
-		_Shaders\00_Terrain.fx = _Shaders\00_Terrain.fx
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01-20", "01-20", "{25371063-64F0-43CF-B47C-8E7E165E3B1D}"
-	ProjectSection(SolutionItems) = preProject
-		_Shaders\02_Vertex.fx = _Shaders\02_Vertex.fx
-		_Shaders\03_Rect.fx = _Shaders\03_Rect.fx
-		_Shaders\04_World.fx = _Shaders\04_World.fx
-		_Shaders\05_Index.fx = _Shaders\05_Index.fx
-		_Shaders\06_Grid.fx = _Shaders\06_Grid.fx
-		_Shaders\08_Terrain.fx = _Shaders\08_Terrain.fx
-		_Shaders\09_Light.fx = _Shaders\09_Light.fx
-		_Shaders\10_Mesh.fx = _Shaders\10_Mesh.fx
-		_Shaders\11_Texture.fx = _Shaders\11_Texture.fx
-		_Shaders\12_Terrain.fx = _Shaders\12_Terrain.fx
-		_Shaders\13_Mesh.fx = _Shaders\13_Mesh.fx
-		_Shaders\14_SkyCube.fx = _Shaders\14_SkyCube.fx
-		_Shaders\35_Collider.fx = _Shaders\35_Collider.fx
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "21-40", "21-40", "{0756B783-1EBC-4DAC-B7FD-739F35CBED5C}"
-	ProjectSection(SolutionItems) = preProject
-		_Shaders\21_Terrain_Brush.fx = _Shaders\21_Terrain_Brush.fx
-		_Shaders\22_TerrainLine.fx = _Shaders\22_TerrainLine.fx
-		_Shaders\23_TerrainSpatting.fx = _Shaders\23_TerrainSpatting.fx
-		_Shaders\24_Model.fx = _Shaders\24_Model.fx
-		_Shaders\25_DebugLine.fx = _Shaders\25_DebugLine.fx
-		_Shaders\25_Model.fx = _Shaders\25_Model.fx
-		_Shaders\26_Animation.fx = _Shaders\26_Animation.fx
-		_Shaders\27_Billboard.fx = _Shaders\27_Billboard.fx
-		_Shaders\28_Rain.fx = _Shaders\28_Rain.fx
-		_Shaders\28_Snow.fx = _Shaders\28_Snow.fx
-		_Shaders\29_Billboard.fx = _Shaders\29_Billboard.fx
-		_Shaders\30_Instancing.fx = _Shaders\30_Instancing.fx
-		_Shaders\31_Mesh.fx = _Shaders\31_Mesh.fx
-		_Shaders\32_Model.fx = _Shaders\32_Model.fx
-		_Shaders\33_Animation.fx = _Shaders\33_Animation.fx
-		_Shaders\34_ByteAddress.fx = _Shaders\34_ByteAddress.fx
-		_Shaders\35_Collider.fx = _Shaders\35_Collider.fx
-		_Shaders\36_Specular.fx = _Shaders\36_Specular.fx
-		_Shaders\37_NormalMap.fx = _Shaders\37_NormalMap.fx
-		_Shaders\38_Lighting.fx = _Shaders\38_Lighting.fx
-		_Shaders\39_Render2D.fx = _Shaders\39_Render2D.fx
-		_Shaders\40_PostEffect.fx = _Shaders\40_PostEffect.fx
+		_Shaders\Header.hlsli = _Shaders\Header.hlsli
+		_Shaders\Vertex.hlsl = _Shaders\Vertex.hlsl
 	EndProjectSection
 EndProject
 Global
@@ -101,11 +33,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{9850716F-03E9-4E44-B02E-6EC2651A59EA} = {D4E435F7-7118-4E13-901B-39445234D64D}
-		{25371063-64F0-43CF-B47C-8E7E165E3B1D} = {D4E435F7-7118-4E13-901B-39445234D64D}
-		{0756B783-1EBC-4DAC-B7FD-739F35CBED5C} = {D4E435F7-7118-4E13-901B-39445234D64D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E7C4C6F8-0135-4033-BA25-9F3F90F282CF}
