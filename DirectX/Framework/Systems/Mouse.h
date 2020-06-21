@@ -19,7 +19,12 @@ public:
 
 	LRESULT InputProc(UINT message, WPARAM wParam, LPARAM lParam);
 
-	XMFLOAT3 GetPosition() { return position; }
+	Vector3 GetPosition() 
+	{ 
+		Vector3 temp;
+		XMStoreFloat3(&temp, position);
+		return temp;
+	}
 
 	bool Down(DWORD button)
 	{
@@ -38,7 +43,9 @@ public:
 
 	XMFLOAT3 GetMoveValue()
 	{
-		return wheelMoveValue;
+		Vector3 temp;
+		XMStoreFloat3(&temp, wheelMoveValue);
+		return temp;
 	}
 
 private:
@@ -48,15 +55,15 @@ private:
 	static Mouse* instance;
 
 	HWND handle;
-	XMFLOAT3 position; //마우스 위치
+	XMVECTOR position; //마우스 위치
 
 	BYTE buttonStatus[MAX_INPUT_MOUSE];
 	BYTE buttonOldStatus[MAX_INPUT_MOUSE];
 	BYTE buttonMap[MAX_INPUT_MOUSE];
 
-	XMFLOAT3 wheelStatus;
-	XMFLOAT3 wheelOldStatus;
-	XMFLOAT3 wheelMoveValue;
+	XMVECTOR wheelStatus;
+	XMVECTOR wheelOldStatus;
+	XMVECTOR wheelMoveValue;
 
 	DWORD timeDblClk;
 	DWORD startDblClk[MAX_INPUT_MOUSE];

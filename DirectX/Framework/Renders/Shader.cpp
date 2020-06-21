@@ -72,7 +72,7 @@ HRESULT Shader::CompileShader(_In_ LPCWSTR srcFile, _In_ LPCSTR entryPoint, _In_
 
 	ID3DBlob* shaderBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
-	HRESULT hr = D3DCompileFromFile(srcFile, nullptr, nullptr,
+	HRESULT hr = D3DCompileFromFile(srcFile, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		entryPoint, profile,
 		flags, 0, &shaderBlob, &errorBlob);
 

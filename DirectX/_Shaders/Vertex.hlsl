@@ -1,8 +1,23 @@
 #include "Header.hlsli"
 
-float4 VS(float4 Pos : Position) : SV_Position
+struct VertexInput
 {
-    return Pos;
+	float4 Position : Position0;
+};
+
+struct VertexOutput
+{
+	float4 Position : SV_Position;
+};
+
+
+VertexOutput VS(VertexInput input)
+{
+	VertexOutput output;
+	output.Position = mul(input.Position, view);
+	output.Position = mul(output.Position, projection);
+
+	return output;
 }
 
 float4 PS(float4 input : SV_Position) : SV_Target

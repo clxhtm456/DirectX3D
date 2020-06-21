@@ -57,7 +57,7 @@ void Context::Render()
 		Gui::Get()->RenderText(5, 20, 1, 1, 1, str);
 
 		str = "camera(R) : ";
-		str += to_string((int)camDir.x) + ", " + to_string((int)camDir.y);
+		str += to_string((int)camDir.x) + ", " + to_string((int)camDir.y)+ ", " + to_string((int)camDir.z);
 		Gui::Get()->RenderText(5, 35, 1, 1, 1, str);
 	}
 }

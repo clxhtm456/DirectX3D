@@ -27,6 +27,7 @@ void TestScene::Initialize()
 void TestScene::Destroy()
 {
 	delete freedomCam;
+	delete vertexBuffer;
 }
 
 void TestScene::Update()
@@ -39,11 +40,11 @@ void TestScene::PreRender()
 
 void TestScene::Render()
 {
-	Context::Get()->GetMainCamera()->GetVPBuffer()->SetVSBuffer(0);
+	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	vertexBuffer->Render();
 
-	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	shader->Render();
+	Context::Get()->GetMainCamera()->GetVPBuffer()->SetVSBuffer(0);
 	D3D::GetDC()->Draw(3,0);
 }
 

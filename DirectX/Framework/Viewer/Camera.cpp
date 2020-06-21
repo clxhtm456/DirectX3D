@@ -29,6 +29,8 @@ Camera::~Camera()
 
 void Camera::Update()
 {
+	GetVPBuffer()->SetView(ViewMatrix());
+	GetVPBuffer()->SetProjection(ProjectionMatrix());
 }
 
 
@@ -75,17 +77,19 @@ void Camera::Rotate()
 	Matrix X, Y, Z;
 	Vector3 rotation;
 	XMStoreFloat3(&rotation ,_rotation);
-	X = XMMatrixRotationX(rotation.x);
-	Y = XMMatrixRotationX(rotation.y);
-	Z = XMMatrixRotationX(rotation.z);
+	X = DirectX::XMMatrixRotationX(rotation.x);
+	Y = DirectX::XMMatrixRotationY(rotation.y);
+	Z = DirectX::XMMatrixRotationZ(rotation.z);
 
 	matRotation = X * Y * Z;
 
 	//저장될 값 <- ..의 방향 <- ..공간
-	forward = XMVector3TransformNormal(XMVectorSet(0,0,1,0), matRotation);
-	up = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), matRotation);
-	right = XMVector3TransformNormal(XMVectorSet(1, 0, 0, 0), matRotation);
+	forward = XMVector3TransformNormal(XMVectorSet(0.0f,0.0f,1.0f,0.0f), matRotation);
+	up = XMVector3TransformNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), matRotation);
+	right = XMVector3TransformNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), matRotation);
 
+	Vector3 tempUp;
+	XMStoreFloat3(&tempUp, up);
 	View();
 	
 }
@@ -97,10 +101,7 @@ void Camera::View()
 
 Matrix Camera::ViewMatrix()
 {
-	Matrix view;
-	GetMatrix(&view);
-
-	return view;
+	return matView;
 }
 
 Matrix Camera::ProjectionMatrix()
@@ -125,8 +126,7 @@ void Camera::Render()
 {
 	viewport->RSSetViewport();
 
-	GetVPBuffer()->SetView(ViewMatrix());
-	GetVPBuffer()->SetProjection(ProjectionMatrix());
+	
 }
 
 void Camera::PreRender()

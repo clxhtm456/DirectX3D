@@ -22,11 +22,11 @@ void Mouse::Delete()
 
 Mouse::Mouse()
 {
-	position = XMFLOAT3(0, 0, 0);
+	position = XMVectorZero();
 
-	wheelStatus = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	wheelOldStatus = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	wheelMoveValue = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	wheelStatus = XMVectorSet(0.0f, 0.0f, 0.0f,0.0f);
+	wheelOldStatus = XMVectorSet(0.0f, 0.0f, 0.0f,0.0f);
+	wheelMoveValue = XMVectorSet(0.0f, 0.0f, 0.0f,0.0f);
 
 	ZeroMemory(buttonStatus, sizeof(BYTE) * MAX_INPUT_MOUSE);
 	ZeroMemory(buttonOldStatus, sizeof(BYTE) * MAX_INPUT_MOUSE);
@@ -79,15 +79,14 @@ void Mouse::Update()
 	GetCursorPos(&point);
 	ScreenToClient(handle, &point);
 
-	wheelOldStatus.x = wheelStatus.x;
-	wheelOldStatus.y = wheelStatus.y;
+	wheelOldStatus = XMVectorSetX(wheelOldStatus, XMVectorGetX(wheelStatus));
+	wheelOldStatus = XMVectorSetY(wheelOldStatus, XMVectorGetY(wheelStatus));
 
-	wheelStatus.x = float(point.x);
-	wheelStatus.y = float(point.y);
+	wheelStatus = XMVectorSetX(wheelStatus, float(point.x));
+	wheelStatus = XMVectorSetY(wheelStatus, float(point.y));
 
-	XMStoreFloat3(&wheelMoveValue, XMLoadFloat3(&wheelStatus) - XMLoadFloat3(&wheelOldStatus));
-	//wheelMoveValue = wheelStatus - wheelOldStatus;
-	wheelOldStatus.z = wheelStatus.z;
+	wheelMoveValue = wheelStatus - wheelOldStatus;
+	wheelOldStatus = XMVectorSetZ(wheelOldStatus, XMVectorGetZ(wheelStatus));
 
 
 	DWORD tButtonStatus = GetTickCount();
@@ -128,16 +127,16 @@ LRESULT Mouse::InputProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message == WM_LBUTTONDOWN || message == WM_MOUSEMOVE)
 	{
-		position.x = (float)LOWORD(lParam);
-		position.y = (float)HIWORD(lParam);
+		position = XMVectorSetX(position,(float)LOWORD(lParam));
+		position = XMVectorSetY(position,(float)LOWORD(lParam));
 	}
 
 	if (message == WM_MOUSEWHEEL)
 	{
 		short tWheelValue = (short)HIWORD(wParam);
 
-		wheelOldStatus.z = wheelStatus.z;
-		wheelStatus.z += (float)tWheelValue;
+		wheelOldStatus = XMVectorSetZ(wheelOldStatus, XMVectorGetZ(wheelStatus));
+		wheelStatus = XMVectorSetZ(wheelStatus, XMVectorGetZ(wheelStatus) + (float)tWheelValue);
 	}
 
 	return TRUE;
