@@ -43,10 +43,7 @@ using namespace std;
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
-#pragma comment(lib,"DirectXTex.lib")
 #pragma comment(lib, "dxguid.lib")
-
-
 
 //fxShader
 //#include <d3dx11effect.h>
@@ -97,3 +94,7 @@ typedef XMVECTOR Plane;
 #include "Utilities/String.h"
 
 #include "Objects/Node.h"
+
+#include "Viewer/Camera.h"
+#include "Viewer/Perspective.h"
+#include "Viewer/Viewport.h"
