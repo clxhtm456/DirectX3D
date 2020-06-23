@@ -25,7 +25,6 @@
     <ClCompile Include="Objects\Node.cpp" />
     <ClCompile Include="Renders\Buffers.cpp" />
     <ClCompile Include="Renders\Shader.cpp" />
-    <ClCompile Include="Renders\Texture.cpp" />
     <ClCompile Include="Systems\Context.cpp" />
     <ClCompile Include="Systems\D3D.cpp" />
     <ClCompile Include="Systems\Gui.cpp" />
@@ -52,7 +51,6 @@
     <ClInclude Include="Renders\Buffers.h" />
     <ClInclude Include="Renders\GlobalBuffer.h" />
     <ClInclude Include="Renders\Shader.h" />
-    <ClInclude Include="Renders\Texture.h" />
     <ClInclude Include="Renders\VertexLayouts.h" />
     <ClInclude Include="Systems\Context.h" />
     <ClInclude Include="Systems\D3D.h" />

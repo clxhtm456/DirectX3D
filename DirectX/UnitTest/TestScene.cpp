@@ -10,12 +10,21 @@ void TestScene::Initialize()
 		Vector3(-0.5f, -0.5f, 0.0f),
 		Vector3(-0.5f, +0.5f, 0.0f),
 		Vector3(+0.5f, -0.5f, 0.0f),
-		Vector3(+0.5f, -0.5f, 0.0f),
-		Vector3(-0.5f, +0.5f, 0.0f),
 		Vector3(+0.5f, +0.5f, 0.0f)
 	};
 
-	vertexBuffer = new VertexBuffer(vertices, 6, sizeof(Vertex));
+	UINT indices[] =
+	{
+		0,
+		1,
+		2,
+		2,
+		1,
+		3
+	};
+	
+	vertexBuffer = new VertexBuffer(vertices, 4, sizeof(Vertex));
+	indexBuffer = new IndexBuffer(indices, 6);
 
 	D3DDesc desc = D3D::GetDesc();
 	CameraOption option;
@@ -45,10 +54,11 @@ void TestScene::Render()
 {
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	vertexBuffer->Render();
+	indexBuffer->Render();
 
 	shader->Render();
 	Context::Get()->GetMainCamera()->GetVPBuffer()->SetVSBuffer(0);
-	D3D::GetDC()->Draw(6,0);
+	D3D::GetDC()->DrawIndexed(6,0,0);
 }
 
 void TestScene::PostRender()

@@ -2,25 +2,17 @@
 
 struct VertexInput
 {
-	float4 Position : Position0;
-};
-
-struct VertexOutput
-{
-	float4 Position : SV_Position;
+	float4 Position : POSITION;
 };
 
 
-VertexOutput VS(VertexInput input)
+void VS(VertexInput input,	out float4 position : SV_POSITION)
 {
-	VertexOutput output;
-	output.Position = mul(input.Position, view);
-	output.Position = mul(output.Position, projection);
-
-	return output;
+	position = mul(input.Position, view);
+	position = mul(position, projection);
 }
 
-float4 PS(float4 input : SV_Position) : SV_Target
+float4 PS(float4 input : SV_POSITION) : SV_TARGET
 {
     return float4(1, 0, 0, 1);
 }

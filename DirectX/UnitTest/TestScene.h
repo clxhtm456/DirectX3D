@@ -17,4 +17,5 @@ private:
 	Shader* shader;
 	class Camera* freedomCam;
 	VertexBuffer* vertexBuffer;
+	IndexBuffer* indexBuffer;
 };

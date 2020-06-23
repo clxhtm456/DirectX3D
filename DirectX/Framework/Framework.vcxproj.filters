@@ -85,9 +85,6 @@
     <ClCompile Include="Renders\Buffers.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="Renders\Texture.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\IExecute.h">
@@ -161,9 +158,6 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Renders\GlobalBuffer.h">
-      <Filter>Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Renders\Texture.h">
       <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>

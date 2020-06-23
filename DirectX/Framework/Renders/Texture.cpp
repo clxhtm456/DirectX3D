@@ -78,7 +78,7 @@ D3D11_TEXTURE2D_DESC Texture::ReadPixel(ID3D11Texture2D * src, DXGI_FORMAT readF
 			float b = f * (float)((0x0000FF00 & colors[index]) >> 8);
 			float a = f * (float)((0x000000FF & colors[index]) >> 0);
 
-			pixels->push_back(D3DXCOLOR(a, b, g, r));
+			pixels->push_back(Color(a, b, g, r));
 		}
 	}
 

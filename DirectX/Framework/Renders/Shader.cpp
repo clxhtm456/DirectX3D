@@ -200,7 +200,9 @@ void Shader::CreateInputLayout()
 			elementDesc.InstanceDataStepRate = 1;
 		}
 
-		inputLayouts.push_back(elementDesc);
+		//if (String::StartsWith(temp, "SV_") == false)
+			inputLayouts.push_back(elementDesc);
+		
 	}
 
 	hr = D3D::GetDevice()->CreateInputLayout(inputLayouts.data(), inputLayouts.size(),
