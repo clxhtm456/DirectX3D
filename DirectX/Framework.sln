@@ -12,7 +12,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4E435F7-7118-4E13-901B-39445234D64D}"
 	ProjectSection(SolutionItems) = preProject
+		_Shaders\DebugLine.hlsl = _Shaders\DebugLine.hlsl
 		_Shaders\Header.hlsli = _Shaders\Header.hlsli
+		_Shaders\Mesh.hlsl = _Shaders\Mesh.hlsl
+		_Shaders\Texture.hlsl = _Shaders\Texture.hlsl
 		_Shaders\Vertex.hlsl = _Shaders\Vertex.hlsl
 	EndProjectSection
 EndProject

@@ -42,6 +42,7 @@ void Context::Render()
 	string str = string("FPS : ") + to_string(ImGui::GetIO().Framerate);
 	Gui::Get()->RenderText(5, 5, 1, 1, 1, str);
 
+
 	if (camera != nullptr)
 	{
 		camera->AutoRender();

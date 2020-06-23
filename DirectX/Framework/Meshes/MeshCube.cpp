@@ -1,6 +1,21 @@
 #include "Framework.h"
 #include "MeshCube.h"
 
+MeshCube* MeshCube::Create()
+{
+	MeshCube* pRet = new MeshCube();
+	if (pRet && pRet->Init())
+	{
+		pRet->AutoRelease();
+	}
+	else
+	{
+		delete pRet;
+		pRet = nullptr;
+	}
+	return pRet;
+}
+
 MeshCube::MeshCube()
 {
 
@@ -11,7 +26,7 @@ MeshCube::~MeshCube()
 
 }
 
-void MeshCube::Create()
+void MeshCube::CreateMesh()
 {
 	vector<MeshVertex> v;
 

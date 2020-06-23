@@ -125,8 +125,6 @@ void Camera::LateUpdate()
 void Camera::Render()
 {
 	viewport->RSSetViewport();
-
-	
 }
 
 void Camera::PreRender()

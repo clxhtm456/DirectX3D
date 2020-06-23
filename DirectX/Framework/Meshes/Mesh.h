@@ -1,28 +1,23 @@
 #pragma once
 
-class Mesh
+class Mesh : public RenderingNode
 {
 public:
 	typedef VertexTextureNormalTangent MeshVertex;
 
 public:
 	Mesh();
-	virtual ~Mesh();
+	~Mesh();
 
-	void SetShader(Shader* shader);
-	void Pass(UINT val) { pass = val; }
-
+	bool Init() override;
 	void Update();
-	void Render(UINT drawCount);
+	void Render();
 
 protected:
-	virtual void Create() = 0;
+	virtual void CreateMesh() = 0;
 	
 protected:
 	Shader * shader;
-	UINT pass = 0;
-
-	PerFrame* perFrame = NULL;
 
 	VertexBuffer* vertexBuffer = NULL;
 	IndexBuffer* indexBuffer = NULL;
@@ -32,5 +27,5 @@ protected:
 
 	UINT vertexCount, indexCount;
 
-
+	Texture* texture;
 };

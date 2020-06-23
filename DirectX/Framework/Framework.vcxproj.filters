@@ -16,6 +16,9 @@
     <Filter Include="Render">
       <UniqueIdentifier>{30d63c54-e300-43eb-8c94-8ab0fb8b2782}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Meshes">
+      <UniqueIdentifier>{d783b3e4-caf3-4602-bee0-7b30ec7a0e98}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Keyboard.cpp">
@@ -83,6 +86,21 @@
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="Renders\Buffers.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\DebugLine.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Meshes\Mesh.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Meshes\MeshCube.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\RenderingNode.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\Texture.cpp">
       <Filter>Render</Filter>
     </ClCompile>
   </ItemGroup>
@@ -158,6 +176,21 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Renders\GlobalBuffer.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\DebugLine.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Meshes\Mesh.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Meshes\MeshCube.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\RenderingNode.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\Texture.h">
       <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>

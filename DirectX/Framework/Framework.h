@@ -87,13 +87,18 @@ typedef XMVECTOR Plane;
 #include "Renders/VertexLayouts.h"
 #include "Renders/Buffers.h"
 #include "Renders/GlobalBuffer.h"
+#include "Renders/DebugLine.h"
+#include "Renders/Texture.h"
 
 #include "Utilities/Math.h"
 #include "Utilities/Path.h"
 #include "Utilities/String.h"
 
 #include "Objects/Node.h"
+#include "Objects/RenderingNode.h"
 
 #include "Viewer/Camera.h"
 #include "Viewer/Perspective.h"
 #include "Viewer/Viewport.h"
+
+#include "Meshes/MeshCube.h"

@@ -35,6 +35,11 @@ public:
 	virtual void SetRotationDegree(Vector3 rotation);
 	virtual void SetScale(Vector3 scale);
 
+	void SetPosition(float x, float y , float z);
+	void SetRotation(float x, float y, float z);
+	void SetRotationDegree(float x, float y, float z);
+	void SetScale(float x, float y, float z);
+
 	bool GetRunning() { return _running; }
 public:
 	void AddChild(Node* child);
@@ -58,6 +63,4 @@ private:
 
 	bool _running;
 	bool _visible;
-
-	
 };

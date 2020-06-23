@@ -1,405 +1,161 @@
-﻿#include "Framework.h"
+#include "Framework.h"
 #include "Texture.h"
 
-vector<TextureDesc> Textures::descs;
 
-Texture::Texture(wstring file)
-	: file(file)
+
+map<wstring, ID3D11ShaderResourceView*> Texture::totalSRV;
+vector<Texture*> Texture::totalTexture;
+
+Texture::Texture(ID3D11ShaderResourceView* SRV, wstring file)
+	: SRV(SRV), file(file)
 {
-	bool b = Path::IsRelativePath(file);
-	if (b == true)
-		this->file = L"../../_Textures/" + file;
+	SRV->GetResource((ID3D11Resource**)&srcTexture);
+	srcTexture->GetDesc(&srcDesc);
 
-	Textures::Load(this);
-	String::Replace(&this->file, L"../../_Textures", L"");
+	width = srcDesc.Width;
+	height = srcDesc.Height;
+
+	D3D11_SAMPLER_DESC sampDesc = {};
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	HRESULT hr = D3D::GetDevice()->CreateSamplerState(&sampDesc, &sampler);
+	Check(hr);
 }
 
 Texture::~Texture()
 {
-	
+	sampler->Release();
 }
 
-
-ID3D11Texture2D * Texture::GetTexture()
+ScratchImage Texture::LoadTextureFromFile(wstring file)
 {
-	ID3D11Texture2D* texture;
-	view->GetResource((ID3D11Resource **)&texture);
+	// Load the texture.
+	string str = String::ToString(file);
+	wstring wsTmp(str.begin(), str.end());
 
-	return texture;
-}
+	wstring ws = wsTmp;
+	// Load the texture.
+	WCHAR ext[_MAX_EXT];
+	_wsplitpath_s(ws.c_str(), nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT);
 
-<<<<<<< HEAD
-D3D11_TEXTURE2D_DESC Texture::ReadPixel(DXGI_FORMAT readFormat, vector<Color>* pixels)
-{
-	ID3D11Texture2D* srcTexture;
-	view->GetResource((ID3D11Resource **)&srcTexture);
-
-	return ReadPixel(srcTexture, readFormat, pixels);
-}
-
-D3D11_TEXTURE2D_DESC Texture::ReadPixel(ID3D11Texture2D * src, DXGI_FORMAT readFormat, vector<Color>* pixels)
-{
-	D3D11_TEXTURE2D_DESC srcDesc;
-	src->GetDesc(&srcDesc);
-
-
-	D3D11_TEXTURE2D_DESC desc;
-	ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-	desc.Width = srcDesc.Width;
-	desc.Height = srcDesc.Height;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.Format = readFormat;
-	desc.SampleDesc = srcDesc.SampleDesc;
-	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-	desc.Usage = D3D11_USAGE_STAGING;
-
-	ID3D11Texture2D* texture;
-	Check(D3D::GetDevice()->CreateTexture2D(&desc, NULL, &texture));
-	Check(D3DX11LoadTextureFromTexture(D3D::GetDC(), src, NULL, texture));
-
-	UINT* colors = new UINT[desc.Width * desc.Height];
-	D3D11_MAPPED_SUBRESOURCE subResource;
-	D3D::GetDC()->Map(texture, 0, D3D11_MAP_READ, NULL, &subResource);
-	{
-		memcpy(colors, subResource.pData, sizeof(UINT) * desc.Width * desc.Height);
-	}
-	D3D::GetDC()->Unmap(texture, 0);
-
-
-	for (UINT y = 0; y < desc.Height; y++)
-	{
-		for (UINT x = 0; x < desc.Width; x++)
-		{
-			UINT index = desc.Width * y + x;
-
-			float f = 1.0f / 255.0f;
-			float r = f * (float)((0xFF000000 & colors[index]) >> 24);
-			float g = f * (float)((0x00FF0000 & colors[index]) >> 16);
-			float b = f * (float)((0x0000FF00 & colors[index]) >> 8);
-			float a = f * (float)((0x000000FF & colors[index]) >> 0);
-
-			pixels->push_back(Color(a, b, g, r));
-		}
-	}
-
-
-	SafeDeleteArray(colors);
-	SafeRelease(texture);
-
-	return desc;
-}
-
-HRESULT Texture::LoadTextureFromTexture(ID3D11DeviceContext * pContext, ID3D11Resource * pSrcTexture, D3DX11_TEXTURE_LOAD_INFO * pLoadInfo, ID3D11Resource * pDstTexture)
-{
-	Resize();
-	Convert();
-	Compress();
-	Decompress();
-	CopyRectangle();
-	return E_NOTIMPL;
-}
-
-=======
->>>>>>> 0a245c5f751c51b38ab3b733885ef3d4182b42c6
-void Textures::Create()
-{
-
-}
-
-void Textures::Delete()
-{
-	for (TextureDesc desc : descs)
-		SafeRelease(desc.view);
-}
-
-void Textures::Load(Texture * texture)
-{
 	HRESULT hr;
+	ScratchImage image;
+	if (_wcsicmp(ext, L".dds") == 0)
+	{
+		hr = LoadFromDDSFile(ws.c_str(), DDS_FLAGS_NONE, nullptr, image);
+	}
 
-	TexMetadata metaData;
-	wstring ext = Path::GetExtension(texture->file);
-	if (ext == L"tga")
+	else if (_wcsicmp(ext, L".tga") == 0)
 	{
-		hr = GetMetadataFromTGAFile(texture->file.c_str(), metaData);
-		Check(hr);
+		hr = LoadFromTGAFile(ws.c_str(), nullptr, image);
 	}
-	else if (ext == L"dds")
+
+	else
 	{
-		hr = GetMetadataFromDDSFile(texture->file.c_str(), DDS_FLAGS_NONE, metaData);
-		Check(hr);
+		hr = LoadFromWICFile(ws.c_str(), WIC_FLAGS_NONE, nullptr, image);
 	}
-	else if (ext == L"hdr")
+
+	return image;
+}
+
+Texture* Texture::Add(wstring file)
+{
+	file = L"../../_Textures/" + file;
+
+	if (!Path::ExistFile(String::ToString(file)))
 	{
-		assert(false);
+		file = L"../../_Textures/White.png";
+	}
+
+	totalTexture.push_back(new Texture(LoadSRV(file), file));
+
+	return totalTexture.back();
+}
+
+ID3D11ShaderResourceView* Texture::LoadSRV(wstring file)
+{
+	ID3D11ShaderResourceView* SRV;
+
+	if (totalSRV.count(file) > 0)
+	{
+		SRV = totalSRV[file];
 	}
 	else
 	{
-		hr = GetMetadataFromWICFile(texture->file.c_str(), WIC_FLAGS_NONE, metaData);
-		Check(hr);
-	}
+		DirectX::ScratchImage image = LoadTextureFromFile(file.c_str());
+		HRESULT hr = CreateShaderResourceView(D3D::GetDevice(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), &SRV);
 
-	UINT width = metaData.width;
-	UINT height = metaData.height;
-
-	/*if (loadInfo != NULL)
-	{
-		width = loadInfo->Width;
-		height = loadInfo->Height;
-
-		metaData.width = loadInfo->Width;
-		metaData.height = loadInfo->Height;
-	}*/
-
-
-	TextureDesc desc;
-	desc.file = texture->file;
-	desc.width = width;
-	desc.height = height;
-
-	TextureDesc exist;
-	bool bExist = false;
-	for (TextureDesc temp : descs)
-	{
-		if (desc == temp)
-		{
-			bExist = true;
-			exist = temp;
-
-			break;
-		}
-	}
-
-	if (bExist == true)
-	{
-		texture->metaData = exist.metaData;
-		texture->view = exist.view;
-	}
-	else
-	{
-		ScratchImage image;
-		if (ext == L"tga")
-		{
-			hr = LoadFromTGAFile(texture->file.c_str(), &metaData, image);
-			Check(hr);
-		}
-		else if (ext == L"dds")
-		{
-			hr = LoadFromDDSFile(texture->file.c_str(), DDS_FLAGS_NONE, &metaData, image);
-			Check(hr);
-		}
-		else if (ext == L"hdr")
-		{
-			assert(false);
-		}
-		else
-		{
-			hr = LoadFromWICFile(texture->file.c_str(), WIC_FLAGS_NONE, &metaData, image);
-			Check(hr);
-		}
-
-		ID3D11ShaderResourceView* view;
-
-		hr = DirectX::CreateShaderResourceView(D3D::GetDevice(), image.GetImages(), image.GetImageCount(), metaData, &view);
 		Check(hr);
 
-		desc.file = texture->file;
-		desc.width = metaData.width;
-		desc.height = metaData.height;
-		desc.view = view;
-		desc.metaData = metaData;
-
-		texture->view = view;
-		texture->metaData = metaData;
-
-		descs.push_back(desc);
+		//totalSRV[file] = SRV;
+		//totalSRV.insert(pair<wstring, ID3D11ShaderResourceView*>(file, SRV));
+		//totalSRV.insert(make_pair(file, SRV));
+		totalSRV.insert({ file, SRV });
 	}
+	return SRV;
 }
 
-//-----------------------------------------------------------------------------
-// TextureArray
-//-----------------------------------------------------------------------------
-TextureArray::TextureArray(vector<wstring> & names, UINT width, UINT height, UINT mipLevels)
+void Texture::Delete()
 {
-	for (UINT i = 0; i < names.size(); i++)
-		names[i] = L"../../_Textures/" + names[i];
+	for (auto SRV : totalSRV)
+		SRV.second->Release();
 
-	vector<ID3D11Texture2D *> textures;
-	textures = CreateTextures(names, width, height, mipLevels);
-
-
-	D3D11_TEXTURE2D_DESC textureDesc;
-	textures[0]->GetDesc(&textureDesc);
-
-	ID3D11Texture2D* textureArray;
-	//Texture2DArray
-	{
-		D3D11_TEXTURE2D_DESC desc;
-		desc.Width = textureDesc.Width;
-		desc.Height = textureDesc.Height;
-		desc.MipLevels = textureDesc.MipLevels;
-		desc.ArraySize = names.size();
-		desc.Format = textureDesc.Format;
-		desc.SampleDesc.Count = 1;
-		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = 0;
-
-		HRESULT hr = D3D::GetDevice()->CreateTexture2D(&desc, NULL, &textureArray);
-		Check(hr);
-	}
-
-
-	for (UINT i = 0; i < textures.size(); i++)
-	{
-		for (UINT level = 0; level < textureDesc.MipLevels; level++)
-		{
-			D3D11_MAPPED_SUBRESOURCE subResource;
-			D3D::GetDC()->Map(textures[i], level, D3D11_MAP_READ, 0, &subResource);
-			{
-				D3D::GetDC()->UpdateSubresource(textureArray, D3D11CalcSubresource(level, i, textureDesc.MipLevels), NULL, subResource.pData, subResource.RowPitch, subResource.DepthPitch);
-			}
-			D3D::GetDC()->Unmap(textures[i], level);
-		}
-	}
-
-	//Create File textures[0] -> test.png (for Test)
-	//D3DX11SaveTextureToFile(D3D::GetDC(), textureArray, D3DX11_IFF_PNG, L"test.png");
-
-	//SRV
-	{
-		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
-		desc.Format = textureDesc.Format;
-		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-		desc.Texture2DArray.MostDetailedMip = 0;
-		desc.Texture2DArray.MipLevels = textureDesc.MipLevels;
-		desc.Texture2DArray.FirstArraySlice = 0;
-		desc.Texture2DArray.ArraySize = names.size();
-
-		HRESULT hr = D3D::GetDevice()->CreateShaderResourceView(textureArray, &desc, &srv);
-		Check(hr);
-	}
-
-	for (ID3D11Texture2D* texture : textures)
-		SafeRelease(texture);
-
-	SafeRelease(textureArray);
+	for (Texture* texture : totalTexture)
+		delete texture;
 }
 
-TextureArray::~TextureArray()
+//vector<Color> Texture::ReadPixels()
+//{
+//	vector<Color> pixels;
+//
+//	D3D11_TEXTURE2D_DESC destDesc = {};
+//	destDesc.Width = width;
+//	destDesc.Height = height;
+//	destDesc.MipLevels = 1;
+//	destDesc.ArraySize = 1;
+//	destDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+//	destDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+//	destDesc.Usage = D3D11_USAGE_STAGING;
+//	destDesc.SampleDesc = srcDesc.SampleDesc;
+//	
+//	ID3D11Texture2D* destTexture;
+//	D3D::GetDevice()->CreateTexture2D(&destDesc, nullptr, &destTexture);
+//
+//	CopyRectangle(srcTexture,nullptr, destTexture);
+//	D3DX11LoadTextureFromTexture(D3D::GetDC(), srcTexture, nullptr, destTexture);
+//
+//	UINT* colors = new UINT[width * height];
+//	D3D11_MAPPED_SUBRESOURCE map;
+//	D3D::GetDC()->Map(destTexture, 0, D3D11_MAP_READ, 0, &map);
+//	memcpy(colors, map.pData, sizeof(UINT) * width * height);
+//	D3D::GetDC()->Unmap(destTexture, 0);
+//
+//	for (UINT i = 0; i < width * height; i++)
+//	{
+//		float f = 1.0f / 255.0f;
+//
+//		float a = f * (float)((0xff000000 & colors[i]) >> 24);
+//		float b = f * (float)((0x00ff0000 & colors[i]) >> 16);
+//		float g = f * (float)((0x0000ff00 & colors[i]) >> 8);
+//		float r = f * (float)((0x000000ff & colors[i]) >> 0);
+//
+//		pixels.push_back(Color(r, g, b, a));
+//	}
+//
+//	destTexture->Release();
+//	delete[] colors;
+//
+//	return pixels;
+//}
+
+void Texture::Set(UINT slot)
 {
-	SafeRelease(srv);
-}
-
-vector<ID3D11Texture2D*> TextureArray::CreateTextures(vector<wstring>& names, UINT width, UINT height, UINT mipLevels)
-{
-	vector<ID3D11Texture2D *> returnTextures;
-	returnTextures.resize(names.size());
-
-	for (UINT index = 0; index < returnTextures.size(); index++)
-	{
-		HRESULT hr;
-
-		TexMetadata metaData;
-		wstring ext = Path::GetExtension(names[index]);
-		if (ext == L"tga")
-		{
-			hr = GetMetadataFromTGAFile(names[index].c_str(), metaData);
-			Check(hr);
-		}
-		else if (ext == L"dds")
-		{
-			hr = GetMetadataFromDDSFile(names[index].c_str(), DDS_FLAGS_NONE, metaData);
-			Check(hr);
-		}
-		else if (ext == L"hdr")
-		{
-			assert(false);
-		}
-		else
-		{
-			hr = GetMetadataFromWICFile(names[index].c_str(), WIC_FLAGS_NONE, metaData);
-			Check(hr);
-		}
-
-		ScratchImage image;
-
-		if (ext == L"tga")
-		{
-			hr = LoadFromTGAFile(names[index].c_str(), &metaData, image);
-			Check(hr);
-		}
-		else if (ext == L"dds")
-		{
-			hr = LoadFromDDSFile(names[index].c_str(), DDS_FLAGS_NONE, &metaData, image);
-			Check(hr);
-		}
-		else if (ext == L"hdr")
-		{
-			assert(false);
-		}
-		else
-		{
-			hr = LoadFromWICFile(names[index].c_str(), WIC_FLAGS_NONE, &metaData, image);
-			Check(hr);
-		}
-
-		ScratchImage resizedImage;
-		hr = DirectX::Resize
-		(
-			image.GetImages(), image.GetImageCount(), image.GetMetadata(), width, height, TEX_FILTER_DEFAULT, resizedImage
-		);
-		Check(hr);
-
-		if (mipLevels > 1)
-		{
-			ScratchImage mipmapedImage;
-			hr = DirectX::GenerateMipMaps
-			(
-				resizedImage.GetImages(), resizedImage.GetImageCount(), resizedImage.GetMetadata(), NULL, mipLevels, mipmapedImage
-			);
-			Check(hr);
-
-			hr = DirectX::CreateTextureEx
-			(
-				D3D::GetDevice()
-				, mipmapedImage.GetImages()
-				, mipmapedImage.GetImageCount()
-				, mipmapedImage.GetMetadata()
-				, D3D11_USAGE_STAGING
-				, 0
-				, D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE
-				, 0
-				, false
-				, (ID3D11Resource **)&returnTextures[index]
-			);
-			Check(hr);
-
-			mipmapedImage.Release();
-		}
-		else
-		{
-			hr = DirectX::CreateTextureEx
-			(
-				D3D::GetDevice()
-				, resizedImage.GetImages()
-				, resizedImage.GetImageCount()
-				, resizedImage.GetMetadata()
-				, D3D11_USAGE_STAGING
-				, 0
-				, D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE
-				, 0
-				, false
-				, (ID3D11Resource **)&returnTextures[index]
-			);
-			Check(hr);
-		}
-
-		image.Release();
-		resizedImage.Release();
-
-	}
-	return returnTextures;
+	D3D::GetDC()->PSSetShaderResources(slot, 1, &SRV);
+	D3D::GetDC()->PSSetSamplers(slot, 1, &sampler);
 }

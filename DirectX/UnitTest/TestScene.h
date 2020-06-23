@@ -14,8 +14,12 @@ public:
 	virtual void PostRender() override;
 	virtual void ResizeScreen() override {};
 private:
+	void CreateFreedomCamera();
+private:
+
 	Shader* shader;
 	class Camera* freedomCam;
-	VertexBuffer* vertexBuffer;
-	IndexBuffer* indexBuffer;
+
+	class MeshCube* cube;
+	
 };

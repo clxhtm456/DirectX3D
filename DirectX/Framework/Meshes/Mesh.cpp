@@ -1,15 +1,14 @@
 #include "Framework.h"
 #include "Mesh.h"
 
-Mesh::Mesh()
+Mesh::Mesh() : RenderingNode()
 {
-		
+	shader = Shader::Add(L"Mesh");
+	texture = Texture::Add(L"boxTexture.png");
 }
 
 Mesh::~Mesh()
 {
-	SafeDelete(perFrame);
-
 	SafeDeleteArray(vertices);
 	SafeDeleteArray(indices);
 
@@ -17,36 +16,36 @@ Mesh::~Mesh()
 	SafeDelete(indexBuffer);
 }
 
-void Mesh::SetShader(Shader * shader)
-{
-	this->shader = shader;
 
-	SafeDelete(perFrame);
-	perFrame = new PerFrame(shader);
-}
-
-void Mesh::Update()
-{
-	assert(perFrame != NULL);
-
-	perFrame->Update();
-
-}
-
-void Mesh::Render(UINT drawCount)
+bool Mesh::Init()
 {
 	if (vertexBuffer == NULL || indexBuffer == NULL)
 	{
-		Create();
+		CreateMesh();
 
 		vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(MeshVertex));
 		indexBuffer = new IndexBuffer(indices, indexCount);
 	}
+	return Super::Init();
+}
 
-	perFrame->Render();
+void Mesh::Update()
+{
+	Super::Update();
+}
+
+void Mesh::Render()
+{
+	Super::Render();
+	
+
 	vertexBuffer->Render();
 	indexBuffer->Render();
 
+	shader->Render();
+
+	texture->Set(0);
+
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	shader->DrawIndexedInstanced(0, pass, indexCount, drawCount);
+	D3D::GetDC()->DrawIndexed(indexCount, 0,0);
 }

@@ -4,9 +4,11 @@
 class MeshCube : public Mesh
 {
 public:
+	static MeshCube* Create();
+public:
 	MeshCube();
-	~MeshCube();
+	virtual ~MeshCube();
 
 private:
-	void Create() override;
+	void CreateMesh() override;
 };

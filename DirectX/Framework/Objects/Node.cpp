@@ -161,6 +161,30 @@ void Node::SetScale(Vector3 scale)
 	_scale = XMLoadFloat3(&scale);
 }
 
+void Node::SetPosition(float x, float y, float z)
+{
+	Vector3 temp = Vector3(x, y, z);
+	SetPosition(temp);
+}
+
+void Node::SetRotation(float x, float y, float z)
+{
+	Vector3 temp = Vector3(x, y, z);
+	SetRotation(temp);
+}
+
+void Node::SetRotationDegree(float x, float y, float z)
+{
+	Vector3 temp = Vector3(x, y, z);
+	SetRotationDegree(temp);
+}
+
+void Node::SetScale(float x, float y, float z)
+{
+	Vector3 temp = Vector3(x, y, z);
+	SetScale(temp);
+}
+
 void Node::AddChild(Node* child)
 {
 	for (auto _child : _childList)

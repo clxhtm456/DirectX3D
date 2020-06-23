@@ -22,9 +22,14 @@
     <ClCompile Include="Framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Meshes\Mesh.cpp" />
+    <ClCompile Include="Meshes\MeshCube.cpp" />
     <ClCompile Include="Objects\Node.cpp" />
+    <ClCompile Include="Objects\RenderingNode.cpp" />
     <ClCompile Include="Renders\Buffers.cpp" />
+    <ClCompile Include="Renders\DebugLine.cpp" />
     <ClCompile Include="Renders\Shader.cpp" />
+    <ClCompile Include="Renders\Texture.cpp" />
     <ClCompile Include="Systems\Context.cpp" />
     <ClCompile Include="Systems\D3D.cpp" />
     <ClCompile Include="Systems\Gui.cpp" />
@@ -47,10 +52,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h" />
+    <ClInclude Include="Meshes\Mesh.h" />
+    <ClInclude Include="Meshes\MeshCube.h" />
     <ClInclude Include="Objects\Node.h" />
+    <ClInclude Include="Objects\RenderingNode.h" />
     <ClInclude Include="Renders\Buffers.h" />
+    <ClInclude Include="Renders\DebugLine.h" />
     <ClInclude Include="Renders\GlobalBuffer.h" />
     <ClInclude Include="Renders\Shader.h" />
+    <ClInclude Include="Renders\Texture.h" />
     <ClInclude Include="Renders\VertexLayouts.h" />
     <ClInclude Include="Systems\Context.h" />
     <ClInclude Include="Systems\D3D.h" />
