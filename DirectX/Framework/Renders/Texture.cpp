@@ -28,6 +28,7 @@ ID3D11Texture2D * Texture::GetTexture()
 	return texture;
 }
 
+<<<<<<< HEAD
 D3D11_TEXTURE2D_DESC Texture::ReadPixel(DXGI_FORMAT readFormat, vector<Color>* pixels)
 {
 	ID3D11Texture2D* srcTexture;
@@ -99,6 +100,8 @@ HRESULT Texture::LoadTextureFromTexture(ID3D11DeviceContext * pContext, ID3D11Re
 	return E_NOTIMPL;
 }
 
+=======
+>>>>>>> 0a245c5f751c51b38ab3b733885ef3d4182b42c6
 void Textures::Create()
 {
 
@@ -139,14 +142,14 @@ void Textures::Load(Texture * texture)
 	UINT width = metaData.width;
 	UINT height = metaData.height;
 
-	if (loadInfo != NULL)
+	/*if (loadInfo != NULL)
 	{
 		width = loadInfo->Width;
 		height = loadInfo->Height;
 
 		metaData.width = loadInfo->Width;
 		metaData.height = loadInfo->Height;
-	}
+	}*/
 
 
 	TextureDesc desc;
@@ -355,7 +358,7 @@ vector<ID3D11Texture2D*> TextureArray::CreateTextures(vector<wstring>& names, UI
 			ScratchImage mipmapedImage;
 			hr = DirectX::GenerateMipMaps
 			(
-				resizedImage.GetImages(), resizedImage.GetImageCount(), resizedImage.GetMetadata(), D3DX11_FILTER_NONE, mipLevels, mipmapedImage
+				resizedImage.GetImages(), resizedImage.GetImageCount(), resizedImage.GetMetadata(), NULL, mipLevels, mipmapedImage
 			);
 			Check(hr);
 
@@ -399,158 +402,4 @@ vector<ID3D11Texture2D*> TextureArray::CreateTextures(vector<wstring>& names, UI
 
 	}
 	return returnTextures;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-TextureCube::TextureCube(UINT width, UINT height)
-	: width(width), height(height)
-{
-	DXGI_FORMAT rtvFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-	//Create Texture2D - RTV
-	{
-		D3D11_TEXTURE2D_DESC desc;
-		ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-		desc.Width = width;
-		desc.Height = height;
-		desc.ArraySize = 6;
-		desc.Format = rtvFormat;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-		desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
-		desc.MipLevels = 1;
-		desc.SampleDesc.Count = 1;
-
-		Check(D3D::GetDevice()->CreateTexture2D(&desc, NULL, &rtvTexture));
-	}
-
-	//Create RTV
-	{
-		D3D11_RENDER_TARGET_VIEW_DESC desc;
-		ZeroMemory(&desc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-		desc.Format = rtvFormat;
-		desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-		desc.Texture2DArray.FirstArraySlice = 0;
-		desc.Texture2DArray.ArraySize = 6;
-
-		Check(D3D::GetDevice()->CreateRenderTargetView(rtvTexture, &desc, &rtv));
-	}
-
-	//Create SRV
-	{
-		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
-		ZeroMemory(&desc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-		desc.Format = rtvFormat;
-		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-		desc.TextureCube.MipLevels = 1;
-
-		Check(D3D::GetDevice()->CreateShaderResourceView(rtvTexture, &desc, &srv));
-	}
-
-	
-	DXGI_FORMAT dsvFormat = DXGI_FORMAT_D32_FLOAT;
-	//Create Texture - DSV
-	{
-		D3D11_TEXTURE2D_DESC desc;
-		ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-		desc.Width = width;
-		desc.Height = height;
-		desc.ArraySize = 6;
-		desc.Format = dsvFormat;
-		desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-		desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
-		desc.MipLevels = 1;
-		desc.SampleDesc.Count = 1;
-
-		Check(D3D::GetDevice()->CreateTexture2D(&desc, NULL, &dsvTexture));
-	}
-
-	//CreateDSV
-	{
-		D3D11_DEPTH_STENCIL_VIEW_DESC desc;
-		ZeroMemory(&desc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-		desc.Format = dsvFormat;
-		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
-		desc.Texture2DArray.ArraySize = 6;
-
-		Check(D3D::GetDevice()->CreateDepthStencilView(dsvTexture, &desc, &dsv));
-	}
-
-
-	viewport = new Viewport((float)width, (float)height);
-
-	buffer = new ConstantBuffer(&desc, sizeof(Desc));
-}
-
-TextureCube::~TextureCube()
-{
-	SafeRelease(rtvTexture);
-	SafeRelease(srv);
-	SafeRelease(rtv);
-
-	SafeRelease(dsvTexture);
-	SafeRelease(dsv);
-
-	SafeDelete(viewport);
-	SafeDelete(buffer);
-}
-
-void TextureCube::Position(Vector3& position, Vector3& scale, float zNear, float zFar, float fov)
-{
-	//Create Camera
-	{
-		float x = position.x;
-		float y = position.y;
-		float z = position.z;
-
-		Vector3 lookAt[6] =
-		{
-			Vector3(x + scale.x , y , z),//Right
-			Vector3(x - scale.x , y , z),//-Right
-			Vector3(x , y + scale.y , z),//Up
-			Vector3(x , y - scale.y , z),//-Up
-			Vector3(x , y , z + scale.z),//Forward
-			Vector3(x , y , z - scale.z)//-Forward
-		};
-
-		Vector3 up[6] =
-		{
-			Vector3(0,1,0),//right
-			Vector3(0,1,0),//-right
-			Vector3(0,0,-1),//up
-			Vector3(0,0,1),//-up
-			Vector3(0,1,0),//forward
-			Vector3(0,1,0)//-forward
-		};
-
-		for (UINT i = 0; i < 6; i++)
-		{
-			D3DXMatrixLookAtLH(&desc.Views[i], &position, &lookAt[i], &up[i]);
-		}
-	}
-
-	perspective = new Perspective(1, 1, zNear, zFar, Math::PI * fov);
-	perspective->GetMatrix(&desc.Projection);//projection정보 desc로 전달
-}
-
-void TextureCube::Set(Shader * shader)
-{
-	buffer->Apply();
-
-	if (sBuffer == nullptr)
-	{
-		sBuffer = shader->AsConstantBuffer("CB_DynamicCubeMap");
-	}
-	sBuffer->SetConstantBuffer(buffer->Buffer());
-
-	/*sView->SetMatrixArray((float *)view, 0, 6);
-
-	Matrix matrix;
-	perspective->GetMatrix(&matrix);
-	sProjection->SetMatrix(matrix);*/
-	
-	D3D::Get()->SetRenderTarget(rtv, dsv);
-	D3D::Get()->Clear(Color(0, 0, 0, 1), rtv, dsv);
-
-	viewport->RSSetViewport();
 }
