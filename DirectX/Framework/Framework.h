@@ -50,7 +50,6 @@ using namespace std;
 //#pragma comment(lib, "Effects11d.lib")
 
 
-
 using namespace std;
 using namespace DirectX;
 using namespace DirectX::PackedVector;

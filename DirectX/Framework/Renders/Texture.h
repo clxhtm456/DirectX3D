@@ -4,6 +4,10 @@
 
 #pragma comment(lib,"DirectXTex.lib")
 
+//fbxsdk
+#include <fbxsdk.h>
+#pragma comment(lib, "libfbxsdk.lib")
+
 class Texture
 {
 public:
@@ -23,9 +27,6 @@ private:
 	} D3DX11_TEXTURE_LOAD_INFO;*/
 
 public:
-
-	D3D11_TEXTURE2D_DESC ReadPixel(DXGI_FORMAT readFormat, vector<Color>* pixels);
-	static D3D11_TEXTURE2D_DESC ReadPixel(ID3D11Texture2D* src, DXGI_FORMAT readFormat, vector<Color>* pixels);
 
 	/*HRESULT LoadTextureFromTexture(
 		ID3D11DeviceContext       *pContext,
@@ -107,37 +108,4 @@ private:
 
 private:
 	ID3D11ShaderResourceView* srv;
-};
-
-class TextureCube
-{
-public:
-	TextureCube(UINT width, UINT height);
-	~TextureCube();
-
-	void Position(Vector3& position,Vector3& scale, float zNear = 0.1f,float zFar = 500.0f, float fov = 0.5f);
-	void Set(Shader* shader);
-
-	ID3D11ShaderResourceView* SRV() { return srv; }
-	Perspective* GetPerspective() { return perspective; }
-
-private:
-	struct Desc
-	{
-		Matrix Views[6];
-		Matrix Projection;
-	}desc;
-
-private:
-	UINT width, height;
-
-	ID3D11Texture2D* rtvTexture;
-	ID3D11RenderTargetView* rtv;
-	ID3D11ShaderResourceView* srv;
-
-	ID3D11Texture2D* dsvTexture;
-	ID3D11DepthStencilView* dsv;
-
-	Perspective* perspective;
-	Viewport* viewport;
 };
