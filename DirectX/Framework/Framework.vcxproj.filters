@@ -19,6 +19,9 @@
     <Filter Include="Meshes">
       <UniqueIdentifier>{d783b3e4-caf3-4602-bee0-7b30ec7a0e98}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{942d4f5e-7d84-4103-adf7-b1c3f3ce69c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Keyboard.cpp">

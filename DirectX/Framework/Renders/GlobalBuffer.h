@@ -312,3 +312,25 @@ public:
 		data.length = 50.0f;
 	}
 };
+
+
+//class BrushBuffer : public ConstantBuffer
+//{
+//public:
+//	struct Data
+//	{
+//		Color Color;
+//		Vector3 Location;
+//		UINT Type;
+//		UINT Range;
+//	}data;
+//
+//	BrushBuffer() : ConstantBuffer(&data, sizeof(Data))
+//	{
+//		data.Color = XMCOLOR(0, 1, 0, 1);
+//		data.Location = Vector3(0, 0, 0);
+//
+//		data.Type = 0;
+//		data.Range = 1;
+//	}
+//};

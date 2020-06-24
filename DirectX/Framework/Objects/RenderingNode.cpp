@@ -23,7 +23,8 @@ void RenderingNode::Update()
 	R = XMMatrixRotationRollPitchYaw(XMVectorGetX(_rotation), XMVectorGetY(_rotation), XMVectorGetZ(_rotation));
 	T = XMMatrixTranslation(XMVectorGetX(_position), XMVectorGetY(_position), XMVectorGetZ(_position));
 
-	worldBuffer->SetWorld(S*R*T);
+	_world = S * R * T;
+	worldBuffer->SetWorld(_world);
 }
 
 void RenderingNode::LateUpdate()
@@ -46,4 +47,9 @@ void RenderingNode::PostRender()
 
 void RenderingNode::RemoveFromParent()
 {
+}
+
+Matrix RenderingNode::GetWorld()
+{
+	return _world;
 }

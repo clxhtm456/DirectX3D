@@ -14,6 +14,9 @@ public:
 	virtual void PreRender() override;
 	virtual void PostRender() override;
 	virtual void RemoveFromParent() override;
+protected:
+	Matrix GetWorld();
 private:
 	WorldBuffer* worldBuffer;
+	Matrix _world;
 };

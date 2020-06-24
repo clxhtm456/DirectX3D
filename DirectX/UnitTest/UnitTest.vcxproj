@@ -83,6 +83,7 @@
       <AdditionalIncludeDirectories>./;../../_Libraries/;../Framework/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>../../_Libraries/</AdditionalLibraryDirectories>

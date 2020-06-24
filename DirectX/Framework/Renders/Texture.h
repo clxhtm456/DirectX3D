@@ -17,6 +17,7 @@ private:
 
 	UINT width, height;
 
+
 	static map<wstring, ID3D11ShaderResourceView*> totalSRV;
 	static vector<Texture*> totalTexture;
 
@@ -24,13 +25,12 @@ private:
 	~Texture();
 
 	static ScratchImage LoadTextureFromFile(wstring file);
-
 public:
 	static Texture* Add(wstring file);
 	static ID3D11ShaderResourceView* LoadSRV(wstring file);
 	static void Delete();
 
-	//vector<Color> ReadPixels();
+	vector<Vector4> ReadPixels();
 
 	void Set(UINT slot);
 

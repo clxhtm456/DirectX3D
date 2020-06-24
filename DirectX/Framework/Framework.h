@@ -39,6 +39,7 @@ using namespace std;
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include <D3Dcompiler.h>
+#include <DirectXCollision.h>
 
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"d3d11.lib")
@@ -48,6 +49,8 @@ using namespace std;
 //fxShader
 //#include <d3dx11effect.h>
 //#pragma comment(lib, "Effects11d.lib")
+
+
 
 
 using namespace std;
@@ -90,12 +93,16 @@ typedef XMVECTOR Plane;
 #include "Renders/DebugLine.h"
 #include "Renders/Texture.h"
 
+
 #include "Utilities/Math.h"
 #include "Utilities/Path.h"
 #include "Utilities/String.h"
+#include "Utilities/Xml.h"
+#include "Utilities/BinaryFile.h"
 
 #include "Objects/Node.h"
 #include "Objects/RenderingNode.h"
+
 
 #include "Viewer/Camera.h"
 #include "Viewer/Perspective.h"
@@ -106,3 +113,4 @@ typedef XMVECTOR Plane;
 #include "Meshes/MeshGrid.h"
 #include "Meshes/MeshQuad.h"
 #include "Meshes/MeshSphere.h"
+#include "Meshes/Terrain.h"

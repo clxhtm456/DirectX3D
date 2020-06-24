@@ -46,7 +46,7 @@ protected :
 	virtual void Move();
 	virtual void Rotate();
 	virtual void View();
-private:
+public:
 	Matrix ViewMatrix();
 	Matrix ProjectionMatrix();
 	class Perspective* GetPerspective() { return perspective; }

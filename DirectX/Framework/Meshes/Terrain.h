@@ -1,14 +1,22 @@
 #pragma once
 
+class TerrainObject
+{
+	virtual wstring ObjectType() = 0;
+};
+
 class BrushBuffer : public ConstantBuffer
 {
 public:
 	struct Data
 	{
 		Color Color;
+
 		Vector3 Location;
-		UINT Type = 0;
-		UINT Range = 1;
+		UINT Type;
+
+		UINT Range;
+		UINT Padding[2];
 	}data;
 
 	BrushBuffer() : ConstantBuffer(&data, sizeof(Data))
@@ -72,19 +80,22 @@ private:
 
 private:
 	Shader* shader;
-	Texture* heightMap;
+
+	Texture* heightMap = NULL;
+	Texture* baseMap = NULL;
+	Texture* layerMap = NULL;
+	Texture* alphaMap = NULL;
 
 	BrushBuffer* brushBuffer;
 	LineBuffer* lineBuffer;
+private:
+	VertexBuffer* vertexBuffer;
+	IndexBuffer* indexBuffer;
 
 	TerrainVertex* vertices;
 	UINT* indices;
 
-	Texture* baseMap = NULL;
-
-	Texture* layerMap = NULL;
-
-	Texture* alphaMap = NULL;
+	UINT indexCount, vertexCount;
 
 private:
 	UINT width;

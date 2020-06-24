@@ -1,10 +1,13 @@
 #include "Framework.h"
 #include "Terrain.h"
 
+using namespace DirectX::TriangleTests;
+
 Terrain::Terrain()
 	: RenderingNode()
 {
-	
+	brushBuffer = new BrushBuffer();
+	lineBuffer = new LineBuffer();
 }
 
 Terrain * Terrain::Create(wstring heightFile)
@@ -24,27 +27,21 @@ Terrain * Terrain::Create(wstring heightFile)
 
 bool Terrain::Init(wstring heightFile)
 {
-	sBaseMap = shader->AsSRV("BaseMap");
-	sAlphaMap = shader->AsSRV("AlphaMap");
-	sLayerMap = shader->AsSRV("LayerMap");
-
+	shader = Shader::Add(L"Terrain");
 	heightMap = Texture::Add(heightFile);
-
+	heightMap->Set(0);
 
 	CreateVertexData();
 	CreateIndexData();
 	CreateNormalData();
 
-	vertexBuffer = new VertexBuffer
-	(vertices, vertexCount, sizeof(TerrainVertex), 0, true);
+	vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(TerrainVertex), 0, true);
 	indexBuffer = new IndexBuffer(indices, indexCount);
 	return true;
 }
 
 Terrain::~Terrain()
 {
-	SafeDelete(heightMap);
-
 	SafeDeleteArray(vertices);
 	SafeDelete(vertexBuffer);
 
@@ -53,63 +50,54 @@ Terrain::~Terrain()
 
 	SafeDelete(brushBuffer);
 	SafeDelete(lineBuffer);
-
-	SafeDelete(baseMap);
-	SafeDelete(layerMap);
-	SafeDelete(alphaMap);
 }
 
 void Terrain::Update()
 {	
 	Super::Update();	
 
-	if (brushDesc.Type > 0)
+	if (brushBuffer->data.Type > 0)
 	{
-		brushDesc.Location = GetPickedPosition();
+		brushBuffer->data.Location = GetPickedPosition();
 
 		if (Mouse::Get()->Press(0))
-			RaiseHeight(brushDesc.Location, brushDesc.Type, brushDesc.Range);
+			RaiseHeight(brushBuffer->data.Location, brushBuffer->data.Type, brushBuffer->data.Range);
 	}
-	
 }
 
 void Terrain::Render()
 {
 	Super::Render();
 
-	if(baseMap != NULL)
-		sBaseMap->SetResource(baseMap->SRV());	
+	if (baseMap != NULL)
+		baseMap->Set(1);
 
-	brushBuffer->Apply();
-	sBrushBuffer->SetConstantBuffer(brushBuffer->Buffer());
+	brushBuffer->SetVSBuffer(2);
+	lineBuffer->SetVSBuffer(3);
 
-	lineBuffer->Apply();
-	sLineBuffer->SetConstantBuffer(lineBuffer->Buffer());
+	vertexBuffer->Render();
+	indexBuffer->Render();
 
+	shader->Render();
 	if (layerMap != NULL && alphaMap != NULL)
 	{
-		sAlphaMap->SetResource(alphaMap->SRV());
-		sLayerMap->SetResource(layerMap->SRV());
+		layerMap->Set(2);
+		alphaMap->Set(3);
 	}
-	
-	
-	shader->DrawIndexed(0, Pass(), indexCount);
+	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDC()->DrawIndexed(indexCount, 0, 0);
 
 }
 
 void Terrain::BaseMap(wstring file)
 {
-	SafeDelete(baseMap);
-	baseMap = new Texture(file);
+	baseMap = Texture::Add(file);
 }
 
 void Terrain::LayerMap(wstring file, wstring alpha)
 {
-	SafeDelete(alphaMap);
-	SafeDelete(layerMap);
-
-	alphaMap = new Texture(alpha);
-	layerMap = new Texture(file);
+	alphaMap = Texture::Add(file);
+	layerMap = Texture::Add(file);
 }
 
 float Terrain::GetHeight(Vector3& position)
@@ -123,14 +111,14 @@ float Terrain::GetHeight(Vector3& position)
 	index[2] = width * z + (x + 1);
 	index[3] = width * (z + 1) + (x + 1);
 
-	Vector3 v[4];
+	XMVECTOR v[4];
 	for (int i = 0; i < 4; i++)
-		v[i] = vertices[index[i]].Position;
+		v[i] = XMLoadFloat3(&vertices[index[i]].Position);
 
-	float ddx = (position.x - v[0].x) / 1.0f;
-	float ddz = (position.z - v[0].z) / 1.0f;
+	float ddx = (position.x - XMVectorGetX(v[0])) / 1.0f;
+	float ddz = (position.z - XMVectorGetZ(v[0])) / 1.0f;
 
-	Vector3 result;
+	XMVECTOR result;
 
 	if(ddx + ddz <= 1)
 		result = v[0] + (v[2] - v[0]) * ddx + (v[1] - v[0]) * ddz;
@@ -141,7 +129,7 @@ float Terrain::GetHeight(Vector3& position)
 		result = v[3] + (v[1] - v[3]) * ddx + (v[2] - v[3]) * ddz;
 	}
 
-	return result.y;
+	return XMVectorGetY(result);
 
 }
 
@@ -156,45 +144,45 @@ float Terrain::GetHeightPick(Vector3 & position)
 	index[2] = width * z + (x + 1);
 	index[3] = width * (z + 1) + (x + 1);
 
-	Vector3 p[4];
+	XMVECTOR p[4];
 	for (int i = 0; i < 4; i++)
-		p[i] = vertices[index[i]].Position;
+		p[i] = XMLoadFloat3(&vertices[index[i]].Position);
 
-	Vector3 start(position.x, 1000, position.z);
-	Vector3 direction(0, -1, 0);
+	XMVECTOR start = XMVectorSet(position.x, 1000, position.z,0);
+	XMVECTOR direction = XMVectorSet(0, -1, 0,0);
 
 	float u, v, distance;
-	Vector3 result(-1, FLT_MIN, -1);
-
-	
-	if (D3DXIntersectTri(&p[0], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
+	XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1,0);
+	if(Intersects(start, direction,p[0], p[1], p[2], distance) == TRUE)
 		result = p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v;
 
-	if (D3DXIntersectTri(&p[3], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
+	if (Intersects(start, direction,p[3], p[1], p[2], distance) == TRUE)
 		result = p[3] + (p[1] - p[3]) * u + (p[2] - p[3]) * v;
 
-	return result.y;
+	return XMVectorGetY(result);
 }
 
 Vector3 Terrain::GetPickedPosition()
 {
-	Matrix V = Context::Get()->View();
-	Matrix P = Context::Get()->Projection();
-	Viewport* vp = Context::Get()->GetViewport();
+	Matrix V = Context::Get()->GetMainCamera()->ViewMatrix();
+	Matrix P = Context::Get()->GetMainCamera()->ProjectionMatrix();
+	Viewport* vp = Context::Get()->GetMainCamera()->GetViewport();
 
 	Vector3 mouse = Mouse::Get()->GetPosition();
 
 	Vector3 n, f;
 
 	mouse.z = 0.0f;
-	vp->UnProject(&n, mouse, transform->World(), V, P);
+	vp->UnProject(&n, mouse, GetWorld(), V, P);
 
 	mouse.z = 1.0f;
-	vp->UnProject(&f, mouse, transform->World(), V, P);
+	vp->UnProject(&f, mouse, GetWorld(), V, P);
 
-	Vector3 start = n;
-	Vector3 direction = f - n;
+	XMVECTOR start = XMLoadFloat3(&n);
+	XMVECTOR direction = XMLoadFloat3(&f) - XMLoadFloat3(&n);
 
+	XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1,0);
+	Vector3 fResult;
 	for (UINT z = 0; z < height - 1; z++)
 	{
 		for (UINT x = 0; x < width - 1; x++)
@@ -205,27 +193,33 @@ Vector3 Terrain::GetPickedPosition()
 			index[2] = width * z + (x + 1);
 			index[3] = width * (z + 1) + (x + 1);
 
-			Vector3 p[4];
+			XMVECTOR p[4];
 			for (int i = 0; i < 4; i++)
-				p[i] = vertices[index[i]].Position;
+				p[i] = XMLoadFloat3(&vertices[index[i]].Position);
 
 			float u, v, distance;
-			if (D3DXIntersectTri(&p[0], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
-				return p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v;
 
-			if (D3DXIntersectTri(&p[3], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
-				return p[3] + (p[1] - p[3]) * u + (p[2] - p[3]) * v;
+			if (Intersects(start, direction, p[0], p[1], p[2], distance) == TRUE)
+			{
+				result = (p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v);
+				break;
+			}
+
+			if (Intersects(start, direction, p[3], p[1], p[2], distance) == TRUE)
+			{
+				result = (p[3] + (p[1] - p[3]) * u + (p[2] - p[3]) * v);
+				break;
+			}
 		}
 	}
-
-	return Vector3(-1, FLT_MIN, -1);
+	XMStoreFloat3(&fResult, result);
+	return fResult;
 }
 
 void Terrain::CreateVertexData()
 {
 	//heightMap의 색상 정보 받아오기
-	vector<Color> heights;
-	heightMap->ReadPixel(DXGI_FORMAT_R8G8B8A8_UNORM, &heights);
+	vector<Vector4> heights = heightMap->ReadPixels();
 
 	width = heightMap->GetWidth();
 	height = heightMap->GetHeight();
@@ -242,7 +236,7 @@ void Terrain::CreateVertexData()
 			UINT pixel = width * (height - z - 1) + x;
 
 			vertices[index].Position.x = (float)x;
-			vertices[index].Position.y = (heights[pixel].r * 256.0f) / 10.0f;
+			vertices[index].Position.y = (heights[pixel].x * 256.0f) / 10.0f;
 			vertices[index].Position.z = (float)z;
 
 			vertices[index].Uv.x = (float)x / (float)width;
@@ -285,19 +279,23 @@ void Terrain::CreateNormalData()
 		TerrainVertex v1 = vertices[index1];
 		TerrainVertex v2 = vertices[index2];
 
-		Vector3 d1 = v1.Position - v0.Position;
-		Vector3 d2 = v2.Position - v0.Position;
+		XMVECTOR d1 = XMLoadFloat3(&v1.Position) - XMLoadFloat3(&v0.Position);
+		XMVECTOR d2 = XMLoadFloat3(&v2.Position) - XMLoadFloat3(&v0.Position);
 
-		Vector3 normal;
-		D3DXVec3Cross(&normal, &d1, &d2);
+		XMVECTOR normal;
+		normal = XMVector3Cross(d1, d2);
 		
-		vertices[index0].Normal = normal;
-		vertices[index1].Normal = normal;
-		vertices[index2].Normal = normal;		
+		XMStoreFloat3(&vertices[index0].Normal, normal);
+		XMStoreFloat3(&vertices[index1].Normal, normal);
+		XMStoreFloat3(&vertices[index2].Normal, normal);	
 	}
 
 	for (UINT i = 0; i < vertexCount; i++)
-		D3DXVec3Normalize(&vertices[i].Normal, &vertices[i].Normal);
+	{
+		XMVECTOR temp = XMLoadFloat3(&vertices[i].Normal);
+		temp = XMVector3Normalize(temp);
+		XMStoreFloat3(&vertices[i].Normal, temp);
+	}
 }
 
 void Terrain::RaiseHeight(Vector3 & position, UINT type, UINT range)

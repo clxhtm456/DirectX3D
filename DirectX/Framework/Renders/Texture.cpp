@@ -9,6 +9,7 @@ vector<Texture*> Texture::totalTexture;
 Texture::Texture(ID3D11ShaderResourceView* SRV, wstring file)
 	: SRV(SRV), file(file)
 {
+
 	SRV->GetResource((ID3D11Resource**)&srcTexture);
 	srcTexture->GetDesc(&srcDesc);
 
@@ -110,49 +111,53 @@ void Texture::Delete()
 		delete texture;
 }
 
-//vector<Color> Texture::ReadPixels()
-//{
-//	vector<Color> pixels;
-//
-//	D3D11_TEXTURE2D_DESC destDesc = {};
-//	destDesc.Width = width;
-//	destDesc.Height = height;
-//	destDesc.MipLevels = 1;
-//	destDesc.ArraySize = 1;
-//	destDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-//	destDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-//	destDesc.Usage = D3D11_USAGE_STAGING;
-//	destDesc.SampleDesc = srcDesc.SampleDesc;
-//	
-//	ID3D11Texture2D* destTexture;
-//	D3D::GetDevice()->CreateTexture2D(&destDesc, nullptr, &destTexture);
-//
-//	CopyRectangle(srcTexture,nullptr, destTexture);
-//	D3DX11LoadTextureFromTexture(D3D::GetDC(), srcTexture, nullptr, destTexture);
-//
-//	UINT* colors = new UINT[width * height];
-//	D3D11_MAPPED_SUBRESOURCE map;
-//	D3D::GetDC()->Map(destTexture, 0, D3D11_MAP_READ, 0, &map);
-//	memcpy(colors, map.pData, sizeof(UINT) * width * height);
-//	D3D::GetDC()->Unmap(destTexture, 0);
-//
-//	for (UINT i = 0; i < width * height; i++)
-//	{
-//		float f = 1.0f / 255.0f;
-//
-//		float a = f * (float)((0xff000000 & colors[i]) >> 24);
-//		float b = f * (float)((0x00ff0000 & colors[i]) >> 16);
-//		float g = f * (float)((0x0000ff00 & colors[i]) >> 8);
-//		float r = f * (float)((0x000000ff & colors[i]) >> 0);
-//
-//		pixels.push_back(Color(r, g, b, a));
-//	}
-//
-//	destTexture->Release();
-//	delete[] colors;
-//
-//	return pixels;
-//}
+vector<Vector4> Texture::ReadPixels()
+{
+	vector<Vector4> pixels;
+
+	D3D11_TEXTURE2D_DESC destDesc = {};
+	destDesc.Width = width;
+	destDesc.Height = height;
+	destDesc.MipLevels = 1;
+	destDesc.ArraySize = 1;
+	destDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	destDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	destDesc.Usage = D3D11_USAGE_STAGING;
+	destDesc.SampleDesc = srcDesc.SampleDesc;
+	
+	ID3D11Texture2D* destTexture;
+	D3D::GetDevice()->CreateTexture2D(&destDesc, nullptr, &destTexture);
+
+	
+	D3D::GetDC()->CopySubresourceRegion(destTexture, 0, 0, 0, 0, srcTexture, 0, nullptr);
+
+	
+
+	UINT* colors = new UINT[width * height];
+	D3D11_MAPPED_SUBRESOURCE map;
+	D3D::GetDC()->Map(destTexture, 0, D3D11_MAP_READ, 0, &map);
+
+	memcpy(colors, map.pData, sizeof(UINT) * width * height);
+
+	D3D::GetDC()->Unmap(destTexture, 0);
+
+	for (UINT i = 0; i < width * height; i++)
+	{
+		float f = 1.0f / 255.0f;
+
+		float a = f * (float)((0xff000000 & colors[i]) >> 24);
+		float b = f * (float)((0x00ff0000 & colors[i]) >> 16);
+		float g = f * (float)((0x0000ff00 & colors[i]) >> 8);
+		float r = f * (float)((0x000000ff & colors[i]) >> 0);
+
+		pixels.push_back(Vector4(r, g, b, a));
+	}
+
+	destTexture->Release();
+	delete[] colors;
+
+	return pixels;
+}
 
 void Texture::Set(UINT slot)
 {

@@ -11,12 +11,16 @@ void TestScene::Initialize()
 	mesh->SetScale(1, 1, 1);
 	mesh->SetPosition(0, 0, 0);
 
+	auto terrain = Terrain::Create(L"Terrain/Gray256.png");
+	terrain->BaseMap(L"Terrain/Dirt3.png");
+	terrain->SetPosition(0, 0, 0);
+
 	AddChild(mesh);
+	AddChild(terrain);
 }
 
 void TestScene::Destroy()
 {
-	delete freedomCam;
 }
 
 void TestScene::Update()
