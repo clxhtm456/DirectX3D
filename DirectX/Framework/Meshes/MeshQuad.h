@@ -5,10 +5,13 @@
 class MeshQuad : public Mesh
 {
 public:
+	static MeshQuad* Create();
+	bool Init();
+public:
 	MeshQuad();
 	~MeshQuad();
 
 private:
-	void Create() override;
+	void CreateMesh() override;
 
 };

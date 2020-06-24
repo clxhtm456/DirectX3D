@@ -17,7 +17,10 @@ struct CameraOption
 class Camera : public Node
 {
 public:
-	Camera(CameraOption option);
+	static Camera* Create(CameraOption option);
+	bool Init(CameraOption option);
+public:
+	Camera();
 	virtual ~Camera();
 
 	virtual void Update();
@@ -32,6 +35,9 @@ public:
 	void SetPosition(Vector3 position) override;
 	void SetRotation(Vector3 rotation) override;
 	void SetRotationDegree(Vector3 rotation) override;
+	void SetPosition(float x, float y, float z);
+	void SetRotation(float x, float y, float z);
+	void SetRotationDegree(float x, float y, float z);
 
 	void Resize();
 public:
@@ -64,7 +70,6 @@ protected:
 
 
 	// Node을(를) 통해 상속됨
-	virtual bool Init() override;
 
 	virtual void PostUpdate() override;
 

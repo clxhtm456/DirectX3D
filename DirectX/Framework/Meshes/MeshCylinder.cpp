@@ -1,8 +1,34 @@
 #include "Framework.h"
 #include "MeshCylinder.h"
 
-MeshCylinder::MeshCylinder(float radius, float height, UINT sliceCount, UINT stackCount)
-	: topRadius(radius), bottomRadius(radius), height(height), sliceCount(sliceCount), stackCount(stackCount)
+MeshCylinder * MeshCylinder::Create(float radius, float height, UINT sliceCount, UINT stackCount)
+{
+	auto pRet = new MeshCylinder();
+	if (pRet && pRet->Init(radius,height,sliceCount,stackCount))
+	{
+		pRet->AutoRelease();
+	}
+	else
+	{
+		delete pRet;
+		pRet = nullptr;
+	}
+	return pRet;
+}
+
+bool MeshCylinder::Init(float radius, float height, UINT sliceCount, UINT stackCount)
+{
+	_topRadius = radius;
+	_bottomRadius = radius;
+	_height = height;
+	_sliceCount = sliceCount;
+	_stackCount = stackCount;
+
+	CreateBuffer();
+	return true;
+}
+
+MeshCylinder::MeshCylinder()
 {
 
 }
@@ -12,38 +38,42 @@ MeshCylinder::~MeshCylinder()
 
 }
 
-void MeshCylinder::Create()
+void MeshCylinder::CreateMesh()
 {
 	vector<MeshVertex> vertices;
 
-	float stackHeight = height / (float)stackCount;
-	float radiusStep = (topRadius - bottomRadius) / (float)stackCount;
+	float stackHeight = _height / (float)_stackCount;
+	float radiusStep = (_topRadius - _bottomRadius) / (float)_stackCount;
 
-	UINT ringCount = stackCount + 1;
+	UINT ringCount = _stackCount + 1;
 	for (UINT i = 0; i < ringCount; i++)
 	{
-		float y = -0.5f * height + i * stackHeight;
-		float r = bottomRadius + i * radiusStep;
-		float theta = 2.0f * Math::PI / (float)sliceCount;
+		float y = -0.5f * _height + i * stackHeight;
+		float r = _bottomRadius + i * radiusStep;
+		float theta = 2.0f * Math::PI / (float)_sliceCount;
 
-		for (UINT k = 0; k <= sliceCount; k++)
+		for (UINT k = 0; k <= _sliceCount; k++)
 		{
 			float c = cosf(k * theta);
 			float s = sinf(k * theta);
 
 
 			MeshVertex vertex;
-			vertex.Position = D3DXVECTOR3(r * c, y, r * s);
-			vertex.Uv = D3DXVECTOR2((float)k / (float)sliceCount, 1.0f - (float)i / (float)stackCount);
+			vertex.Position = Vector3(r * c, y, r * s);
+			vertex.Uv = Vector2((float)k / (float)_sliceCount, 1.0f - (float)i / (float)_stackCount);
 
 
-			D3DXVECTOR3 tangent = D3DXVECTOR3(-s, 0.0f, c);
+			Vector3 tangent = Vector3(-s, 0.0f, c);
 
-			float dr = bottomRadius - topRadius;
-			D3DXVECTOR3 biTangent = D3DXVECTOR3(dr * c, -height, dr * s);
+			float dr = _bottomRadius - _topRadius;
+			Vector3 biTangent = Vector3(dr * c, -_height, dr * s);
 
-			D3DXVec3Cross(&vertex.Normal, &tangent, &biTangent);
-			D3DXVec3Normalize(&vertex.Normal, &vertex.Normal);
+			XMVECTOR vTangent =  XMLoadFloat3(&tangent);
+			XMVECTOR vBiTangent = XMLoadFloat3(&biTangent);
+			XMVECTOR vVertexNormal = XMVector3Cross(vTangent, vBiTangent);
+
+			vVertexNormal = XMVector3Normalize(vVertexNormal);
+			XMStoreFloat3(&vertex.Normal, vVertexNormal);
 
 			vertex.Tangent = tangent;
 
@@ -53,10 +83,10 @@ void MeshCylinder::Create()
 
 
 	vector<UINT> indices;
-	UINT ringVertexCount = sliceCount + 1;
-	for (UINT y = 0; y < stackCount; y++)
+	UINT ringVertexCount = _sliceCount + 1;
+	for (UINT y = 0; y < _stackCount; y++)
 	{
-		for (UINT x = 0; x < sliceCount; x++)
+		for (UINT x = 0; x < _sliceCount; x++)
 		{
 			indices.push_back(y * ringVertexCount + x);
 			indices.push_back((y + 1) * ringVertexCount + x);
@@ -83,26 +113,26 @@ void MeshCylinder::Create()
 
 void MeshCylinder::BuildTopCap(vector<MeshVertex>& vertices, vector<UINT>& indices)
 {
-	float y = 0.5f * height;
-	float theta = 2.0f * Math::PI / (float)sliceCount;
+	float y = 0.5f * _height;
+	float theta = 2.0f * Math::PI / (float)_sliceCount;
 
-	for (UINT i = 0; i <= sliceCount; i++)
+	for (UINT i = 0; i <= _sliceCount; i++)
 	{
-		float x = topRadius * cosf(i * theta);
-		float z = topRadius * sinf(i * theta);
+		float x = _topRadius * cosf(i * theta);
+		float z = _topRadius * sinf(i * theta);
 
-		float u = x / height + 0.5f;
-		float v = z / height + 0.5f;
+		float u = x / _height + 0.5f;
+		float v = z / _height + 0.5f;
 
 		vertices.push_back(MeshVertex(x, y, z, u, v, 0, 1, 0, 1, 0, 0));
 	}
 	vertices.push_back(MeshVertex(0, y, 0, 0.5f, 0.5f, 0, 1, 0, 1, 0, 0));
 
 
-	UINT baseIndex = vertices.size() - sliceCount - 2;
+	UINT baseIndex = vertices.size() - _sliceCount - 2;
 	UINT centerIndex = vertices.size() - 1;
 
-	for (UINT i = 0; i < sliceCount; i++)
+	for (UINT i = 0; i < _sliceCount; i++)
 	{
 		indices.push_back(centerIndex);
 		indices.push_back(baseIndex + i + 1);
@@ -112,26 +142,26 @@ void MeshCylinder::BuildTopCap(vector<MeshVertex>& vertices, vector<UINT>& indic
 
 void MeshCylinder::BuildBottomCap(vector<MeshVertex>& vertices, vector<UINT>& indices)
 {
-	float y = -0.5f * height;
-	float theta = 2.0f * Math::PI / (float)sliceCount;
+	float y = -0.5f * _height;
+	float theta = 2.0f * Math::PI / (float)_sliceCount;
 
-	for (UINT i = 0; i <= sliceCount; i++)
+	for (UINT i = 0; i <= _sliceCount; i++)
 	{
-		float x = bottomRadius * cosf(i * theta);
-		float z = bottomRadius * sinf(i * theta);
+		float x = _bottomRadius * cosf(i * theta);
+		float z = _bottomRadius * sinf(i * theta);
 
-		float u = x / height + 0.5f;
-		float v = z / height + 0.5f;
+		float u = x / _height + 0.5f;
+		float v = z / _height + 0.5f;
 
 		vertices.push_back(MeshVertex(x, y, z, u, v, 0, -1, 0, -1, 0, 0));
 	}
 	vertices.push_back(MeshVertex(0, y, 0, 0.5f, 0.5f, 0, -1, 0, -1, 0, 0));
 
 
-	UINT baseIndex = vertices.size() - sliceCount - 2;
+	UINT baseIndex = vertices.size() - _sliceCount - 2;
 	UINT centerIndex = vertices.size() - 1;
 
-	for (UINT i = 0; i < sliceCount; i++)
+	for (UINT i = 0; i < _sliceCount; i++)
 	{
 		indices.push_back(centerIndex);
 		indices.push_back(baseIndex + i);

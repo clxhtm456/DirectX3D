@@ -1,8 +1,8 @@
-#include "framework.h"
-#include "IExecute.h"
+#include "Framework.h"
+#include "Scene.h"
 #include "Viewer/Camera.h"
 
-void IExecute::AutoInitialize()
+void Scene::AutoInitialize()
 {
 	D3DDesc desc = D3D::GetDesc();
 
@@ -10,22 +10,18 @@ void IExecute::AutoInitialize()
 	option.Width = desc.Width;
 	option.Height = desc.Height;
 
-	_mainCamera = new Camera(option);
+	auto cam = Camera::Create(option);
 
-	Context::Get()->SetMainCamera(_mainCamera);
+
+	SetMainCamera(cam);
+
+	
 
 	Initialize();
-
-	for (auto object : _childList)
-	{
-		if (object->GetRunning())
-			object->AutoInit();
-	}
 }
 
-void IExecute::AutoDestroy()
+void Scene::AutoDestroy()
 {
-	delete _mainCamera;
 
 	Destroy();
 
@@ -35,9 +31,11 @@ void IExecute::AutoDestroy()
 	}
 }
 
-void IExecute::AutoUpdate()
+void Scene::AutoUpdate()
 {
 	Update();
+
+	_mainCamera->AutoUpdate();
 
 	for (auto object : _childList)
 	{
@@ -46,10 +44,11 @@ void IExecute::AutoUpdate()
 	}
 }
 
-void IExecute::AutoPreRender()
+void Scene::AutoPreRender()
 {
 	PreRender();
 
+	_mainCamera->AutoPreRender();
 	for (auto object : _childList)
 	{
 		if (object->GetRunning())
@@ -57,9 +56,11 @@ void IExecute::AutoPreRender()
 	}
 }
 
-void IExecute::AutoRender()
+void Scene::AutoRender()
 {
 	Render();
+
+	_mainCamera->AutoRender();
 
 	for (auto object : _childList)
 	{
@@ -68,10 +69,11 @@ void IExecute::AutoRender()
 	}
 }
 
-void IExecute::AutoPostRender()
+void Scene::AutoPostRender()
 {
 	PostRender();
 
+	_mainCamera->AutoPostRender();
 	for (auto object : _childList)
 	{
 		if (object->GetRunning())
@@ -79,7 +81,7 @@ void IExecute::AutoPostRender()
 	}
 }
 
-void IExecute::AddChild(Node* node)
+void Scene::AddChild(Node* node)
 {
 	for (auto _child : _childList)
 	{
@@ -91,14 +93,14 @@ void IExecute::AddChild(Node* node)
 	node->Retain();
 }
 
-void IExecute::DelChild(Node* child)
+void Scene::DelChild(Node* child)
 {
 	if (_childList.empty())
 	{
 		return;
 	}
 
-	int index;
+	int index = 0;
 	auto iter = std::find(_childList.begin(), _childList.end(), child);
 	if (iter != _childList.end())
 	{
@@ -106,4 +108,15 @@ void IExecute::DelChild(Node* child)
 		(*it)->Release();
 		_childList.erase(it);
 	}
+}
+
+void Scene::SetMainCamera(Camera* cam)
+{
+	if(_mainCamera != nullptr)
+		DelChild(_mainCamera);
+
+	Context::Get()->SetMainCamera(cam);
+	AddChild(cam);
+
+	_mainCamera = cam;
 }

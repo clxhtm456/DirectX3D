@@ -4,21 +4,24 @@
 class MeshCylinder : public Mesh
 {
 public:
-	MeshCylinder(float radius, float height, UINT sliceCount = 10, UINT stackCount = 10);
+	static MeshCylinder* Create(float radius, float height, UINT sliceCount = 10, UINT stackCount = 10);
+	bool Init(float radius, float height, UINT sliceCount, UINT stackCount);
+public:
+	MeshCylinder();
 	~MeshCylinder();
 
 protected:
-	void Create() override;
+	void CreateMesh() override;
 
 private:
 	void BuildTopCap(vector<MeshVertex>& vertices, vector<UINT>& indices);
 	void BuildBottomCap(vector<MeshVertex>& vertices, vector<UINT>& indices);
 
 private:
-	float topRadius;
-	float bottomRadius;
-	float height;
+	float _topRadius;
+	float _bottomRadius;
+	float _height;
 
-	UINT sliceCount; //정밀도
-	UINT stackCount;
+	UINT _sliceCount; //정밀도
+	UINT _stackCount;
 };

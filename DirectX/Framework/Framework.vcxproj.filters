@@ -79,9 +79,6 @@
     <ClCompile Include="Objects\Node.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Systems\IExecute.cpp">
-      <Filter>Systems</Filter>
-    </ClCompile>
     <ClCompile Include="Renders\Shader.cpp">
       <Filter>Render</Filter>
     </ClCompile>
@@ -103,11 +100,26 @@
     <ClCompile Include="Renders\Texture.cpp">
       <Filter>Render</Filter>
     </ClCompile>
+    <ClCompile Include="Systems\Scene.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Meshes\MeshCylinder.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Meshes\MeshGrid.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Meshes\MeshQuad.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Meshes\MeshSphere.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Meshes\Terrain.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Systems\IExecute.h">
-      <Filter>Systems</Filter>
-    </ClInclude>
     <ClInclude Include="Systems\Keyboard.h">
       <Filter>Systems</Filter>
     </ClInclude>
@@ -192,6 +204,24 @@
     </ClInclude>
     <ClInclude Include="Renders\Texture.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Systems\Scene.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Meshes\MeshCylinder.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Meshes\MeshGrid.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Meshes\MeshQuad.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Meshes\MeshSphere.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Meshes\Terrain.h">
+      <Filter>Meshes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

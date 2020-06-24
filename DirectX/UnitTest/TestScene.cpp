@@ -4,14 +4,14 @@
 
 void TestScene::Initialize()
 {
-	shader = Shader::Add(L"Texture");
-
 	CreateFreedomCamera();
 
-	cube = MeshCube::Create();
-	cube->SetScale(0.5, 1, 0.5);
+	//auto mesh = MeshCube::Create();
+	auto mesh = MeshSphere::Create(5);
+	mesh->SetScale(1, 1, 1);
+	mesh->SetPosition(0, 0, 0);
 
-	AddChild(cube);
+	AddChild(mesh);
 }
 
 void TestScene::Destroy()
@@ -42,7 +42,9 @@ void TestScene::CreateFreedomCamera()
 	option.Width = desc.Width;
 	option.Height = desc.Height;
 
-	freedomCam = new Freedom(option);
+	freedomCam = Freedom::Create(option);
+	freedomCam->SetPosition(0, 0, -30);
 
-	Context::Get()->SetMainCamera(freedomCam);
+	SetMainCamera(freedomCam);
+
 }

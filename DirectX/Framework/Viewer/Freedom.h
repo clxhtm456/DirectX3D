@@ -4,7 +4,9 @@
 class Freedom : public Camera
 {
 public:
-	Freedom(CameraOption option);
+	static Freedom* Create(CameraOption option);
+public:
+	Freedom();
 	~Freedom();
 
 	void Update() override;
@@ -12,7 +14,7 @@ public:
 
 
 private:
-	float move = 20.0f;
+	float move = 5.0f;
 	float rotation = 5.0f;
 
 };

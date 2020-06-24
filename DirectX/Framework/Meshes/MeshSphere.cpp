@@ -1,10 +1,34 @@
 #include "Framework.h"
 #include "MeshSphere.h"
 
-MeshSphere::MeshSphere(float radius, UINT stackCount, UINT sliceCount)
-	: radius(radius), stackCount(stackCount), sliceCount(sliceCount)
+MeshSphere * MeshSphere::Create(float radius, UINT stackCount, UINT sliceCount)
+{
+	auto pRet = new MeshSphere();
+	if (pRet && pRet->Init(radius,stackCount, sliceCount))
+	{
+		pRet->AutoRelease();
+	}
+	else
+	{
+		delete pRet;
+		pRet = nullptr;
+	}
+	return pRet;
+}
+
+MeshSphere::MeshSphere()
 {
 
+}
+
+bool MeshSphere::Init(float radius, UINT stackCount, UINT sliceCount)
+{
+	_radius = radius;
+	_stackCount = stackCount;
+	_sliceCount = sliceCount;
+
+	CreateBuffer();
+	return true;
 }
 
 MeshSphere::~MeshSphere()
@@ -12,46 +36,51 @@ MeshSphere::~MeshSphere()
 
 }
 
-void MeshSphere::Create()
+void MeshSphere::CreateMesh()
 {
 	vector<MeshVertex> v;
-	v.push_back(MeshVertex(0, radius, 0, 0, 0, 0, 1, 0, 1, 0, 0));
+	v.push_back(MeshVertex(0, _radius, 0, 0, 0, 0, 1, 0, 1, 0, 0));
 
-	float phiStep = Math::PI / stackCount;
-	float thetaStep = 2.0f * Math::PI / sliceCount;
+	float phiStep = Math::PI / _stackCount;
+	float thetaStep = 2.0f * Math::PI / _sliceCount;
 
-	for (UINT i = 1; i <= stackCount - 1; i++)
+	for (UINT i = 1; i <= _stackCount - 1; i++)
 	{
 		float phi = i * phiStep;
 
-		for (UINT j = 0; j <= sliceCount; j++)
+		for (UINT j = 0; j <= _sliceCount; j++)
 		{
 			float theta = j * thetaStep;
 
-			D3DXVECTOR3 p = D3DXVECTOR3
+			Vector3 p = Vector3
 			(
-				(radius * sinf(phi) * cosf(theta)),
-				(radius * cosf(phi)),
-				(radius * sinf(phi) * sinf(theta))
+				(_radius * sinf(phi) * cosf(theta)),
+				(_radius * cosf(phi)),
+				(_radius * sinf(phi) * sinf(theta))
 			);
 
-			D3DXVECTOR3 t = D3DXVECTOR3
+			Vector3 t = Vector3
 			(
-				-radius * sinf(phi) * sinf(theta),
+				-_radius * sinf(phi) * sinf(theta),
 				0,
-				radius * sinf(phi) * cosf(theta)
+				_radius * sinf(phi) * cosf(theta)
 			);
 
-			D3DXVec3Normalize(&t, &t);
+			XMVECTOR vT = XMLoadFloat3(&t);
+			vT = XMVector3Normalize(vT);
+			XMStoreFloat3(&t, vT);
 
-			D3DXVECTOR3 n;
-			D3DXVec3Normalize(&n, &p);
+			XMVECTOR vN;
+			Vector3 n;
+			XMVECTOR vP = XMLoadFloat3(&p);
+			vN = XMVector3Normalize(vP);
+			XMStoreFloat3(&n, vN);
 
-			D3DXVECTOR2 uv = D3DXVECTOR2(theta / (Math::PI * 2), phi / Math::PI);
+			Vector2 uv = Vector2(theta / (Math::PI * 2), phi / Math::PI);
 			v.push_back(MeshVertex(p.x, p.y, p.z, uv.x, uv.y, n.x, n.y, n.z, t.x, t.y, t.z));
 		}
 	}
-	v.push_back(MeshVertex(0, -radius, 0, 0, 0, 0, -1, 0, -1, 0, 0));
+	v.push_back(MeshVertex(0, -_radius, 0, 0, 0, 0, -1, 0, -1, 0, 0));
 
 	vertices = new MeshVertex[v.size()];
 	vertexCount = v.size();
@@ -59,7 +88,7 @@ void MeshSphere::Create()
 
 
 	vector<UINT> indices;
-	for (UINT i = 1; i <= sliceCount; i++)
+	for (UINT i = 1; i <= _sliceCount; i++)
 	{
 		indices.push_back(0);
 		indices.push_back(i + 1);
@@ -67,10 +96,10 @@ void MeshSphere::Create()
 	}
 
 	UINT baseIndex = 1;
-	UINT ringVertexCount = sliceCount + 1;
-	for (UINT i = 0; i < stackCount - 2; i++)
+	UINT ringVertexCount = _sliceCount + 1;
+	for (UINT i = 0; i < _stackCount - 2; i++)
 	{
-		for (UINT j = 0; j < sliceCount; j++)
+		for (UINT j = 0; j < _sliceCount; j++)
 		{
 			indices.push_back(baseIndex + i * ringVertexCount + j);
 			indices.push_back(baseIndex + i * ringVertexCount + j + 1);
@@ -85,7 +114,7 @@ void MeshSphere::Create()
 	UINT southPoleIndex = v.size() - 1;
 	baseIndex = southPoleIndex - ringVertexCount;
 
-	for (UINT i = 0; i < sliceCount; i++)
+	for (UINT i = 0; i < _sliceCount; i++)
 	{
 		indices.push_back(southPoleIndex);
 		indices.push_back(baseIndex + i);

@@ -116,27 +116,7 @@ public:
 	}
 };
 
-class BrushBuffer : public ConstantBuffer
-{
-public:
-	struct Data
-	{
-		int type;
-		Vector3 location;
 
-		float range;
-		Vector3 color;
-	}data;
-
-	BrushBuffer() : ConstantBuffer(&data, sizeof(Data))
-	{
-		data.type = 1;
-		data.location = Vector3(0, 0, 0);
-
-		data.range = 10.0f;
-		data.color = Vector3(0, 1, 0);
-	}
-};
 
 class BoneBuffer : public ConstantBuffer
 {

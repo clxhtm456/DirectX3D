@@ -33,8 +33,6 @@ Context::~Context()
 
 void Context::Update()
 {
-	if (camera != nullptr)
-		camera->Update();
 }
 
 void Context::Render()
@@ -45,8 +43,6 @@ void Context::Render()
 
 	if (camera != nullptr)
 	{
-		camera->AutoRender();
-
 		Vector3 camPos;
 		camPos = camera->GetPosition();
 

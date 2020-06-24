@@ -1,8 +1,31 @@
 #include "Framework.h"
 #include "MeshGrid.h"
 
-MeshGrid::MeshGrid(float offsetU, float offsetV)
-	: offsetU(offsetU), offsetV(offsetV)
+MeshGrid * MeshGrid::Create(float offsetU, float offsetV)
+{
+	auto pRet = new MeshGrid();
+	if (pRet && pRet->Init(offsetU, offsetV))
+	{
+		pRet->AutoRelease();
+	}
+	else
+	{
+		delete pRet;
+		pRet = nullptr;
+	}
+	return pRet;
+}
+
+bool MeshGrid::Init(float offsetU, float offsetV)
+{
+	_offsetU = offsetU;
+	_offsetV = offsetV;
+
+	CreateBuffer();
+	return true;
+}
+
+MeshGrid::MeshGrid()
 {
 
 }
@@ -12,7 +35,7 @@ MeshGrid::~MeshGrid()
 
 }
 
-void MeshGrid::Create()
+void MeshGrid::CreateMesh()
 {
 	UINT countX = 11;
 	UINT countZ = 11;
@@ -29,8 +52,8 @@ void MeshGrid::Create()
 			vertex.Position = Vector3((float)x - w, 0, (float)z - h);
 			vertex.Normal = Vector3(0, 1, 0);
 			vertex.Tangent = Vector3(1, 0, 0);
-			vertex.Uv.x = (float)x / (float)(countX - 1) * offsetU;
-			vertex.Uv.y = (float)z / (float)(countZ - 1) * offsetV;
+			vertex.Uv.x = (float)x / (float)(countX - 1) * _offsetU;
+			vertex.Uv.y = (float)z / (float)(countZ - 1) * _offsetV;
 
 			v.push_back(vertex);
 		}

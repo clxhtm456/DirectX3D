@@ -4,12 +4,15 @@
 class MeshGrid : public Mesh
 {
 public:
-	MeshGrid(float offsetU = 1.0f, float offsetV = 1.0f);
+	static MeshGrid* Create(float offsetU = 1.0f, float offsetV = 1.0f);
+	bool Init(float offsetU, float offsetV);
+public:
+	MeshGrid();
 	~MeshGrid();
 
 private:
-	void Create() override;
+	void CreateMesh() override;
 
-	float offsetU;
-	float offsetV;
+	float _offsetU;
+	float _offsetV;
 };

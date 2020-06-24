@@ -5,6 +5,7 @@ class MeshCube : public Mesh
 {
 public:
 	static MeshCube* Create();
+	bool Init();
 public:
 	MeshCube();
 	virtual ~MeshCube();

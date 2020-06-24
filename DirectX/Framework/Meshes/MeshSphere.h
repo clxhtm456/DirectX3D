@@ -4,15 +4,18 @@
 class MeshSphere : public Mesh
 {
 public:
-	MeshSphere(float radius, UINT stackCount = 20, UINT sliceCount = 20);
+	static MeshSphere* Create(float radius, UINT stackCount = 20, UINT sliceCount = 20);
+	bool Init(float radius, UINT stackCount, UINT sliceCount);
+public:
+	MeshSphere();
 	~MeshSphere();
 
 protected:
-	void Create() override;
+	void CreateMesh() override;
 
 private:
-	float radius;
+	float _radius;
 
-	UINT stackCount;
-	UINT sliceCount;
+	UINT _stackCount;
+	UINT _sliceCount;
 };

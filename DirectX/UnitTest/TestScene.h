@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Systems/IExecute.h"
+#include "Systems/Scene.h"
 
-class TestScene : public IExecute
+class TestScene : public Scene
 {
 public:
 	virtual void Initialize() override;
@@ -16,10 +16,6 @@ public:
 private:
 	void CreateFreedomCamera();
 private:
-
-	Shader* shader;
 	class Camera* freedomCam;
-
-	class MeshCube* cube;
 	
 };

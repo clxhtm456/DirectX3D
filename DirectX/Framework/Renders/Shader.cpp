@@ -10,7 +10,7 @@ Shader::Shader(wstring shaderFile, string vsName, string psName)
 	: vsName(vsName), psName(psName), gsName(""),
 	geometryShader(nullptr), geometryBlob(nullptr)
 {
-	this->shaderFile = L"../_Shaders/" + shaderFile + L".hlsl";
+	this->shaderFile = L"../../_Shaders/" + shaderFile + L".hlsl";
 	CreateVertexShader();
 	CreatePixelShader();
 	CreateInputLayout();

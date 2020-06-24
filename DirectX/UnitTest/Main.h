@@ -1,7 +1,7 @@
 #pragma once
-#include "Systems/IExecute.h"
+#include "Systems/Scene.h"
 
-class Main : public IExecute
+class Main : public Scene
 {
 public:
 	virtual void Initialize() override;
@@ -14,8 +14,8 @@ public:
 	virtual void ResizeScreen() override;
 
 private:
-	void Push(IExecute* execute);
+	void Push(Scene* execute);
 
 private:
-	vector<IExecute *> executes;
+	vector<Scene *> executes;
 };

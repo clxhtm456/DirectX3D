@@ -1,7 +1,22 @@
 #include "Framework.h"
 #include "Freedom.h"
 
-Freedom::Freedom(CameraOption option) : Camera(option)
+Freedom * Freedom::Create(CameraOption option)
+{
+	auto pRet = new Freedom();
+	if (pRet && pRet->Init(option))
+	{
+		pRet->AutoRelease();
+	}
+	else
+	{
+		delete pRet;
+		pRet = nullptr;
+	}
+	return pRet;
+}
+
+Freedom::Freedom() : Camera()
 {
 }
 

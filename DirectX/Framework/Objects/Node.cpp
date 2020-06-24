@@ -19,10 +19,6 @@ Node::~Node()
 		object->Release();
 }
 
-bool Node::AutoInit()
-{
-	return Init();
-}
 
 void Node::AutoPostUpdate()
 {

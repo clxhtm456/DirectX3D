@@ -3,21 +3,43 @@
 #include "Perspective.h"
 #include "Viewport.h"
 
-Camera::Camera(CameraOption option) :
-	Node()
+Camera * Camera::Create(CameraOption option)
+{
+	auto pRet = new Camera();
+	if (pRet && pRet->Init(option))
+	{
+		pRet->AutoRelease();
+	}
+	else
+	{
+		delete pRet;
+		pRet = nullptr;
+	}
+	return pRet;
+}
+
+bool Camera::Init(CameraOption option)
 {
 	default = option;
 	matView = XMMatrixIdentity();
 	matRotation = XMMatrixIdentity();
 
-	perspective = new Perspective(option.Width, option.Height,option.zn,option.zf,option.fov);
-	viewport = new Viewport(option.Width, option.Height,option.x,option.y,option.minDepth,option.maxDepth);
+	perspective = new Perspective(option.Width, option.Height, option.zn, option.zf, option.fov);
+	viewport = new Viewport(option.Width, option.Height, option.x, option.y, option.minDepth, option.maxDepth);
 	viewProjection = new ViewProjectionBuffer();
 
 	viewProjection->SetProjection(perspective->GetMatrix());
 
 	Rotate();
 	Move();
+
+	return true;
+}
+
+Camera::Camera() :
+	Node()
+{
+	
 }
 
 Camera::~Camera()
@@ -58,6 +80,24 @@ void Camera::SetRotationDegree(Vector3 rotation)
 	Node::SetRotationDegree(rotation);
 
 	Rotate();
+}
+
+void Camera::SetPosition(float x, float y, float z)
+{
+	Vector3 temp = Vector3(x, y, z);
+	SetPosition(temp);
+}
+
+void Camera::SetRotation(float x, float y, float z)
+{
+	Vector3 temp = Vector3(x, y, z);
+	SetRotation(temp);
+}
+
+void Camera::SetRotationDegree(float x, float y, float z)
+{
+	Vector3 temp = Vector3(x, y, z);
+	SetRotationDegree(temp);
 }
 
 void Camera::Resize()
@@ -107,11 +147,6 @@ Matrix Camera::ViewMatrix()
 Matrix Camera::ProjectionMatrix()
 {
 	return perspective->GetMatrix();
-}
-
-bool Camera::Init()
-{
-	return false;
 }
 
 void Camera::PostUpdate()

@@ -16,7 +16,7 @@ void Main::Ready()
 
 void Main::Destroy()
 {
-	for (IExecute* exe : executes)
+	for (Scene* exe : executes)
 	{
 		exe->AutoDestroy();
 		SafeDelete(exe);
@@ -25,35 +25,35 @@ void Main::Destroy()
 
 void Main::Update()
 {
-	for (IExecute* exe : executes)
+	for (Scene* exe : executes)
 		exe->AutoUpdate();
 }
 
 void Main::PreRender()
 {
-	for (IExecute* exe : executes)
+	for (Scene* exe : executes)
 		exe->AutoPreRender();
 }
 
 void Main::Render()
 {
-	for (IExecute* exe : executes)
+	for (Scene* exe : executes)
 		exe->AutoRender();
 }
 
 void Main::PostRender()
 {
-	for (IExecute* exe : executes)
+	for (Scene* exe : executes)
 		exe->AutoPostRender();
 }
 
 void Main::ResizeScreen()
 {
-	for (IExecute* exe : executes)
+	for (Scene* exe : executes)
 		exe->ResizeScreen();
 }
 
-void Main::Push(IExecute * execute)
+void Main::Push(Scene * execute)
 {
 	executes.push_back(execute);
 

@@ -2,11 +2,12 @@
 
 class Node
 {
+private:
+	friend class Scene;
 protected:
 	Node();
 	virtual ~Node();
 protected:
-	virtual bool Init() = 0;
 	virtual void PostUpdate() = 0;
 	virtual void Update() = 0;
 	virtual void LateUpdate() = 0;
@@ -14,8 +15,7 @@ protected:
 	virtual void PreRender() = 0;
 	virtual void PostRender() = 0;
 	virtual void RemoveFromParent() = 0;
-public:
-	bool AutoInit();
+private:
 	void AutoPostUpdate();
 	void AutoUpdate();
 	void AutoLateUpdate();
@@ -52,6 +52,8 @@ protected:
 	XMVECTOR _position;
 	XMVECTOR _rotation;
 	XMVECTOR _scale;
+protected:
+	Scene* _scene;
 
 private:
 	unsigned int _referenceCount;

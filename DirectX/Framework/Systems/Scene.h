@@ -1,7 +1,9 @@
 #pragma once
 
-class IExecute
+class Scene
 {
+private:
+	friend class Main;
 public:
 	virtual void Initialize() = 0;
 	virtual void Ready() = 0;
@@ -13,7 +15,7 @@ public:
 	virtual void PostRender() = 0;
 
 	virtual void ResizeScreen() = 0;
-public:
+private:
 	void AutoInitialize();
 	void AutoDestroy();
 	void AutoUpdate();
@@ -23,7 +25,9 @@ public:
 public:
 	void AddChild(Node* node);
 	void DelChild(Node* child);
+
+	void SetMainCamera(Camera* cam);
 private:
 	vector<Node*> _childList;
-	class Camera* _mainCamera;
+	class Camera* _mainCamera = nullptr;
 };

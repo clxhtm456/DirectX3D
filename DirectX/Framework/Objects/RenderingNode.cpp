@@ -11,10 +11,6 @@ RenderingNode::~RenderingNode()
 	delete worldBuffer;
 }
 
-bool RenderingNode::Init()
-{
-	return true;
-}
 
 void RenderingNode::PostUpdate()
 {

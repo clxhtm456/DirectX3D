@@ -9,7 +9,7 @@ public:
 	Mesh();
 	~Mesh();
 
-	bool Init() override;
+	bool CreateBuffer();
 	void Update();
 	void Render();
 

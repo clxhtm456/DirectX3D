@@ -1,11 +1,11 @@
 #include "Framework.h"
 #include "Window.h"
-#include "IExecute.h"
+#include "Scene.h"
 
-IExecute* Window::mainExecute = NULL;
+Scene* Window::mainExecute = NULL;
 vector<Node*> Window::releaseList;
 
-WPARAM Window::Run(IExecute * main)
+WPARAM Window::Run(Scene * main)
 {
 	mainExecute = main;
 	Create();

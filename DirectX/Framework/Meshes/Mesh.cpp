@@ -17,7 +17,7 @@ Mesh::~Mesh()
 }
 
 
-bool Mesh::Init()
+bool Mesh::CreateBuffer()
 {
 	if (vertexBuffer == NULL || indexBuffer == NULL)
 	{
@@ -26,7 +26,7 @@ bool Mesh::Init()
 		vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(MeshVertex));
 		indexBuffer = new IndexBuffer(indices, indexCount);
 	}
-	return Super::Init();
+	return true;
 }
 
 void Mesh::Update()

@@ -102,3 +102,7 @@ typedef XMVECTOR Plane;
 #include "Viewer/Viewport.h"
 
 #include "Meshes/MeshCube.h"
+#include "Meshes/MeshCylinder.h"
+#include "Meshes/MeshGrid.h"
+#include "Meshes/MeshQuad.h"
+#include "Meshes/MeshSphere.h"
