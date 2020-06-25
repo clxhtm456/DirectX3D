@@ -4,14 +4,21 @@
 
 #include "Exporter/Exporter.h"
 
+#include "TestExporter/AssetLoader.h"
+#include "TestExporter/FbxLoader.h"
+
 void ModelExtractor::Initialize()
 {
-	string name = "unitychan";
+	string name = "pikachu";
 
-	Exporter* reader = new Exporter("Models/" + name + ".fbx");
-	reader->ExporterMaterial(name + "/" + name);
+	/*Exporter* reader = new Exporter("Models/" + name + ".fbx");
+	reader->ExporterMaterial(name + "/" + name);*/
 	//reader->ExporterMesh(name + "/" + name);
-	delete reader;
+
+	auto& loader = Utility::AssetLoader::GetLoader();
+	loader.LoadFbx("../../_Assets/Models/pikachu.fbx");
+
+	//delete reader;
 }
 
 void ModelExtractor::Destroy()

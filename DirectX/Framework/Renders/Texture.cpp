@@ -111,6 +111,29 @@ void Texture::Delete()
 		delete texture;
 }
 
+void Texture::DeleteOne(Texture * texture)
+{
+	for (auto iter = totalSRV.begin(); iter != totalSRV.end(); iter++)
+	{
+		if ((*iter).second == texture->GetSRV())
+		{
+			(*iter).second->Release();
+			totalSRV.erase(iter);
+			break;
+		}
+	}
+
+	for (auto iter = totalTexture.begin(); iter != totalTexture.end(); iter++)
+	{
+		if (*iter == texture)
+		{
+			totalTexture.erase(iter);
+			delete texture;
+			break;
+		}
+	}
+}
+
 vector<Vector4> Texture::ReadPixels()
 {
 	vector<Vector4> pixels;

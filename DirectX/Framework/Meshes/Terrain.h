@@ -79,8 +79,6 @@ private:
 	void RaiseHeight(Vector3& position, UINT type, UINT range);
 
 private:
-	Shader* shader;
-
 	Texture* heightMap = NULL;
 	Texture* baseMap = NULL;
 	Texture* layerMap = NULL;

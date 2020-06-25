@@ -16,6 +16,7 @@ public:
 	virtual void RemoveFromParent() override;
 protected:
 	Matrix GetWorld();
+	Shader* shader;
 private:
 	WorldBuffer* worldBuffer;
 	Matrix _world;

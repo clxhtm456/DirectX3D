@@ -133,6 +133,8 @@
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TestExporter\AssetLoader.cpp" />
+    <ClCompile Include="TestExporter\FbxLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Exporter\Exporter.h" />
@@ -141,6 +143,8 @@
     <ClInclude Include="Main.h" />
     <ClInclude Include="ModelExtractor.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TestExporter\AssetLoader.h" />
+    <ClInclude Include="TestExporter\FbxLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

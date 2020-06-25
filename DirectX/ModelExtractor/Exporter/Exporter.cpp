@@ -17,7 +17,7 @@ Exporter::Exporter(string file)
 	ios->SetBoolProp(IMP_FBX_TEXTURE, true);
 	manager->SetIOSettings(ios);
 
-	(*(manager->GetIOSettings())).SetBoolProp(EXP_FBX_EMBEDDED, true);
+	(*(manager->GetIOSettings())).SetBoolProp(EXP_FBX_EMBEDDED, false);
 
 	importer = FbxImporter::Create(manager, "");
 	bool lExportStatus = importer->Initialize(file.c_str(), -1, manager->GetIOSettings());

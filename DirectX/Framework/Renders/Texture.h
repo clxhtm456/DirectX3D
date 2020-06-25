@@ -29,6 +29,7 @@ public:
 	static Texture* Add(wstring file);
 	static ID3D11ShaderResourceView* LoadSRV(wstring file);
 	static void Delete();
+	static void DeleteOne(Texture* texture);
 
 	vector<Vector4> ReadPixels();
 

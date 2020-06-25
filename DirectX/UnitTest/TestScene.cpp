@@ -11,9 +11,10 @@ void TestScene::Initialize()
 	mesh->SetScale(1, 1, 1);
 	mesh->SetPosition(0, 0, 0);
 
-	auto terrain = Terrain::Create(L"Terrain/Gray256.png");
+	auto terrain = Terrain::Create(L"Terrain/Gray1024.jpg");
 	terrain->BaseMap(L"Terrain/Dirt3.png");
 	terrain->SetPosition(0, 0, 0);
+	//terrain->SetScale(2, 2, 2);
 
 	AddChild(mesh);
 	AddChild(terrain);

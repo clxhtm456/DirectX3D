@@ -29,7 +29,6 @@ bool Terrain::Init(wstring heightFile)
 {
 	shader = Shader::Add(L"Terrain");
 	heightMap = Texture::Add(heightFile);
-	heightMap->Set(0);
 
 	CreateVertexData();
 	CreateIndexData();
@@ -70,10 +69,10 @@ void Terrain::Render()
 	Super::Render();
 
 	if (baseMap != NULL)
-		baseMap->Set(1);
+		baseMap->Set(0);
 
-	brushBuffer->SetVSBuffer(2);
-	lineBuffer->SetVSBuffer(3);
+	brushBuffer->SetVSBuffer(1);
+	lineBuffer->SetVSBuffer(2);
 
 	vertexBuffer->Render();
 	indexBuffer->Render();

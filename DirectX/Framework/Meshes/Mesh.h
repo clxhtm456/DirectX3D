@@ -17,8 +17,6 @@ protected:
 	virtual void CreateMesh() = 0;
 	
 protected:
-	Shader * shader;
-
 	VertexBuffer* vertexBuffer = NULL;
 	IndexBuffer* indexBuffer = NULL;
 

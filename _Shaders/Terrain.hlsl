@@ -40,17 +40,14 @@ cbuffer Line : register(b3)
 	LineDesc Line;
 }
 
-Texture2D HeightMap : register(t0);
-SamplerState HeightSamp : register(s0);
+Texture2D BaseMap : register(t0);
+SamplerState BaseSamp : register(s0);
 
-Texture2D BaseMap : register(t1);
-SamplerState BaseSamp : register(s1);
+Texture2D LayerMap : register(t1);
+SamplerState LayerSamp : register(s1);
 
-Texture2D LayerMap : register(t2);
-SamplerState LayerSamp : register(s2);
-
-Texture2D AlphaMap : register(t3);
-SamplerState AlphaSamp : register(s3);
+Texture2D AlphaMap : register(t2);
+SamplerState AlphaSamp : register(s2);
 
 VertexOutput VS(VertexInput input)
 {

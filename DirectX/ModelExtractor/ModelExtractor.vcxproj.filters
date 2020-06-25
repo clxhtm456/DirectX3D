@@ -10,6 +10,12 @@
     <ClCompile Include="Exporter\FbxUtility.cpp">
       <Filter>Exporter</Filter>
     </ClCompile>
+    <ClCompile Include="TestExporter\AssetLoader.cpp">
+      <Filter>TestExporter</Filter>
+    </ClCompile>
+    <ClCompile Include="TestExporter\FbxLoader.cpp">
+      <Filter>TestExporter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h" />
@@ -24,10 +30,19 @@
     <ClInclude Include="Exporter\FbxUtility.h">
       <Filter>Exporter</Filter>
     </ClInclude>
+    <ClInclude Include="TestExporter\AssetLoader.h">
+      <Filter>TestExporter</Filter>
+    </ClInclude>
+    <ClInclude Include="TestExporter\FbxLoader.h">
+      <Filter>TestExporter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Exporter">
       <UniqueIdentifier>{dddbf3d3-cff2-4418-8864-715d2780bceb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestExporter">
+      <UniqueIdentifier>{07e6e394-d9a9-4919-ab91-9fe3b27ed4cd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
