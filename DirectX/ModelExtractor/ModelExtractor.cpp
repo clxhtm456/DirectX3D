@@ -14,10 +14,11 @@ void ModelExtractor::Initialize()
 	/*Exporter* reader = new Exporter("Models/" + name + ".fbx");
 	reader->ExporterMaterial(name + "/" + name);*/
 	//reader->ExporterMesh(name + "/" + name);
-
+	XmlExtractor* extractor = new XmlExtractor();
 	auto& loader = Utility::AssetLoader::GetLoader();
-	loader.LoadFbx("../../_Assets/Models/pikachu.fbx");
+	loader.LoadFbx("unitychan", extractor);
 
+	delete extractor;
 	//delete reader;
 }
 

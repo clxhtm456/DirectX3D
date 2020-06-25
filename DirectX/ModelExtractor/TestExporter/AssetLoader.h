@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "FbxLoader.h"
+#include "XmlExtractor.h"
 #include <future>
 
 namespace Utility
@@ -14,9 +15,9 @@ namespace Utility
 			return l_loader;
 		}
 
-		__forceinline void LoadFbx(const std::string p_fileName)
+		__forceinline void LoadFbx(const std::string p_fileName, XmlExtractor* extractor)
 		{
-			m_fbxLoader->LoadSceneFromFile(p_fileName);
+			m_fbxLoader->LoadSceneFromFile(p_fileName, extractor);
 		};
 
 		FbxLoader* m_fbxLoader;

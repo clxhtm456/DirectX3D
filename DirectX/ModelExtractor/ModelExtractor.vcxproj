@@ -135,6 +135,7 @@
     </ClCompile>
     <ClCompile Include="TestExporter\AssetLoader.cpp" />
     <ClCompile Include="TestExporter\FbxLoader.cpp" />
+    <ClCompile Include="TestExporter\XmlExtractor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Exporter\Exporter.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TestExporter\AssetLoader.h" />
     <ClInclude Include="TestExporter\FbxLoader.h" />
+    <ClInclude Include="TestExporter\XmlExtractor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

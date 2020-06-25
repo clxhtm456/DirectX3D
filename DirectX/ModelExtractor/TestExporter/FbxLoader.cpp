@@ -42,17 +42,19 @@ Utility::FbxLoader::FbxLoader():
 
 
 
-void Utility::FbxLoader::LoadSceneFromFile(const std::string p_fileName)
+void Utility::FbxLoader::LoadSceneFromFile(const std::string p_fileName,XmlExtractor* extractor)
 {
+	string fileDir = "../../_Assets/Models/" + p_fileName + ".fbx";
+	m_extractor = extractor;
     // Prepare the FBX SDK.
     InitializeSdkObjects(m_sdkManager, m_scene);
     // Load the scene.
     
-    auto lResult = LoadScene(m_sdkManager, m_scene, p_fileName.c_str());
+    auto lResult = LoadScene(m_sdkManager, m_scene, fileDir.c_str());
 
     if (lResult == false)
     {
-        //FBXSDK_printf("\n\nAn error occurred while loading the scene...");
+        FBXSDK_printf("\n\nAn error occurred while loading the scene...");
     }
     else
     {
@@ -92,6 +94,10 @@ void Utility::FbxLoader::LoadSceneFromFile(const std::string p_fileName)
         //
         ////FBXSDK_printf("\n\n---------\nGeneric Information\n---------\n\n");
         //if (gVerbose) DisplayGenericInfo(m_scene);
+
+		//파일추출
+
+		m_extractor->WriteMaterial(m_scene, L"../../_Assets/Materials/" + String::ToWString(p_fileName) + L".mat", true);
     }
     m_animStacks.clear();
 }
@@ -407,7 +413,8 @@ void Utility::FbxLoader::DisplayMesh(FbxNode* pNode, FbxAMatrix* p_globalPos, Fb
     DisplayShape(lMesh);
     DisplayCache(lMesh);
 
-	//파일 추출
+	//int count = m_scene->GetMaterialCount();
+
    /* if (!hasAnim) delete l_anim;
     Gameplay::Mesh* l_mesh = new Gameplay::Mesh(std::move(l_vertices), std::move(l_indices), hasAnim ? l_anim : nullptr);
     l_mesh->SetRoughness(0.5f);
@@ -577,8 +584,8 @@ void Utility::FbxLoader::DisplayControlsPoints(FbxMesh* pMesh, std::vector<Verte
 
     for (i = 0; i < lControlPointsCount; i++)
     {
-        DisplayInt("        Control Point ", i);
-        Display3DVector("            Coordinates: ", lControlPoints[i]);
+        //DisplayInt("        Control Point ", i);
+        //Display3DVector("            Coordinates: ", lControlPoints[i]);
         Vertex l_vertex = {};
 		//auto transformed_control_points = l_transformMatrix->MultT(lControlPoints[i]);
         l_vertex.position.x = static_cast<float>(lControlPoints[i].Buffer()[0]);
@@ -620,7 +627,7 @@ void Utility::FbxLoader::DisplayPolygons(FbxMesh* pMesh, std::vector<uint32_t>& 
     int vertexId = 0;
     for (i = 0; i < lPolygonCount; i++)
     {
-        DisplayInt("        Polygon ", i);
+        //DisplayInt("        Polygon ", i);
         int l;
 
         for (l = 0; l < pMesh->GetElementPolygonGroupCount(); l++)
@@ -1194,6 +1201,7 @@ void Utility::FbxLoader::InitializeSdkObjects(FbxManager*& pManager, FbxScene*& 
     //Create an IOSettings object. This object holds all import/export settings.
     FbxIOSettings* ios = FbxIOSettings::Create(pManager, IOSROOT);
     pManager->SetIOSettings(ios);
+	ios->WriteXMLFile("../../Test.xml");
 
     //Load plugins from the executable directory (optional)
     FbxString lPath = FbxGetApplicationDirectory();
@@ -1227,7 +1235,6 @@ void DisplayMaterial(FbxGeometry* pGeometry)
         if (lNode)
             lMaterialCount = lNode->GetMaterialCount();
     }
-
     if (lMaterialCount > 0)
     {
         FbxPropertyT<FbxDouble3> lKFbxDouble3;
@@ -1241,7 +1248,7 @@ void DisplayMaterial(FbxGeometry* pGeometry)
             FbxSurfaceMaterial* lMaterial = lNode->GetMaterial(lCount);
 
             DisplayString("            Name: \"", (char*)lMaterial->GetName(), "\"");
-
+			
             //Get the implementation to see if it's a hardware shader.
             const FbxImplementation* lImplementation = GetImplementation(lMaterial, FBXSDK_IMPLEMENTATION_HLSL);
             FbxString lImplemenationType = "HLSL";
@@ -1270,7 +1277,7 @@ void DisplayMaterial(FbxGeometry* pGeometry)
 
 
                     FbxString lTest = lEntry.GetSource();
-                    //FBXSDK_printf("            Entry: %s\n", lTest.Buffer());
+                    FBXSDK_printf("            Entry: %s\n", lTest.Buffer());
 
 
                     if (strcmp(FbxPropertyEntryView::sEntryType, lEntrySrcType) == 0)
@@ -1295,17 +1302,17 @@ void DisplayMaterial(FbxGeometry* pGeometry)
                             for (int j = 0; j < lFbxProp.GetSrcObjectCount<FbxFileTexture>(); ++j)
                             {
                                 FbxFileTexture* lTex = lFbxProp.GetSrcObject<FbxFileTexture>(j);
-                                //FBXSDK_printf("           File Texture: %s\n", lTex->GetFileName());
+                                FBXSDK_printf("           File Texture: %s\n", lTex->GetFileName());
                             }
                             for (int j = 0; j < lFbxProp.GetSrcObjectCount<FbxLayeredTexture>(); ++j)
                             {
                                 FbxLayeredTexture* lTex = lFbxProp.GetSrcObject<FbxLayeredTexture>(j);
-                                //FBXSDK_printf("        Layered Texture: %s\n", lTex->GetName());
+                                FBXSDK_printf("        Layered Texture: %s\n", lTex->GetName());
                             }
                             for (int j = 0; j < lFbxProp.GetSrcObjectCount<FbxProceduralTexture>(); ++j)
                             {
                                 FbxProceduralTexture* lTex = lFbxProp.GetSrcObject<FbxProceduralTexture>(j);
-                                //FBXSDK_printf("     Procedural Texture: %s\n", lTex->GetName());
+                                FBXSDK_printf("     Procedural Texture: %s\n", lTex->GetName());
                             }
                         }
                         else

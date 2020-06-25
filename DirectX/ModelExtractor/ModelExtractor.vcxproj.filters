@@ -16,6 +16,9 @@
     <ClCompile Include="TestExporter\FbxLoader.cpp">
       <Filter>TestExporter</Filter>
     </ClCompile>
+    <ClCompile Include="TestExporter\XmlExtractor.cpp">
+      <Filter>TestExporter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h" />
@@ -34,6 +37,9 @@
       <Filter>TestExporter</Filter>
     </ClInclude>
     <ClInclude Include="TestExporter\FbxLoader.h">
+      <Filter>TestExporter</Filter>
+    </ClInclude>
+    <ClInclude Include="TestExporter\XmlExtractor.h">
       <Filter>TestExporter</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,6 +4,8 @@
 #include <fbxsdk.h>
 #include <array>
 
+#include "XmlExtractor.h"
+
 namespace Utility
 {
 	struct Vertex
@@ -31,8 +33,7 @@ namespace Utility
 
 		~FbxLoader();
 
-		void LoadSceneFromFile(const std::string p_fileName);
-
+		void LoadSceneFromFile(const std::string p_fileName, XmlExtractor* extractor);
 
 	private:
 		std::vector<FbxAnimStack*> m_animStacks;
@@ -53,6 +54,8 @@ namespace Utility
 
 		FbxTime mFrameTime, mStart, mStop, mCurrentTime;
 		FbxTime mCache_Start, mCache_Stop;
+
+		XmlExtractor* m_extractor;
 
 		bool m_supportVBO;
 
