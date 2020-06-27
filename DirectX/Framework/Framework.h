@@ -70,6 +70,10 @@ typedef XMVECTOR Plane;
 	XMStoreFloat3(&__result__, XMLoadFloat3(&__vec1__) - XMLoadFloat3(&__vec2__));\
 }
 
+#define TYPE_NODE	(1<<1)
+#define TYPE_VIEWER	(1<<2)
+#define TYPE_LIGHT	(1<<3)
+
 
 //ImGui
 #include <ImGui_New/imgui.h>
@@ -103,6 +107,8 @@ typedef XMVECTOR Plane;
 #include "Objects/Node.h"
 #include "Objects/RenderingNode.h"
 
+#include "Light/Light.h"
+#include "Light/DirectLight.h"
 
 #include "Viewer/Camera.h"
 #include "Viewer/Perspective.h"
@@ -114,3 +120,5 @@ typedef XMVECTOR Plane;
 #include "Meshes/MeshQuad.h"
 #include "Meshes/MeshSphere.h"
 #include "Meshes/Terrain.h"
+
+#include "Systems/Scene.h"

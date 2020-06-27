@@ -1,12 +1,23 @@
-cbuffer ViewProjection : register(b0)
+cbuffer ViewProjection : register(b8)
 {
 	matrix View;
 	matrix Projection;
 }
 
-cbuffer World : register(b1)
+cbuffer World : register(b9)
 {
 	matrix World;
+}
+
+cbuffer Light : register(b8)
+{
+	float3 lightDirection;
+	float specExp;
+
+	float4 ambientLight;
+
+	int isSpecularMap;
+	int isNormalMap;
 }
 
 float4 WorldPosition(float4 position)

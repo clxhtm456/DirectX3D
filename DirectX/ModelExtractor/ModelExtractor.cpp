@@ -14,9 +14,14 @@ void ModelExtractor::Initialize()
 	/*Exporter* reader = new Exporter("Models/" + name + ".fbx");
 	reader->ExporterMaterial(name + "/" + name);*/
 	//reader->ExporterMesh(name + "/" + name);
-	XmlExtractor* extractor = new XmlExtractor();
+	/*XmlExtractor* extractor = new XmlExtractor();
 	auto& loader = Utility::AssetLoader::GetLoader();
-	loader.LoadFbx("unitychan", extractor);
+	loader.LoadFbx("unitychan", extractor);*/
+
+	extractor = XmlExtractor::Create();
+
+	extractor->LoadModel("kachujin/Mesh");
+	extractor->LoadAnimation(0,"kachujin/Idle");
 
 	delete extractor;
 	//delete reader;

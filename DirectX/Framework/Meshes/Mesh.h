@@ -10,8 +10,9 @@ public:
 	~Mesh();
 
 	bool CreateBuffer();
-	void Update();
-	void Render();
+
+	void Update() override;
+	void Render(Camera* viewer) override;
 
 protected:
 	virtual void CreateMesh() = 0;

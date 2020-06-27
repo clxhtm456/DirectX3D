@@ -5,7 +5,7 @@
 #define IOS_REF (*(pManager->GetIOSettings()))
 #endif
 
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+
 
 using namespace fbxsdk;
 
@@ -96,10 +96,9 @@ void Utility::FbxLoader::LoadSceneFromFile(const std::string p_fileName,XmlExtra
         //if (gVerbose) DisplayGenericInfo(m_scene);
 
 		//파일추출
-
-		m_extractor->WriteMaterial(m_scene, L"../../_Assets/Materials/" + String::ToWString(p_fileName) + L".mat", true);
     }
     m_animStacks.clear();
+	m_extractor->Reset();
 }
 
 
@@ -384,8 +383,8 @@ void Utility::FbxLoader::DisplayContent(FbxNode* pNode, FbxTime p_time, FbxAMatr
 
 
 void Utility::FbxLoader::DisplayMesh(FbxNode* pNode, FbxAMatrix* p_globalPos, FbxTime p_time)
-{
-    FbxMesh* lMesh = (FbxMesh*)pNode->GetNodeAttribute();
+{FbxMesh* lMesh = (FbxMesh*)pNode->GetNodeAttribute();
+    
     std::vector<Vertex> l_vertices;
     std::vector<uint32_t> l_indices;
     SkeletonAnim* l_anim = new SkeletonAnim;

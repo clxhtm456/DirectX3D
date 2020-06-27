@@ -34,9 +34,9 @@ void Mesh::Update()
 	Super::Update();
 }
 
-void Mesh::Render()
+void Mesh::Render(Camera* viewer)
 {
-	Super::Render();
+	Super::Render(viewer);
 	
 
 	vertexBuffer->Render();

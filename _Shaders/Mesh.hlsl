@@ -27,7 +27,7 @@ VertexOutput VS(VertexInput input)
 	output.Position = ViewProjection(output.Position);
 
 	output.Uv = input.Uv;
-	output.Normal = input.Normal;
+	output.Normal = mul(input.Normal, (float3x3)World);
 	output.Tangent = input.Tangent;
 
 	return output;
@@ -35,6 +35,9 @@ VertexOutput VS(VertexInput input)
 
 float4 PS(VertexOutput input) : SV_TARGET
 {
-	float4 result = diffuseMap.Sample(diffuseSamp, input.Uv);
-	return result;
+	float3 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv).rgb;
+
+	float NdotL = dot(normalize(input.Normal), -lightDirection);
+
+	return float4(diffuse * NdotL, 1);
 }

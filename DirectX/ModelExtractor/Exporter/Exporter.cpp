@@ -2,7 +2,6 @@
 #include "Exporter.h"
 
 #include "FbxUtility.h"
-#include "FbxType.h"
 
 
 

@@ -126,7 +126,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Exporter\Exporter.cpp" />
     <ClCompile Include="Exporter\FbxUtility.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModelExtractor.cpp" />
@@ -138,8 +137,6 @@
     <ClCompile Include="TestExporter\XmlExtractor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Exporter\Exporter.h" />
-    <ClInclude Include="Exporter\FbxType.h" />
     <ClInclude Include="Exporter\FbxUtility.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="ModelExtractor.h" />

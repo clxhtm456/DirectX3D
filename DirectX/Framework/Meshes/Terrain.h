@@ -62,8 +62,8 @@ public:
 	Terrain();
 	~Terrain();
 
-	void Update();
-	void Render();
+	void Update()override;
+	void Render(Camera* viewer)override;
 
 	void BaseMap(wstring file);
 	void LayerMap(wstring file, wstring alpha);

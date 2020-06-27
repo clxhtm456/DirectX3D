@@ -40,6 +40,11 @@ public:
 	void SetRotationDegree(float x, float y, float z);
 
 	void Resize();
+
+	UINT ChildType() override
+	{
+		return TYPE_VIEWER;
+	}
 public:
 	ViewProjectionBuffer* GetVPBuffer() { return viewProjection; }
 protected :
@@ -70,16 +75,16 @@ protected:
 
 
 	// Node을(를) 통해 상속됨
-
+	virtual void Start() override;
 	virtual void PostUpdate() override;
 
 	virtual void LateUpdate() override;
 
-	virtual void Render() override;
+	virtual void Render(Camera* viewer) override;
 
-	virtual void PreRender() override;
+	virtual void PreRender(Camera* viewer) override;
 
-	virtual void PostRender() override;
+	virtual void PostRender(Camera* viewer) override;
 
 	virtual void RemoveFromParent() override;
 

@@ -1,6 +1,7 @@
 #include "Framework.h"
 #include "Scene.h"
 #include "Viewer/Camera.h"
+#include "Light/DirectLight.h"
 
 void Scene::AutoInitialize()
 {
@@ -14,6 +15,7 @@ void Scene::AutoInitialize()
 
 
 	SetMainCamera(cam);
+	CreateMainLight();
 
 	
 
@@ -22,8 +24,15 @@ void Scene::AutoInitialize()
 
 void Scene::AutoDestroy()
 {
+	if (_directionLight != nullptr)
+		_directionLight->Release();
 
 	Destroy();
+
+	for (Node* object : _cameraList)
+	{
+		object->Release();
+	}
 
 	for (auto object : _childList)
 	{
@@ -35,7 +44,11 @@ void Scene::AutoUpdate()
 {
 	Update();
 
-	_mainCamera->AutoUpdate();
+	for (Node* object : _cameraList)
+	{
+		if (object->GetRunning())
+			object->AutoUpdate();
+	}
 
 	for (auto object : _childList)
 	{
@@ -48,11 +61,18 @@ void Scene::AutoPreRender()
 {
 	PreRender();
 
-	_mainCamera->AutoPreRender();
-	for (auto object : _childList)
+	for (Camera* camera : _cameraList)
 	{
-		if (object->GetRunning())
-			object->AutoPreRender();
+		if (camera->GetRunning())
+		{
+			camera->AutoPreRender(nullptr);
+
+			for (auto object : _childList)
+			{
+				if (object->GetRunning())
+					object->AutoPreRender(camera);
+			}
+		}
 	}
 }
 
@@ -60,12 +80,18 @@ void Scene::AutoRender()
 {
 	Render();
 
-	_mainCamera->AutoRender();
-
-	for (auto object : _childList)
+	for (Camera* camera : _cameraList)
 	{
-		if (object->GetRunning())
-			object->AutoRender();
+		if (camera->GetRunning())
+		{
+			camera->AutoRender();
+
+			for (auto object : _childList)
+			{
+				if (object->GetRunning())
+					object->AutoRender(camera);
+			}
+		}
 	}
 }
 
@@ -73,41 +99,106 @@ void Scene::AutoPostRender()
 {
 	PostRender();
 
-	_mainCamera->AutoPostRender();
-	for (auto object : _childList)
+	for (Camera* camera : _cameraList)
 	{
-		if (object->GetRunning())
-			object->AutoPostRender();
+		if (camera->GetRunning())
+		{
+			camera->AutoPostRender();
+
+			for (auto object : _childList)
+			{
+				if (object->GetRunning())
+					object->AutoPostRender(camera);
+			}
+		}
 	}
 }
 
 void Scene::AddChild(Node* node)
 {
-	for (auto _child : _childList)
-	{
-		if (_child == node)
-			return;
-	}
-	_childList.push_back(node);
-
+	node->_scene = this;
 	node->Retain();
+
+	switch (node->ChildType())
+	{
+	case TYPE_NODE:
+	{
+		for (auto _child : _childList)
+		{
+			if (_child == node)
+				return;
+		}
+		_childList.push_back(node);
+		break;
+	}
+	case TYPE_VIEWER:
+	{
+		for (auto _child : _cameraList)
+		{
+			if (_child == node)
+				return;
+		}
+		_cameraList.push_back((Camera*)node);
+		break;
+	}
+	case TYPE_LIGHT:
+	{
+		for (auto _child : _lightList)
+		{
+			if (_child == node)
+				return;
+		}
+		_lightList.push_back((Light*)node);
+		break;
+	}
+	}
 }
+
 
 void Scene::DelChild(Node* child)
 {
-	if (_childList.empty())
+	if (_childList.empty() && _cameraList.empty() && _lightList.empty())
 	{
 		return;
 	}
 
-	int index = 0;
-	auto iter = std::find(_childList.begin(), _childList.end(), child);
-	if (iter != _childList.end())
+	switch (child->ChildType())
 	{
-		auto it = std::next(_childList.begin(), index);
-		(*it)->Release();
-		_childList.erase(it);
+	case TYPE_NODE:
+	{
+		int index = 0;
+		auto iter = std::find(_childList.begin(), _childList.end(), child);
+		if (iter != _childList.end())
+		{
+			auto it = std::next(_childList.begin(), index);
+			(*it)->Release();
+			_childList.erase(it);
+		}
 	}
+	case TYPE_VIEWER:
+	{
+		int index = 0;
+		auto iter = std::find(_cameraList.begin(), _cameraList.end(), child);
+		if (iter != _cameraList.end())
+		{
+			auto it = std::next(_cameraList.begin(), index);
+			(*it)->Release();
+			_cameraList.erase(it);
+		}
+	}
+	case TYPE_LIGHT:
+	{
+		int index = 0;
+		auto iter = std::find(_lightList.begin(), _lightList.end(), child);
+		if (iter != _lightList.end())
+		{
+			auto it = std::next(_lightList.begin(), index);
+			(*it)->Release();
+			_lightList.erase(it);
+		}
+	}
+	}
+	
 }
 
 void Scene::SetMainCamera(Camera* cam)
@@ -119,4 +210,17 @@ void Scene::SetMainCamera(Camera* cam)
 	AddChild(cam);
 
 	_mainCamera = cam;
+}
+
+void Scene::CreateMainLight()
+{
+	auto mainLight = DirectionLight::Create();
+	mainLight->Retain();
+
+	_directionLight = mainLight;
+}
+
+DirectionLight* Scene::GetDirectionLight()
+{
+	return _directionLight;
 }

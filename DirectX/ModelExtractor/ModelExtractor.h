@@ -17,5 +17,6 @@ private:
 	void CreateFreedomCamera();
 private:
 	class Camera* freedomCam;
+	class XmlExtractor* extractor;
 	
 };

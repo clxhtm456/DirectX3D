@@ -57,7 +57,7 @@ VertexOutput VS(VertexInput input)
 	//output.Position = input.Position;
 
 	output.Uv = input.Uv;
-	output.Normal = input.Normal;
+	output.Normal = mul(input.Normal, (float3x3)World);
 
 	return output;
 }
@@ -68,6 +68,7 @@ float4 PS(VertexOutput input) : SV_TARGET
 
 	//float NdotL = dot(normalize(input.Normal), -GlobalLight.Direction);
 
-	return float4(diffuse,1);
-	//return float4(1, 0, 0, 1);
+	float NdotL = dot(normalize(input.Normal), -lightDirection);
+
+	return float4(diffuse * NdotL, 1);
 }

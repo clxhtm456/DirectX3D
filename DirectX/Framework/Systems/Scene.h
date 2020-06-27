@@ -27,7 +27,13 @@ public:
 	void DelChild(Node* child);
 
 	void SetMainCamera(Camera* cam);
+public:
+	void CreateMainLight();
+	DirectionLight* GetDirectionLight();
 private:
-	vector<Node*> _childList;
+	DirectionLight* _directionLight;
+	list<Node*> _childList;
+	list<Light*> _lightList;
+	list<Camera*> _cameraList;
 	class Camera* _mainCamera = nullptr;
 };

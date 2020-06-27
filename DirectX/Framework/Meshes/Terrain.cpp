@@ -34,6 +34,7 @@ bool Terrain::Init(wstring heightFile)
 	CreateIndexData();
 	CreateNormalData();
 
+	Texture::DeleteOne(heightMap);
 	vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(TerrainVertex), 0, true);
 	indexBuffer = new IndexBuffer(indices, indexCount);
 	return true;
@@ -64,15 +65,15 @@ void Terrain::Update()
 	}
 }
 
-void Terrain::Render()
+void Terrain::Render(Camera* viewer)
 {
-	Super::Render();
+	Super::Render(viewer);
 
 	if (baseMap != NULL)
 		baseMap->Set(0);
 
-	brushBuffer->SetVSBuffer(1);
-	lineBuffer->SetVSBuffer(2);
+	brushBuffer->SetVSBuffer(2);
+	lineBuffer->SetVSBuffer(3);
 
 	vertexBuffer->Render();
 	indexBuffer->Render();
@@ -80,8 +81,8 @@ void Terrain::Render()
 	shader->Render();
 	if (layerMap != NULL && alphaMap != NULL)
 	{
-		layerMap->Set(2);
-		alphaMap->Set(3);
+		layerMap->Set(1);
+		alphaMap->Set(2);
 	}
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D::GetDC()->DrawIndexed(indexCount, 0, 0);

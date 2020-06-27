@@ -8,9 +8,15 @@ Node::Node() :
 	_rotation(XMVectorSet(0, 0, 0,0)),
 	_running(true),
 	_reorderChildDirty(false),
-	_visible(true)
+	_visible(true),
+	_scene(nullptr)
 {
 	_parent = nullptr;
+
+	AddEvent([=]()->void
+		{
+			Start();
+		});
 }
 
 Node::~Node()
@@ -61,32 +67,34 @@ void Node::AutoLateUpdate()
 		object->AutoLateUpdate();
 }
 
-void Node::AutoRender()
+void Node::AutoRender(Camera* viewer)
 {
 	if (_visible == false)
 		return;
 
-	Render();
+	Render(viewer);
 
 	Draw();
 
 	auto list = _childList;
 	for (auto object : list)
-		object->AutoRender();
+		object->AutoRender(viewer);
 }
 
-void Node::AutoPreRender()
+void Node::AutoPreRender(Camera* viewer)
 {
+	PreRender(viewer);
 	auto list = _childList;
 	for (auto object : list)
-		object->AutoPreRender();
+		object->AutoPreRender(viewer);
 }
 
-void Node::AutoPostRender()
+void Node::AutoPostRender(Camera* viewer)
 {
+	PostRender(viewer);
 	auto list = _childList;
 	for (auto object : list)
-		object->AutoPostRender();
+		object->AutoPostRender(viewer);
 }
 
 void Node::RemoveFromParent()
@@ -192,6 +200,7 @@ void Node::AddChild(Node* child)
 	_reorderChildDirty = true;
 
 	child->_parent = this;
+	child->_scene = _scene;
 	child->Retain();
 }
 
@@ -213,6 +222,12 @@ void Node::DelChild(Node* child)
 		_childList.erase(it);
 	}
 	_reorderChildDirty = true;
+}
+
+void Node::AddEvent(const std::function<void()>& func, float timer)
+{
+	auto event = pair<std::function<void()>, float>(func, timer);
+	_eventList.push_back(event);
 }
 
 void Node::AutoRelease()

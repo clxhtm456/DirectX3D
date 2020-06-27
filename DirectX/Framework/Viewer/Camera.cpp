@@ -149,6 +149,10 @@ Matrix Camera::ProjectionMatrix()
 	return perspective->GetMatrix();
 }
 
+void Camera::Start()
+{
+}
+
 void Camera::PostUpdate()
 {
 }
@@ -157,16 +161,16 @@ void Camera::LateUpdate()
 {
 }
 
-void Camera::Render()
+void Camera::Render(Camera* viewer)
 {
 	viewport->RSSetViewport();
 }
 
-void Camera::PreRender()
+void Camera::PreRender(Camera* viewer)
 {
 }
 
-void Camera::PostRender()
+void Camera::PostRender(Camera* viewer)
 {
 }
 

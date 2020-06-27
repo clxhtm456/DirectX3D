@@ -22,6 +22,8 @@
     <ClCompile Include="Framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Light\DirectLight.cpp" />
+    <ClCompile Include="Light\Light.cpp" />
     <ClCompile Include="Meshes\Mesh.cpp" />
     <ClCompile Include="Meshes\MeshCube.cpp" />
     <ClCompile Include="Meshes\MeshCylinder.cpp" />
@@ -29,6 +31,8 @@
     <ClCompile Include="Meshes\MeshQuad.cpp" />
     <ClCompile Include="Meshes\MeshSphere.cpp" />
     <ClCompile Include="Meshes\Terrain.cpp" />
+    <ClCompile Include="Model\Model.cpp" />
+    <ClCompile Include="Model\ModelData.cpp" />
     <ClCompile Include="Objects\Node.cpp" />
     <ClCompile Include="Objects\RenderingNode.cpp" />
     <ClCompile Include="Renders\Buffers.cpp" />
@@ -57,6 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h" />
+    <ClInclude Include="Light\DirectLight.h" />
+    <ClInclude Include="Light\Light.h" />
     <ClInclude Include="Meshes\Mesh.h" />
     <ClInclude Include="Meshes\MeshCube.h" />
     <ClInclude Include="Meshes\MeshCylinder.h" />
@@ -64,6 +70,9 @@
     <ClInclude Include="Meshes\MeshQuad.h" />
     <ClInclude Include="Meshes\MeshSphere.h" />
     <ClInclude Include="Meshes\Terrain.h" />
+    <ClInclude Include="Model\FbxType.h" />
+    <ClInclude Include="Model\Model.h" />
+    <ClInclude Include="Model\ModelData.h" />
     <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Objects\RenderingNode.h" />
     <ClInclude Include="Renders\Buffers.h" />
