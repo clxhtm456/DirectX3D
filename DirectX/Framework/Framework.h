@@ -96,6 +96,7 @@ typedef XMVECTOR Plane;
 #include "Renders/GlobalBuffer.h"
 #include "Renders/DebugLine.h"
 #include "Renders/Texture.h"
+#include "Renders/Material.h"
 
 
 #include "Utilities/Math.h"

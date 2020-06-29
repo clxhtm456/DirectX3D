@@ -1,7 +1,6 @@
 #include "Framework.h"
 #include "Scene.h"
-#include "Viewer/Camera.h"
-#include "Light/DirectLight.h"
+
 
 void Scene::AutoInitialize()
 {

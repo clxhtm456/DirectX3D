@@ -103,17 +103,19 @@ class MaterialBuffer : public ConstantBuffer
 public:
 	struct Data
 	{
-		Color diffuse;
+		Color ambient ;
+		Color diffuse ;
 		Color specular;
-		Color ambient;
+		Color emissive;
 	}data;
 
 	MaterialBuffer() : ConstantBuffer(&data, sizeof(Data))
 	{
+		data.ambient = Color(0, 0, 0, 1);
 		data.diffuse = Color(1, 1, 1, 1);
-		data.specular = Color(1, 1, 1, 1);
-		data.ambient = Color(1, 1, 1, 1);
-	}
+		data.specular = Color(0, 0, 0, 1);
+		data.emissive = Color(0, 0, 0, 1);
+	}	
 };
 
 

@@ -11,6 +11,8 @@ public:
 
 	bool CreateBuffer();
 
+	void SetMaterial(wstring diffuseMap, wstring specularMap, wstring normalMap);
+
 	void Update() override;
 	void Render(Camera* viewer) override;
 
@@ -26,5 +28,5 @@ protected:
 
 	UINT vertexCount, indexCount;
 
-	Texture* texture;
+	Material* material;
 };

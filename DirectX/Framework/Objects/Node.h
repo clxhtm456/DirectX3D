@@ -12,17 +12,17 @@ protected:
 	virtual void PostUpdate() = 0;
 	virtual void Update() = 0;
 	virtual void LateUpdate() = 0;
-	virtual void Render(Camera* viewer) = 0;
-	virtual void PreRender(Camera* viewer) = 0;
-	virtual void PostRender(Camera* viewer) = 0;
+	virtual void Render(class Camera* viewer) = 0;
+	virtual void PreRender(class Camera* viewer) = 0;
+	virtual void PostRender(class Camera* viewer) = 0;
 	virtual void RemoveFromParent() = 0;
-protected:
+private:
 	void AutoPostUpdate();
 	void AutoUpdate();
 	void AutoLateUpdate();
-	void AutoRender(Camera* viewer = nullptr);
-	void AutoPreRender(Camera* viewer = nullptr);
-	void AutoPostRender(Camera* viewer = nullptr);
+	void AutoRender(class Camera* viewer = nullptr);
+	void AutoPreRender(class Camera* viewer = nullptr);
+	void AutoPostRender(class Camera* viewer = nullptr);
 protected:
 	virtual void Draw();
 public:

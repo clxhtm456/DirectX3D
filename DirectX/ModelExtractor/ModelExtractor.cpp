@@ -9,22 +9,22 @@
 
 void ModelExtractor::Initialize()
 {
-	string name = "pikachu";
+	//string name = "pikachu";
 
-	/*Exporter* reader = new Exporter("Models/" + name + ".fbx");
-	reader->ExporterMaterial(name + "/" + name);*/
-	//reader->ExporterMesh(name + "/" + name);
-	/*XmlExtractor* extractor = new XmlExtractor();
-	auto& loader = Utility::AssetLoader::GetLoader();
-	loader.LoadFbx("unitychan", extractor);*/
+	///*Exporter* reader = new Exporter("Models/" + name + ".fbx");
+	//reader->ExporterMaterial(name + "/" + name);*/
+	////reader->ExporterMesh(name + "/" + name);
+	///*XmlExtractor* extractor = new XmlExtractor();
+	//auto& loader = Utility::AssetLoader::GetLoader();
+	//loader.LoadFbx("unitychan", extractor);*/
 
-	extractor = XmlExtractor::Create();
+	//extractor = XmlExtractor::Create();
 
-	extractor->LoadModel("kachujin/Mesh");
-	extractor->LoadAnimation(0,"kachujin/Idle");
+	//extractor->LoadModel("pikachu");
+	////extractor->LoadAnimation(0,"kachujin/Idle");
 
-	delete extractor;
-	//delete reader;
+	//delete extractor;
+	////delete reader;
 }
 
 void ModelExtractor::Destroy()

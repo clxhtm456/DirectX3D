@@ -4,7 +4,7 @@
 Mesh::Mesh() : RenderingNode()
 {
 	shader = Shader::Add(L"Mesh");
-	texture = Texture::Add(L"boxTexture.png");
+	material = new Material();
 }
 
 Mesh::~Mesh()
@@ -14,6 +14,8 @@ Mesh::~Mesh()
 
 	SafeDelete(vertexBuffer);
 	SafeDelete(indexBuffer);
+
+	delete material;
 }
 
 
@@ -27,6 +29,13 @@ bool Mesh::CreateBuffer()
 		indexBuffer = new IndexBuffer(indices, indexCount);
 	}
 	return true;
+}
+
+void Mesh::SetMaterial(wstring diffuseMap, wstring specularMap, wstring normalMap)
+{
+	material->SetDiffuseMap(diffuseMap);
+	material->SetSpecularMap(specularMap);
+	material->SetNormalMap(normalMap);
 }
 
 void Mesh::Update()
@@ -44,7 +53,7 @@ void Mesh::Render(Camera* viewer)
 
 	shader->Render();
 
-	texture->Set(0);
+	material->Render();
 
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D::GetDC()->DrawIndexed(indexCount, 0,0);

@@ -67,6 +67,9 @@ ScratchImage Texture::LoadTextureFromFile(wstring file)
 
 Texture* Texture::Add(wstring file)
 {
+	if (file == L"")
+		return nullptr;
+
 	file = L"../../_Textures/" + file;
 
 	if (!Path::ExistFile(String::ToString(file)))

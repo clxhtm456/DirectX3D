@@ -136,6 +136,9 @@
     <ClCompile Include="Light\DirectLight.cpp">
       <Filter>Light</Filter>
     </ClCompile>
+    <ClCompile Include="Renders\Material.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\Keyboard.h">
@@ -255,6 +258,9 @@
     </ClInclude>
     <ClInclude Include="Light\DirectLight.h">
       <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\Material.h">
+      <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
