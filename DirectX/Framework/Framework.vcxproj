@@ -31,6 +31,8 @@
     <ClCompile Include="Meshes\MeshQuad.cpp" />
     <ClCompile Include="Meshes\MeshSphere.cpp" />
     <ClCompile Include="Meshes\Terrain.cpp" />
+    <ClCompile Include="Model\FModel.cpp" />
+    <ClCompile Include="Model\FModelData.cpp" />
     <ClCompile Include="Model\Model.cpp" />
     <ClCompile Include="Model\ModelData.cpp" />
     <ClCompile Include="Objects\Node.cpp" />
@@ -39,6 +41,10 @@
     <ClCompile Include="Renders\DebugLine.cpp" />
     <ClCompile Include="Renders\Material.cpp" />
     <ClCompile Include="Renders\Shader.cpp" />
+    <ClCompile Include="Renders\ShaderState\BlendState.cpp" />
+    <ClCompile Include="Renders\ShaderState\DepthStencilState.cpp" />
+    <ClCompile Include="Renders\ShaderState\RasterizerState.cpp" />
+    <ClCompile Include="Renders\ShaderState\SamplerState.cpp" />
     <ClCompile Include="Renders\Texture.cpp" />
     <ClCompile Include="Systems\Context.cpp" />
     <ClCompile Include="Systems\D3D.cpp" />
@@ -72,6 +78,8 @@
     <ClInclude Include="Meshes\MeshSphere.h" />
     <ClInclude Include="Meshes\Terrain.h" />
     <ClInclude Include="Model\FbxType.h" />
+    <ClInclude Include="Model\FModel.h" />
+    <ClInclude Include="Model\FModelData.h" />
     <ClInclude Include="Model\Model.h" />
     <ClInclude Include="Model\ModelData.h" />
     <ClInclude Include="Objects\Node.h" />
@@ -81,6 +89,10 @@
     <ClInclude Include="Renders\GlobalBuffer.h" />
     <ClInclude Include="Renders\Material.h" />
     <ClInclude Include="Renders\Shader.h" />
+    <ClInclude Include="Renders\ShaderState\BlendState.h" />
+    <ClInclude Include="Renders\ShaderState\DepthStencilState.h" />
+    <ClInclude Include="Renders\ShaderState\RasterizerState.h" />
+    <ClInclude Include="Renders\ShaderState\SamplerState.h" />
     <ClInclude Include="Renders\Texture.h" />
     <ClInclude Include="Renders\VertexLayouts.h" />
     <ClInclude Include="Systems\Context.h" />
@@ -108,13 +120,13 @@
     <ProjectGuid>{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Framework</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

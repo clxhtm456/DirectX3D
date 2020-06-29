@@ -21,7 +21,7 @@ public:
 
 	BrushBuffer() : ConstantBuffer(&data, sizeof(Data))
 	{
-		data.Color = XMCOLOR(0, 1, 0, 1);
+		data.Color = Color(0, 1, 0, 1);
 		data.Location = Vector3(0, 0, 0);
 
 		data.Type = 0;
@@ -42,7 +42,7 @@ public:
 
 	LineBuffer() : ConstantBuffer(&data, sizeof(Data))
 	{
-		data.Color = XMCOLOR(1, 1, 1, 1);
+		data.Color = Color(1, 1, 1, 1);
 		data.Visible = 0;
 
 		data.Thickness = 0.01f;

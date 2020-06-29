@@ -41,7 +41,7 @@ void D3D::SetRenderTarget(ID3D11RenderTargetView * rtv, ID3D11DepthStencilView *
 	D3D::GetDC()->OMSetRenderTargets(1, &rtv, dsv);
 }
 
-void D3D::Clear(XMCOLOR color, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv)
+void D3D::Clear(Color color, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv)
 {
 	if (rtv == nullptr)
 		rtv = renderTargetView;
@@ -49,9 +49,7 @@ void D3D::Clear(XMCOLOR color, ID3D11RenderTargetView* rtv, ID3D11DepthStencilVi
 	if (dsv == nullptr)
 		dsv = depthStencilView;
 
-	XMFLOAT4 floatcolor;
-	XMStoreFloat4(&floatcolor,XMLoadColor(&color));
-	const FLOAT colorArray[4] = { floatcolor.x,floatcolor.y,floatcolor.z,floatcolor.w };
+	const FLOAT colorArray[4] = { color.x,color.y,color.z,color.w };
 	deviceContext->ClearRenderTargetView(rtv, colorArray);
 	deviceContext->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }

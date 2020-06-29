@@ -26,7 +26,13 @@ public:
 	void SetRotationDegree(float x, float y, float z);
 	void SetScale(float x, float y, float z);
 
-	void CalcWorldMatrix();
+	virtual void SetShader(wstring file);
+
+	void WorldSet();
+	void VPSet(Camera* viewer);
+	void LightSet();
+
+	virtual void CalcWorldMatrix();
 protected:
 	Matrix GetWorld();
 	Shader* shader;

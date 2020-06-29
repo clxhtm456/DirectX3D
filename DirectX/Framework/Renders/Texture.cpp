@@ -72,6 +72,14 @@ Texture* Texture::Add(wstring file)
 
 	file = L"../../_Textures/" + file;
 
+	AddAbsPath(file);
+}
+
+Texture* Texture::AddAbsPath(wstring file)
+{
+	if (file == L"")
+		return nullptr;
+
 	if (!Path::ExistFile(String::ToString(file)))
 	{
 		file = L"../../_Textures/White.png";

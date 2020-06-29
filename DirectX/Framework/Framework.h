@@ -60,7 +60,7 @@ using namespace DirectX::PackedVector;
 typedef XMFLOAT2 Vector2;
 typedef XMFLOAT3 Vector3;
 typedef XMFLOAT4 Vector4;
-typedef XMCOLOR Color;
+typedef XMFLOAT4 Color;
 typedef XMMATRIX Matrix;
 typedef XMVECTOR Quaternion;
 typedef XMVECTOR Plane;
@@ -74,6 +74,7 @@ typedef XMVECTOR Plane;
 #define TYPE_VIEWER	(1<<2)
 #define TYPE_LIGHT	(1<<3)
 
+#define TEXTURE_DIR(texture)	"../../_Textures/" + texture
 
 //ImGui
 #include <ImGui_New/imgui.h>
@@ -97,6 +98,10 @@ typedef XMVECTOR Plane;
 #include "Renders/DebugLine.h"
 #include "Renders/Texture.h"
 #include "Renders/Material.h"
+#include "Renders/ShaderState/RasterizerState.h"
+#include "Renders/ShaderState/DepthStencilState.h"
+#include "Renders/ShaderState/BlendState.h"
+#include "Renders/ShaderState/SamplerState.h"
 
 
 #include "Utilities/Math.h"
@@ -121,5 +126,7 @@ typedef XMVECTOR Plane;
 #include "Meshes/MeshQuad.h"
 #include "Meshes/MeshSphere.h"
 #include "Meshes/Terrain.h"
+
+#include "Model/Model.h"
 
 #include "Systems/Scene.h"

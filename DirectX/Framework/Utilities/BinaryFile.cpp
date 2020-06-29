@@ -87,14 +87,14 @@ void BinaryWriter::Vector4(const XMFLOAT4& data)
 	WriteFile(fileHandle, &data, sizeof(XMFLOAT4), &size, NULL);
 }
 
-void BinaryWriter::Color3f(const XMCOLOR& data)
+void BinaryWriter::Color3f(const Color& data)
 {
-	WriteFile(fileHandle, &data, sizeof(XMCOLOR) - 4, &size, NULL);
+	WriteFile(fileHandle, &data, sizeof(Color) - 4, &size, NULL);
 }
 
-void BinaryWriter::Color4f(const XMCOLOR& data)
+void BinaryWriter::Color4f(const Color& data)
 {
-	WriteFile(fileHandle, &data, sizeof(XMCOLOR), &size, NULL);
+	WriteFile(fileHandle, &data, sizeof(Color), &size, NULL);
 }
 
 void BinaryWriter::Matrix(const XMMATRIX& data)
@@ -269,7 +269,11 @@ string BinaryReader::String()
 	ReadFile(fileHandle, temp, sizeof(char) * size, &this->size, NULL); //데이터 읽기
 	temp[size] = '\0';
 
-	return temp;
+	string temp2 = "";
+	temp2.append(temp);
+	delete[] temp;
+
+	return temp2;
 }
 
 void BinaryReader::BYTE(void ** data, UINT dataSize)

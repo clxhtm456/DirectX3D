@@ -27,6 +27,7 @@ private:
 	static ScratchImage LoadTextureFromFile(wstring file);
 public:
 	static Texture* Add(wstring file);
+	static Texture* AddAbsPath(wstring file);
 	static ID3D11ShaderResourceView* LoadSRV(wstring file);
 	static void Delete();
 	static void DeleteOne(Texture* texture);

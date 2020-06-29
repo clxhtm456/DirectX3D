@@ -35,9 +35,11 @@ VertexOutput VS(VertexInput input)
 
 float4 PS(VertexOutput input) : SV_TARGET
 {
-	float3 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv).rgb;
-
 	float NdotL = dot(normalize(input.Normal), -lightDirection);
 
-	return float4(diffuse * NdotL, 1);
+	float4 albedo = diffuseMap.Sample(diffuseSamp, input.Uv);
+	float4 diffuse = albedo * NdotL * mDiffuse;
+
+
+	return float4(diffuse);
 }

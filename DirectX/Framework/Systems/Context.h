@@ -90,8 +90,8 @@ private:
 	UINT fogType = 2;
 
 	UINT pointLightCount = 0;
-	PointLight pointLights[MAX_POINT_LIGHT] = {0};
+	PointLight pointLights[MAX_POINT_LIGHT];
 
 	UINT spotLightCount = 0;
-	SpotLight spotLights[MAX_SPOT_LIGHT] = { 0 };
+	SpotLight spotLights[MAX_SPOT_LIGHT];
 };

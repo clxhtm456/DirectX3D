@@ -25,6 +25,9 @@
     <Filter Include="Light">
       <UniqueIdentifier>{c4b8531b-9e67-4382-bbf3-fef02ed2da24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\ShaderState">
+      <UniqueIdentifier>{04475dfb-85b3-4d23-ace4-954abc84e35d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Keyboard.cpp">
@@ -138,6 +141,24 @@
     </ClCompile>
     <ClCompile Include="Renders\Material.cpp">
       <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\ShaderState\BlendState.cpp">
+      <Filter>Render\ShaderState</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\ShaderState\DepthStencilState.cpp">
+      <Filter>Render\ShaderState</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\ShaderState\RasterizerState.cpp">
+      <Filter>Render\ShaderState</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\ShaderState\SamplerState.cpp">
+      <Filter>Render\ShaderState</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\FModel.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\FModelData.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +282,24 @@
     </ClInclude>
     <ClInclude Include="Renders\Material.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\ShaderState\BlendState.h">
+      <Filter>Render\ShaderState</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\ShaderState\DepthStencilState.h">
+      <Filter>Render\ShaderState</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\ShaderState\RasterizerState.h">
+      <Filter>Render\ShaderState</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\ShaderState\SamplerState.h">
+      <Filter>Render\ShaderState</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\FModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\FModelData.h">
+      <Filter>Model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

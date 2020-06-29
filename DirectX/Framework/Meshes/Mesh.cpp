@@ -5,6 +5,8 @@ Mesh::Mesh() : RenderingNode()
 {
 	shader = Shader::Add(L"Mesh");
 	material = new Material();
+	rasterizerState = new RasterizerState();
+	//rasterizerState->FillMode(D3D11_FILL_MODE::D3D11_FILL_WIREFRAME);
 }
 
 Mesh::~Mesh()
@@ -16,6 +18,8 @@ Mesh::~Mesh()
 	SafeDelete(indexBuffer);
 
 	delete material;
+
+	delete rasterizerState;
 }
 
 
@@ -55,6 +59,8 @@ void Mesh::Render(Camera* viewer)
 
 	material->Render();
 
-	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	rasterizerState->SetState();
+
+	D3D::GetDC()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D::GetDC()->DrawIndexed(indexCount, 0,0);
 }

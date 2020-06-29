@@ -8,7 +8,7 @@ Material::Material()
 	Initialize();
 
 
-	SetDiffuseMap("White.png");
+	SetDiffuseMap("../../_Textures/White.png");
 }
 
 Material::Material(wstring diffuseMap, wstring specularMap, wstring normalMap)
@@ -32,6 +32,11 @@ void Material::Initialize()
 Material::~Material()
 {
 	delete materialBuffer;
+}
+
+void Material::SetName(wstring name)
+{
+	this->name = name;
 }
 
 void Material::SetAmbient(Color color)
@@ -86,7 +91,7 @@ void Material::SetDiffuseMap(string file)
 
 void Material::SetDiffuseMap(wstring file)
 {
-	diffuseMap = Texture::Add(file);
+	diffuseMap = Texture::AddAbsPath(file);
 }
 
 void Material::SetSpecularMap(string file)
@@ -96,7 +101,7 @@ void Material::SetSpecularMap(string file)
 
 void Material::SetSpecularMap(wstring file)
 {
-	specularMap = Texture::Add(file);
+	specularMap = Texture::AddAbsPath(file);
 }
 
 void Material::SetNormalMap(string file)
@@ -106,12 +111,12 @@ void Material::SetNormalMap(string file)
 
 void Material::SetNormalMap(wstring file)
 {
-	normalMap = Texture::Add(file);
+	normalMap = Texture::AddAbsPath(file);
 }
 
 void Material::Render()
 {
-	materialBuffer->SetPSBuffer(9);
+	materialBuffer->SetPSBuffer(1);
 
 	if (diffuseMap != nullptr)
 		diffuseMap->Set(0);

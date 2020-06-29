@@ -12,7 +12,7 @@ struct D3DDesc
 	float Height;
 	bool bVsync;
 	bool bFullScreen;
-	XMCOLOR Background;
+	Color Background;
 };
 
 class D3D
@@ -65,7 +65,7 @@ public:
 
 	void SetRenderTarget(ID3D11RenderTargetView* rtv = nullptr, ID3D11DepthStencilView* dsv = nullptr);
 
-	void Clear(XMCOLOR color = XMCOLOR(0, 0, 0, 1), ID3D11RenderTargetView* rtv = nullptr, ID3D11DepthStencilView* dsv = nullptr);
+	void Clear(Color color = Color(0, 0, 0, 1), ID3D11RenderTargetView* rtv = nullptr, ID3D11DepthStencilView* dsv = nullptr);
 	void Present();
 
 	void ResizeScreen(float width, float height);

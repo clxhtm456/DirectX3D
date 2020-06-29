@@ -6,20 +6,24 @@ void TestScene::Initialize()
 {
 	CreateFreedomCamera();
 
-	//auto mesh = MeshCube::Create();
-	auto mesh = MeshSphere::Create(3);
-	mesh->SetScale(5, 5, 5);
-	mesh->SetPosition(0, 0, 0);
+	//auto mesh = MeshSphere::Create(3);
+	//mesh->SetScale(5, 5, 5);
+	//mesh->SetPosition(0, 0, 0);
 
-	mesh->SetPosition(5, 0, 0);
+	//mesh->SetPosition(5, 0, 0);
 
-	auto terrain = Terrain::Create(L"Terrain/Gray256.png");
+	/*auto terrain = Terrain::Create(L"Terrain/Gray256.png");
 	terrain->BaseMap(L"Terrain/Dirt3.png");
 	terrain->SetPosition(0, 0, 0);
-	terrain->SetScale(2, 2, 2);
+	terrain->SetScale(2, 2, 2);*/
 
-	AddChild(mesh);
-	AddChild(terrain);
+	//AddChild(mesh);
+	//AddChild(terrain);
+
+	auto kachujin = Model::Create("pikachu");
+	//kachujin->SetScale(0.05f, 0.05f, 0.05f);
+
+	AddChild(kachujin);
 }
 
 void TestScene::Destroy()

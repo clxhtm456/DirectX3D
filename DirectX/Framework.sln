@@ -13,12 +13,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4E435F7-7118-4E13-901B-39445234D64D}"
 	ProjectSection(SolutionItems) = preProject
 		..\_Shaders\DebugLine.hlsl = ..\_Shaders\DebugLine.hlsl
+		..\_Shaders\FModel.hlsl = ..\_Shaders\FModel.hlsl
 		..\_Shaders\Header.hlsli = ..\_Shaders\Header.hlsli
 		..\_Shaders\Mesh.hlsl = ..\_Shaders\Mesh.hlsl
+		..\_Shaders\Model.hlsl = ..\_Shaders\Model.hlsl
 		..\_Shaders\Terrain.hlsl = ..\_Shaders\Terrain.hlsl
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelExtractor", "ModelExtractor\ModelExtractor.vcxproj", "{CB963556-5444-46FD-9DD2-A8CE68F090A3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FBXExtractor", "FBXExtractor\FBXExtractor.vcxproj", "{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5} = {4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}
 	EndProjectSection
@@ -47,14 +49,14 @@ Global
 		{EB7A4EF9-D765-4687-A483-1118A7DBB965}.Release|x64.Build.0 = Release|x64
 		{EB7A4EF9-D765-4687-A483-1118A7DBB965}.Release|x86.ActiveCfg = Release|Win32
 		{EB7A4EF9-D765-4687-A483-1118A7DBB965}.Release|x86.Build.0 = Release|Win32
-		{CB963556-5444-46FD-9DD2-A8CE68F090A3}.Debug|x64.ActiveCfg = Debug|x64
-		{CB963556-5444-46FD-9DD2-A8CE68F090A3}.Debug|x64.Build.0 = Debug|x64
-		{CB963556-5444-46FD-9DD2-A8CE68F090A3}.Debug|x86.ActiveCfg = Debug|Win32
-		{CB963556-5444-46FD-9DD2-A8CE68F090A3}.Debug|x86.Build.0 = Debug|Win32
-		{CB963556-5444-46FD-9DD2-A8CE68F090A3}.Release|x64.ActiveCfg = Release|x64
-		{CB963556-5444-46FD-9DD2-A8CE68F090A3}.Release|x64.Build.0 = Release|x64
-		{CB963556-5444-46FD-9DD2-A8CE68F090A3}.Release|x86.ActiveCfg = Release|Win32
-		{CB963556-5444-46FD-9DD2-A8CE68F090A3}.Release|x86.Build.0 = Release|Win32
+		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Debug|x64.ActiveCfg = Debug|x64
+		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Debug|x64.Build.0 = Debug|x64
+		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Debug|x86.ActiveCfg = Debug|Win32
+		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Debug|x86.Build.0 = Debug|Win32
+		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Release|x64.ActiveCfg = Release|x64
+		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Release|x64.Build.0 = Release|x64
+		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Release|x86.ActiveCfg = Release|Win32
+		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

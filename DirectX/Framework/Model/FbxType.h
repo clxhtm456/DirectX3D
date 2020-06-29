@@ -53,12 +53,12 @@ struct FbxMeshData
 	vector<FbxVertex*> vertices;
 	vector<FbxMeshPartData*> meshParts;
 
-	~FbxMeshData()
+	/*~FbxMeshData()
 	{
 		for (auto vertex : vertices)
 			delete vertex;
 		vertices.clear();
-	}
+	}*/
 };
 
 struct FbxKeyFrameData

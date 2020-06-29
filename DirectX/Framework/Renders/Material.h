@@ -8,6 +8,9 @@ public:
 	Material(wstring diffuseMap, wstring specularMap = L"", wstring normalMap = L"");
 	~Material();
 
+	wstring GetName() { return name; }
+	void SetName(wstring name);
+
 	Color GetAmbient() { return materialBuffer->data.ambient; }
 	void SetAmbient(Color color);
 	void SetAmbient(float r, float g, float b, float a = 1.0f);
@@ -24,7 +27,7 @@ public:
 	void SetEmissive(Color color);
 	void SetEmissive(float r, float g, float b, float a = 1.0f);
 
-
+	MaterialBuffer* GetBuffer() { return materialBuffer; }
 
 	Texture* GetDiffuseMap() { return diffuseMap; }
 	void SetDiffuseMap(string file);
@@ -46,6 +49,8 @@ private:
 private:
 	MaterialBuffer* materialBuffer;
 private:
+	wstring name;
+
 	Texture* diffuseMap;
 	Texture* specularMap;
 	Texture* normalMap;

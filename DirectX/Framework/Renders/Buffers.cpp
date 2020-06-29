@@ -59,7 +59,7 @@ IndexBuffer::IndexBuffer(void * data, UINT count)
 
 	desc.ByteWidth = sizeof(UINT) * count;
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.Usage = D3D11_USAGE_DEFAULT;
 
 	D3D11_SUBRESOURCE_DATA subResource = { 0 };
 	subResource.pSysMem = data;
@@ -76,7 +76,7 @@ void IndexBuffer::Render()
 {
 	UINT offset = 0;
 
-	D3D::GetDC()->IASetIndexBuffer(buffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDC()->IASetIndexBuffer(buffer, DXGI_FORMAT_R32_UINT, offset);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

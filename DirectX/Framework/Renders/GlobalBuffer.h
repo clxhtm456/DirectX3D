@@ -84,7 +84,7 @@ public:
 		int isSpecularMap;
 		int isNormalMap;
 
-		float padding;
+		float padding[2];
 	}data;
 
 	LightBuffer() : ConstantBuffer(&data, sizeof(Data))

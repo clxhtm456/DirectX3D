@@ -45,10 +45,10 @@ struct VertexColor
 		Position.y = y;
 		Position.z = z;
 
-		Color.r = r;
-		Color.g = g;
-		Color.b = b;
-		Color.a = 1.0f;
+		Color.x = r;
+		Color.y = g;
+		Color.z = b;
+		Color.w = 1.0f;
 	}
 
 	Vector3	Position;

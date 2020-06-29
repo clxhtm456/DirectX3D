@@ -29,4 +29,6 @@ protected:
 	UINT vertexCount, indexCount;
 
 	Material* material;
+
+	RasterizerState* rasterizerState;
 };

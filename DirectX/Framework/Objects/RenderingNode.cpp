@@ -34,10 +34,10 @@ void RenderingNode::LateUpdate()
 
 void RenderingNode::Render(Camera* viewer)
 {
-	if(viewer != nullptr)
-		viewer->GetVPBuffer()->SetVSBuffer(8);
-	worldBuffer->SetVSBuffer(9);
-	lightBuffer->SetPSBuffer(8);
+	VPSet(viewer);
+	WorldSet();
+
+	LightSet();
 }
 
 void RenderingNode::PreRender(Camera* viewer)
@@ -102,6 +102,27 @@ void RenderingNode::SetScale(float x, float y, float z)
 {
 	Vector3 temp = Vector3(x, y, z);
 	SetScale(temp);
+}
+
+void RenderingNode::SetShader(wstring file)
+{
+	shader = Shader::Add(file);
+}
+
+void RenderingNode::WorldSet()
+{
+	worldBuffer->SetVSBuffer(1);
+}
+
+void RenderingNode::VPSet(Camera* viewer)
+{
+	if (viewer != nullptr)
+		viewer->GetVPBuffer()->SetVSBuffer(0);
+}
+
+void RenderingNode::LightSet()
+{
+	lightBuffer->SetPSBuffer(0);
 }
 
 void RenderingNode::CalcWorldMatrix()
