@@ -58,6 +58,8 @@ private:
 	FbxTime mFrameTime, mStart, mStop, mCurrentTime;
 	FbxTime mCache_Start, mCache_Stop;
 
+	FbxGeometryConverter* converter;
+
 	bool m_supportVBO;
 public:
 	void WriteMaterial(wstring savePath,bool bOverWrite);
@@ -71,7 +73,15 @@ public:
 
 	string WriteTexture(FbxProperty& pProperty);
 	void ReadKeyFrameData(class FbxClip* clip, FbxNode* node, int start, int end);
+
 private:
+	void ReadPosition(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Vector3& outNormal);
+	void ReadNormal(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Vector3& outNormal);
+	void ReadTangent(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Vector3& outNormal);
+	void ReadUv(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Vector2& outNormal);
+
+private:
+	UINT GetBoneIndexByName(string name);
 	vector<class FbxBoneData*> bones;
 	vector<class FbxMeshData*> meshes;
 };

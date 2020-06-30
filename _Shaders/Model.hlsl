@@ -35,14 +35,6 @@ struct VertexInput
 	float4 blendWeights : BLENDWEIGHTS;
 };
 
-struct VertexUVNormalTangent
-{
-	float4 position : POSITION;
-	float2 uv : UV;
-	float3 normal : NORMAL;
-	float3 tangent : TANGENT;
-};
-
 struct PixelInput
 {
 	float4 position : SV_POSITION;
@@ -54,7 +46,7 @@ struct PixelInput
 };
 
 
-PixelInput VS(VertexUVNormalTangent input)
+PixelInput VS(VertexInput input)
 {
 	PixelInput output;
 	matrix boneWorld = bones[boneIndex];

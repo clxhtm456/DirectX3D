@@ -10,6 +10,9 @@
       <Filter>Converter</Filter>
     </ClCompile>
     <ClCompile Include="ModelExtractor.cpp" />
+    <ClCompile Include="Converter\FbxLoader.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h" />
@@ -21,6 +24,9 @@
       <Filter>Converter</Filter>
     </ClInclude>
     <ClInclude Include="ModelExtractor.h" />
+    <ClInclude Include="Converter\FbxLoader.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Converter">

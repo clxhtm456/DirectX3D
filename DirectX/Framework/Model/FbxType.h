@@ -18,11 +18,13 @@ struct FbxMaterial
 
 struct FbxBoneData
 {
-	int Index;
-	string Name;
+	int index;
+	string name;
 
-	int Parent;
-	Matrix Transform;
+	int parent;
+
+	Matrix local;
+	Matrix global;
 };
 
 struct FbxVertex
@@ -33,25 +35,34 @@ struct FbxVertex
 	ModelVertexType vertex;
 };
 
+struct FbxMeshPartData
+{
+	string materialName;
+
+	vector<ModelVertexType> vertices;
+	vector<UINT> indices;
+
+
+};
+
 struct FbxMeshData
 {
-	string Name;
-	int BoneIndex;
+	string name;
+	int parentBone;
 
-	class FbxMesh* Mesh;
+	class FbxMesh* mesh;
 
-	string MaterialName;
+	vector<FbxVertex*> vertices;
+	vector<FbxMeshPartData*> meshParts;
 
-	vector<ModelVertexType> Vertices;
-	vector<UINT> Indices;
-
-	/*~FbxMeshData()
+	~FbxMeshData()
 	{
 		for (auto vertex : vertices)
 			delete vertex;
 		vertices.clear();
-	}*/
+	}
 };
+
 
 struct FbxKeyFrameData
 {

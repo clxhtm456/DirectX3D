@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Converter\FbxLoader.cpp" />
     <ClCompile Include="Converter\FbxUtility.cpp" />
     <ClCompile Include="Converter\XmlExtractor.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -135,6 +136,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Converter\FbxLoader.h" />
     <ClInclude Include="Converter\FbxUtility.h" />
     <ClInclude Include="Converter\XmlExtractor.h" />
     <ClInclude Include="Main.h" />
