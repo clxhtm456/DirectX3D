@@ -64,6 +64,7 @@ public:
 
 	UINT* indices;
 	UINT indexCount;
+
 	ModelMeshPart();
 	~ModelMeshPart();
 

@@ -264,12 +264,19 @@ void XmlExtractor::ReadBone(FbxNode* pNode, int index, int parent)
 		if (b)
 		{
 			FbxBoneData* bone = new FbxBoneData();
-			bone->index = index;
-			bone->parent = parent;
-			bone->name = pNode->GetName();
+			bone->Index = index;
+			bone->Parent = parent;
+			bone->Name = pNode->GetName();
 
-			bone->local = FbxUtility::ToMatrix(pNode->EvaluateLocalTransform());
-			bone->global = FbxUtility::ToMatrix(pNode->EvaluateGlobalTransform());
+			Matrix transform = FbxUtility::ToMatrix(pNode->EvaluateGlobalTransform());
+			bone->Transform = XMMatrixTranspose(transform);
+
+			Matrix matParent;
+			if (parent < 0)
+				matParent = XMMatrixIdentity();
+			else
+				matParent = bones[parent]->Transform;
+			bone->Transform = bone->Transform * matParent;
 
 			bones.push_back(bone);
 
@@ -277,7 +284,7 @@ void XmlExtractor::ReadBone(FbxNode* pNode, int index, int parent)
 			{
 				FbxGeometryConverter lGeomConverter(m_sdkManager);
 				try {
-					lGeomConverter.Triangulate(pNode->GetNodeAttribute(), true,true);
+					lGeomConverter.Triangulate(pNode->GetNodeAttribute(), true, true);
 				}
 				catch (std::runtime_error) {
 					FBXSDK_printf("Scene integrity verification failed.\n");
@@ -293,16 +300,13 @@ void XmlExtractor::ReadBone(FbxNode* pNode, int index, int parent)
 	//DisplayPivotsAndLimits(pNode);
 	//DisplayTransformPropagation(pNode);
 	//DisplayGeometricTransform(pNode);
-
-	for (i = 0; i < pNode->GetChildCount(); i++)
-	{
+	for (UINT i = 0; i < pNode->GetChildCount(); i++)
 		ReadBone(pNode->GetChild(i), bones.size(), index);
-	}
 }
-
+//
 void XmlExtractor::ReadSkin()
 {
-	for (FbxMeshData* data : meshes)
+	/*for (FbxMeshData* data : meshes)
 	{
 		FbxMesh* mesh = data->mesh;
 
@@ -385,7 +389,53 @@ void XmlExtractor::ReadSkin()
 
 			data->meshParts.push_back(meshPart);
 		}
-	}
+	}*/
+	////////////////////////////
+	//for (UINT i = 0; i < scene->mNumMeshes; i++)
+	//{
+	//	aiMesh* aiMesh = scene->mMeshes[i];
+
+	//	if (aiMesh->HasBones() == false) continue;
+
+	//	asMesh* mesh = meshes[i];
+
+	//	vector<asBoneWeights> boneWeighs;
+	//	boneWeighs.assign(mesh->Vertices.size(), asBoneWeights());
+
+	//	for (UINT b = 0; b < aiMesh->mNumBones; b++)
+	//	{
+	//		aiBone* aiBone = aiMesh->mBones[b];
+
+	//		UINT boneIndex = 0;
+	//		for (asBone* bone : bones)
+	//		{
+	//			if (bone->Name == (string)aiBone->mName.C_Str())
+	//			{
+	//				boneIndex = bone->Index;
+	//				break;
+	//			}
+	//		}//for(bone)
+
+	//		for (UINT w = 0; w < aiBone->mNumWeights; w++)
+	//		{
+	//			UINT index = aiBone->mWeights[w].mVertexId;
+	//			float weight = aiBone->mWeights[w].mWeight;
+
+	//			boneWeighs[index].AddWeights(boneIndex, weight);
+	//		}//for(w)
+	//	}//for(b)
+
+	//	for (UINT w = 0; w < boneWeighs.size(); w++)
+	//	{
+	//		boneWeighs[w].Normalize();
+
+	//		asBlendWeight blendWeights;
+	//		boneWeighs[w].GetBlendWeighs(blendWeights);
+
+	//		mesh->Vertices[w].BlendIndices = blendWeights.Indices;
+	//		mesh->Vertices[w].BlendWeights = blendWeights.Weights;
+	//	}
+	//}
 }
 
 FbxAMatrix XmlExtractor::GetGeometry(FbxNode* pNode)
@@ -654,12 +704,10 @@ void XmlExtractor::WriteMesh(wstring savePath, bool bOverWrite)
 	w->UInt(bones.size());
 	for (FbxBoneData* bone : bones)
 	{
-		w->Int(bone->index);
-		w->String(bone->name);
-		w->Int(bone->parent);
-
-		w->Matrix(bone->local);
-		w->Matrix(bone->global);
+		w->Int(bone->Index);
+		w->String(bone->Name);
+		w->Int(bone->Parent);
+		w->Matrix(bone->Transform);
 
 		delete bone;
 	}
@@ -667,22 +715,16 @@ void XmlExtractor::WriteMesh(wstring savePath, bool bOverWrite)
 	w->UInt(meshes.size());
 	for (FbxMeshData* data : meshes)
 	{
-		w->String(data->name);
-		w->Int(data->parentBone);
+		w->String(data->Name);
+		w->Int(data->BoneIndex);
 
-		w->UInt(data->meshParts.size());
-		for (FbxMeshPartData* part : data->meshParts)
-		{
-			w->String(part->materialName);
+		w->String(data->MaterialName);
 
-			w->UInt(part->vertices.size());
-			w->BYTE(part->vertices.data(), sizeof(ModelVertexType) * part->vertices.size());
+		w->UInt(data->Vertices.size());
+		w->BYTE(&data->Vertices[0], sizeof(ModelVertexType) * data->Vertices.size());
 
-			w->UInt(part->indices.size());
-			w->BYTE(part->indices.data(), sizeof(UINT) * part->indices.size());
-
-			delete part;
-		}
+		w->UInt(data->Indices.size());
+		w->BYTE(&data->Indices[0], sizeof(UINT) * data->Indices.size());
 		delete data;
 	}
 
@@ -752,7 +794,6 @@ void XmlExtractor::ReadMesh(FbxNode* node, int parentBone)
 {
 	FbxMesh* mesh = node->GetMesh();
 
-	vector<FbxVertex*> vertices;
 	for (int p = 0; p < mesh->GetPolygonCount(); p++)
 	{
 		for (int vi = 2; vi >= 0; vi--)
@@ -825,12 +866,117 @@ void XmlExtractor::ReadMesh(FbxNode* node, int parentBone)
 		XMStoreFloat3(&vertex->vertex.Tangent, temp);
 	}
 
-	FbxMeshData* data = new FbxMeshData();
+	/*FbxMeshData* data = new FbxMeshData();
 	data->name = node->GetName();
 	data->parentBone = parentBone;
 	data->vertices = vertices;
 	data->mesh = mesh;
-	meshes.push_back(data);
+	meshes.push_back(data);*/
+	/////////////////////////////
+	if (node->GetMesh() == nullptr) return;
+
+	FbxMeshData* meshData = new FbxMeshData();
+	meshData->Name = node->GetName();
+	meshData->BoneIndex = parentBone;
+
+	FbxMesh* srcMesh = node->GetMesh();
+
+	for (int i = 0; i < m_scene->GetMaterialCount(); i++)
+	{
+		fbxsdk::FbxSurfaceMaterial* material = m_scene->GetMaterial(i);
+		meshData->MaterialName = material->GetName();
+
+		UINT startVertex = meshData->Vertices.size();
+		for (UINT v = 0; v < srcMesh->GetPolygonVertexCount(); v++)
+		{
+			for (int vi = 2; vi >= 0; vi--)
+			{
+				ModelVertexType vertex;
+
+				FbxVertex* fvertex = new FbxVertex();
+				int cpIndex = mesh->GetPolygonVertex(v, vi);
+				fvertex->controlPoint = cpIndex;
+
+				FbxVector4 position = mesh->GetControlPointAt(cpIndex);
+				Vector3 temp = FbxUtility::ToVector3(position);
+				XMStoreFloat3(&fvertex->vertex.Position, XMVector3TransformCoord(XMLoadFloat3(&temp), FbxUtility::Negative()));
+
+				FbxVector4 normal;
+				mesh->GetPolygonVertexNormal(v, vi, normal);
+				normal.Normalize();
+				temp = FbxUtility::ToVector3(normal);
+				XMStoreFloat3(&fvertex->vertex.Normal, XMVector3TransformCoord(XMLoadFloat3(&temp), FbxUtility::Negative()));
+
+				fvertex->materialName = FbxUtility::GetMaterialName(mesh, p, cpIndex);
+
+				int uvIndex = mesh->GetTextureUVIndex(p, vi);
+				fvertex->vertex.Uv = FbxUtility::GetUV(mesh, cpIndex, uvIndex);
+
+				vertex.Position = 
+
+				meshData->Vertices.push_back(fvertex->vertex);
+				vertices.push_back(fvertex);
+			}
+
+			if (srcMesh->HasTextureCoords(0))
+				memcpy(&vertex.Uv, &srcMesh->mTextureCoords[0][v], sizeof(Vector2));
+
+			if (srcMesh->HasNormals())
+				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
+
+			if (srcMesh->HasTangentsAndBitangents())
+				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
+
+			mesh->Vertices.push_back(vertex);
+
+		}
+
+		for (UINT f = 0; f < srcMesh->mNumFaces; f++)
+		{
+			aiFace& face = srcMesh->mFaces[f];
+
+			for (UINT k = 0; k < face.mNumIndices; k++)
+			{
+				mesh->Indices.push_back(face.mIndices[k]);
+				mesh->Indices.back() += startVertex;
+			}
+		}
+
+		meshes.push_back(mesh);
+	}
+	
+	/*srcMesh->GetPolygonVertexCount()
+	UINT startVertex = mesh->Vertices.size();
+	for (UINT v = 0; v < srcMesh->mNumVertices; v++)
+	{
+		Model::ModelVertex vertex;
+		memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
+
+		if (srcMesh->HasTextureCoords(0))
+			memcpy(&vertex.Uv, &srcMesh->mTextureCoords[0][v], sizeof(Vector2));
+
+		if (srcMesh->HasNormals())
+			memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
+
+		if (srcMesh->HasTangentsAndBitangents())
+			memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
+
+		mesh->Vertices.push_back(vertex);
+
+	}
+
+	for (UINT f = 0; f < srcMesh->mNumFaces; f++)
+	{
+		aiFace& face = srcMesh->mFaces[f];
+
+		for (UINT k = 0; k < face.mNumIndices; k++)
+		{
+			mesh->Indices.push_back(face.mIndices[k]);
+			mesh->Indices.back() += startVertex;
+		}
+	}
+
+	meshes.push_back(mesh);*/
 }
 
 string XmlExtractor::WriteTexture(FbxProperty& pProperty)
@@ -873,16 +1019,6 @@ string XmlExtractor::WriteTexture(FbxProperty& pProperty)
 	return "";
 }
 
-UINT XmlExtractor::GetBoneIndexByName(string name)
-{
-	for (UINT i = 0; i < bones.size(); i++)
-	{
-		if (bones[i]->name == name)
-			return i;
-	}
-
-	return -1;
-}
 
 void XmlExtractor::ReadKeyFrameData(FbxClip* clip, FbxNode* node, int start, int end)
 {

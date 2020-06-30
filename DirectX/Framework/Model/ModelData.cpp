@@ -31,6 +31,9 @@ ModelMeshPart::~ModelMeshPart()
 {
 	delete indexBuffer;
 	delete vertexBuffer;
+
+	delete vertices;
+	delete indices;
 }
 
 void ModelMeshPart::Render()
@@ -40,11 +43,9 @@ void ModelMeshPart::Render()
 
 	material->Render();
 
-	static int value = 0;
-	ImGui::SliderInt("draw", &value, 0, indexCount);
 
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	D3D::GetDC()->DrawIndexed(value, 0, 0);
+	D3D::GetDC()->DrawIndexed(indexCount, 0, 0);
 }
 
 void ModelMeshPart::Binding()

@@ -70,7 +70,6 @@ public:
 	void ReadSkin();
 
 	string WriteTexture(FbxProperty& pProperty);
-	UINT GetBoneIndexByName(string name);
 	void ReadKeyFrameData(class FbxClip* clip, FbxNode* node, int start, int end);
 private:
 	vector<class FbxBoneData*> bones;
