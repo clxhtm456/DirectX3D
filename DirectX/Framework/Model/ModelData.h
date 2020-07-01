@@ -59,11 +59,9 @@ private:
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
 public:
-	ModelVertexType* vertices;
-	UINT vertexCount;
+	vector<ModelVertexType*> vertices;
 
-	UINT* indices;
-	UINT indexCount;
+	vector<UINT*> indices;
 
 	ModelMeshPart();
 	~ModelMeshPart();

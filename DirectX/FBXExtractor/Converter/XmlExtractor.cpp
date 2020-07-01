@@ -339,6 +339,7 @@ void XmlExtractor::ReadSkin()
 			vertex->vertex.BlendWeights = weights.weights;
 		}
 
+
 		for (int i = 0; i < m_scene->GetMaterialCount(); i++)
 		{
 			FbxSurfaceMaterial* material = m_scene->GetMaterial(i);
@@ -353,19 +354,20 @@ void XmlExtractor::ReadSkin()
 			if (gather.size() == 0)
 				continue;
 
-			/*FbxMeshPartData* meshPart = new FbxMeshPartData();
-			meshPart->materialName = materialName;*/
+			FbxMeshPartData* meshPart = new FbxMeshPartData();
+			meshPart->materialName = materialName;
 
-			/*for (FbxVertex* temp : gather)
+			for (FbxVertex* temp : gather)
 			{
 				ModelVertexType vertex;
 				vertex = temp->vertex;
+				UINT index;
 
 				meshPart->vertices.push_back(vertex);
 				meshPart->indices.push_back(meshPart->indices.size());
-			}*/
+			}
 
-			data->meshParts[index]->materialName = materialName;
+			data->meshParts.push_back(meshPart);
 		}
 	}
 	
@@ -863,7 +865,7 @@ void XmlExtractor::ReadMesh(FbxNode* node, int parentBone)
 		}
 		meshData->vertices = vertices;
 		meshPart.push_back(meshPartData);
-		meshData->meshParts = meshPart;
+		//meshData->meshParts = meshPart;
 	}
 	meshes.push_back(meshData);
 }

@@ -116,7 +116,7 @@ void Material::SetNormalMap(wstring file)
 
 void Material::Render()
 {
-	materialBuffer->SetPSBuffer(1);
+	materialBuffer->SetPSBuffer(PS_MATERIALBUFFER);
 
 	if (diffuseMap != nullptr)
 		diffuseMap->Set(0);

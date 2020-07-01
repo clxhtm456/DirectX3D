@@ -52,5 +52,5 @@ DepthStencil::~DepthStencil()
 
 void DepthStencil::SaveTexture(wstring saveFile)
 {
-	Check(D3DX11SaveTextureToFile(D3D::GetDC(), backBuffer, D3DX11_IFF_PNG, saveFile.c_str()));
+	//Check(D3DX11SaveTextureToFile(D3D::GetDC(), backBuffer, D3DX11_IFF_PNG, saveFile.c_str()));
 }

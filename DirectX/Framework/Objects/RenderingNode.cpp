@@ -111,18 +111,18 @@ void RenderingNode::SetShader(wstring file)
 
 void RenderingNode::WorldSet()
 {
-	worldBuffer->SetVSBuffer(1);
+	worldBuffer->SetVSBuffer(VS_WORLDBUFFER);
 }
 
 void RenderingNode::VPSet(Camera* viewer)
 {
 	if (viewer != nullptr)
-		viewer->GetVPBuffer()->SetVSBuffer(0);
+		viewer->GetVPBuffer()->SetVSBuffer(VS_VPBUFFER);
 }
 
 void RenderingNode::LightSet()
 {
-	lightBuffer->SetPSBuffer(0);
+	lightBuffer->SetPSBuffer(PS_GLOBALLIGHTBUFFER);
 }
 
 void RenderingNode::CalcWorldMatrix()

@@ -60,6 +60,10 @@ struct FbxMeshData
 		for (auto vertex : vertices)
 			delete vertex;
 		vertices.clear();
+
+		/*for (auto mesh : meshParts)
+			delete mesh;
+		meshParts.clear();*/
 	}
 };
 

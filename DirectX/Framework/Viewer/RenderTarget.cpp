@@ -42,7 +42,7 @@ RenderTarget::~RenderTarget()
 
 void RenderTarget::SaveTexture(wstring file)
 {
-	Check(D3DX11SaveTextureToFile(D3D::GetDC(), backbuffer, D3DX11_IFF_PNG, file.c_str()));
+	//Check(D3DX11SaveTextureToFile(D3D::GetDC(), backbuffer, D3DX11_IFF_PNG, file.c_str()));
 }
 
 void RenderTarget::Set(DepthStencil * depthStencil)
@@ -58,7 +58,8 @@ void RenderTarget::Sets(RenderTarget ** targets, UINT count, DepthStencil * dept
 	{
 		ID3D11RenderTargetView* rtv = targets[i]->RTV();
 		rtvs.push_back(rtv);
-		D3D::GetDC()->ClearRenderTargetView(rtv, Color(0, 0, 0, 1));
+		const FLOAT colorArray[4] = { 0.0f,0.0f,0.0f,1.0f };
+		D3D::GetDC()->ClearRenderTargetView(rtv, colorArray);
 	}
 
 	D3D::GetDC()->ClearDepthStencilView(depthStencil->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);

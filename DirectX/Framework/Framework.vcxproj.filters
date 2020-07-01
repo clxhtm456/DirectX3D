@@ -28,6 +28,9 @@
     <Filter Include="Render\ShaderState">
       <UniqueIdentifier>{04475dfb-85b3-4d23-ace4-954abc84e35d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DefferedRender">
+      <UniqueIdentifier>{5968aa94-f649-44a0-826d-494eb4bcacf9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Keyboard.cpp">
@@ -159,6 +162,15 @@
     </ClCompile>
     <ClCompile Include="Model\FModelData.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="DefferedRender\GBuffer.cpp">
+      <Filter>DefferedRender</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer\RenderTarget.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer\DepthStencil.cpp">
+      <Filter>Viewer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -300,6 +312,18 @@
     </ClInclude>
     <ClInclude Include="Model\FModelData.h">
       <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="DefferedRender\GBuffer.h">
+      <Filter>DefferedRender</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer\RenderTarget.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer\DepthStencil.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\ShaderResourceDefine.h">
+      <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

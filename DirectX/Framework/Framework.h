@@ -91,6 +91,11 @@ typedef XMVECTOR Plane;
 #include "Systems/Context.h"
 #include "Systems/Window.h"
 
+//
+#include "Renders/ShaderResourceDefine.h"
+
+//Framework
+
 #include "Renders/Shader.h"
 #include "Renders/VertexLayouts.h"
 #include "Renders/Buffers.h"
@@ -119,6 +124,8 @@ typedef XMVECTOR Plane;
 #include "Viewer/Camera.h"
 #include "Viewer/Perspective.h"
 #include "Viewer/Viewport.h"
+#include "Viewer/DepthStencil.h"
+#include "Viewer/RenderTarget.h"
 
 #include "Meshes/MeshCube.h"
 #include "Meshes/MeshCylinder.h"

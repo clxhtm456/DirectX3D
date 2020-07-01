@@ -14,5 +14,10 @@ public:
 
 	void DepthEnable(bool val);
 
+	void FrontFaceOp(D3D11_DEPTH_STENCILOP_DESC op);
+	void BackFaceOp(D3D11_DEPTH_STENCILOP_DESC op);
+	void DepthWriteMask(D3D11_DEPTH_WRITE_MASK target);
+	void DepthFunc(D3D11_COMPARISON_FUNC func);
+
 	void Changed();
 };

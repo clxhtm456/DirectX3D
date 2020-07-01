@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DefferedRender\GBuffer.cpp" />
     <ClCompile Include="Framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -60,13 +61,16 @@
     <ClCompile Include="Utilities\String.cpp" />
     <ClCompile Include="Utilities\Xml.cpp" />
     <ClCompile Include="Viewer\Camera.cpp" />
+    <ClCompile Include="Viewer\DepthStencil.cpp" />
     <ClCompile Include="Viewer\Freedom.cpp" />
     <ClCompile Include="Viewer\Orthographic.cpp" />
     <ClCompile Include="Viewer\Perspective.cpp" />
     <ClCompile Include="Viewer\Projection.cpp" />
+    <ClCompile Include="Viewer\RenderTarget.cpp" />
     <ClCompile Include="Viewer\Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DefferedRender\GBuffer.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Light\DirectLight.h" />
     <ClInclude Include="Light\Light.h" />
@@ -89,6 +93,7 @@
     <ClInclude Include="Renders\GlobalBuffer.h" />
     <ClInclude Include="Renders\Material.h" />
     <ClInclude Include="Renders\Shader.h" />
+    <ClInclude Include="Renders\ShaderResourceDefine.h" />
     <ClInclude Include="Renders\ShaderState\BlendState.h" />
     <ClInclude Include="Renders\ShaderState\DepthStencilState.h" />
     <ClInclude Include="Renders\ShaderState\RasterizerState.h" />
@@ -109,10 +114,12 @@
     <ClInclude Include="Utilities\String.h" />
     <ClInclude Include="Utilities\Xml.h" />
     <ClInclude Include="Viewer\Camera.h" />
+    <ClInclude Include="Viewer\DepthStencil.h" />
     <ClInclude Include="Viewer\Freedom.h" />
     <ClInclude Include="Viewer\Orthographic.h" />
     <ClInclude Include="Viewer\Perspective.h" />
     <ClInclude Include="Viewer\Projection.h" />
+    <ClInclude Include="Viewer\RenderTarget.h" />
     <ClInclude Include="Viewer\Viewport.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -42,6 +42,30 @@ void DepthStencilState::DepthEnable(bool val)
 	Changed();
 }
 
+void DepthStencilState::FrontFaceOp(D3D11_DEPTH_STENCILOP_DESC op)
+{
+	desc.FrontFace = op;
+	Changed();
+}
+
+void DepthStencilState::BackFaceOp(D3D11_DEPTH_STENCILOP_DESC op)
+{
+	desc.BackFace = op;
+	Changed();
+}
+
+void DepthStencilState::DepthWriteMask(D3D11_DEPTH_WRITE_MASK target)
+{
+	desc.DepthWriteMask = target;
+	Changed();
+}
+
+void DepthStencilState::DepthFunc(D3D11_COMPARISON_FUNC func)
+{
+	desc.DepthFunc = func;
+	Changed();
+}
+
 void DepthStencilState::Changed()
 {
 

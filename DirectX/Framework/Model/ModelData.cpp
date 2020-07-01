@@ -32,8 +32,6 @@ ModelMeshPart::~ModelMeshPart()
 	delete indexBuffer;
 	delete vertexBuffer;
 
-	delete vertices;
-	delete indices;
 }
 
 void ModelMeshPart::Render()
@@ -45,13 +43,13 @@ void ModelMeshPart::Render()
 
 
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	D3D::GetDC()->DrawIndexed(indexCount, 0, 0);
+	D3D::GetDC()->DrawIndexed(indices.size(), 0, 0);
 }
 
 void ModelMeshPart::Binding()
 {
-	vertexBuffer = new VertexBuffer(vertices, sizeof(ModelVertexType), vertexCount,0,false,true);
-	indexBuffer = new IndexBuffer(indices, indexCount);
+	vertexBuffer = new VertexBuffer(vertices.data(), sizeof(ModelVertexType), vertices.size(),0,false,true);
+	indexBuffer = new IndexBuffer(indices.data(), indices.size());
 }
 
 ModelData::ModelData(string modelDir)
@@ -184,36 +182,18 @@ void ModelData::ReadMesh(string file)
 
 			{
 				UINT count = r->UInt();
-				vector<ModelVertexType> vertices;
-				vertices.assign(count, ModelVertexType());
+				meshPart->vertices.resize(count);
 
-				void* ptr = (void*) & (vertices[0]);
+				void* ptr = (void*)meshPart->vertices.data();
 				r->BYTE(&ptr, sizeof(ModelVertexType) * count);
-
-				meshPart->vertices = new ModelVertexType[count];
-				meshPart->vertexCount = count;
-				copy
-				(
-					vertices.begin(), vertices.end(),
-					stdext::checked_array_iterator<ModelVertexType*>(meshPart->vertices, count)
-				);
 			}
 
 			{
 				UINT count = r->UInt();
-				vector<UINT> indices;
-				indices.assign(count, UINT());
+				meshPart->indices.resize(count);
 
-				void* ptr = (void*) & (indices[0]);
+				void* ptr = (void*)meshPart->indices.data();
 				r->BYTE(&ptr, sizeof(UINT) * count);
-
-				meshPart->indices = new UINT[count];
-				meshPart->indexCount = count;
-				copy
-				(
-					indices.begin(), indices.end(),
-					stdext::checked_array_iterator<UINT*>(meshPart->indices, count)
-				);
 			}
 
 			mesh->meshParts.push_back(meshPart);

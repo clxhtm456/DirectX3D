@@ -1,0 +1,8 @@
+#pragma once
+
+
+#define VS_WORLDBUFFER	1
+#define VS_VPBUFFER 0
+
+#define PS_GLOBALLIGHTBUFFER 0
+#define PS_MATERIALBUFFER 1
