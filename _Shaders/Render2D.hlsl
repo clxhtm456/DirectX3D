@@ -21,6 +21,7 @@ struct VertexOutput
 VertexOutput VS(VertexInput input)
 {
 	VertexOutput output;
+	//output.Position = input.Position;
 	output.Position = WorldPosition(input.Position);
 	output.Position = mul(output.Position, View2D);
 	output.Position = mul(output.Position, Projection2D);
@@ -32,5 +33,7 @@ VertexOutput VS(VertexInput input)
 
 float4 PS(VertexOutput input) : SV_TARGET
 {
-	return diffuseMap.Sample(diffuseSamp, input.Uv);
+	float4 color = float4(0,1,0,1);
+	float4 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv);;
+	return diffuse;
 }

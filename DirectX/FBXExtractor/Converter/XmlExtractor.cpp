@@ -864,7 +864,7 @@ void XmlExtractor::ReadMesh(FbxNode* node, int parentBone)
 			XMStoreFloat3(&vertex->vertex.Tangent, temp);
 		}
 		meshData->vertices = vertices;
-		meshPart.push_back(meshPartData);
+		//meshPart.push_back(meshPartData);
 		//meshData->meshParts = meshPart;
 	}
 	meshes.push_back(meshData);

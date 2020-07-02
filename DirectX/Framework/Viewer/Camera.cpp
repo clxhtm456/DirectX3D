@@ -44,6 +44,8 @@ Camera::~Camera()
 	delete viewProjection;
 
 	delete renderTarget;
+	delete depthStencil;
+	delete renderViewport;
 	renderImage->Release();
 	//delete renderImage;
 }
@@ -125,10 +127,12 @@ void Camera::CreateRender2DOption()
 {
 	renderTarget = new RenderTarget();
 	depthStencil = new DepthStencil();
+	renderViewport = new Viewport(D3D::Width(), D3D::Height(), default.x, default.y, default.minDepth, default.maxDepth);
+
 	renderImage = Render2D::Create();
 	renderImage->Retain();
 
-	renderImage->SetPosition(D3D::Width() * 0.5f, D3D::Height() * 0.5f, 0);
+	renderImage->SetPosition(D3D::Width()*0.5f, D3D::Height()*0.5f, 0);
 	renderImage->SetScale(D3D::Width(), D3D::Height(), 1);
 }
 
@@ -189,7 +193,9 @@ void Camera::LateUpdate()
 void Camera::Render(Camera* viewer)
 {
 	D3D::Get()->SetRenderTarget();
-	D3D::Get()->Clear(D3D::GetDesc().Background);
+	D3D::Get()->Clear(Color(0,0,1,1));
+
+	viewport->RSSetViewport();
 
 	auto srv = renderTarget->SRV();
 	renderImage->SetSRV(srv);

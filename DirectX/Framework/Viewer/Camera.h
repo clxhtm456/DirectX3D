@@ -73,6 +73,7 @@ private:
 protected:
 	class Perspective* perspective;
 	class Viewport* viewport;
+	class Viewport* renderViewport;
 	CameraOption default;
 	
 	ViewProjectionBuffer* viewProjection;

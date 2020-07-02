@@ -12,6 +12,7 @@ void TestScene::Initialize()
 	cube->SetScale(20, 10, 20);
 	cube->SetPosition(0, 5, 0);
 	cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
+	cube->GetMaterial()->SetSpecular(1, 1, 1, 1);
 	AddChild(cube);
 	
 	auto grid = MeshGrid::Create(10,10);

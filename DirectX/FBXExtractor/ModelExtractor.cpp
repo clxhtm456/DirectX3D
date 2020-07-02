@@ -18,7 +18,7 @@ void ModelExtractor::Initialize()
 
 	auto extractor = XmlExtractor::Create();
 
-	extractor->LoadModel("pikachu");
+	extractor->LoadModel("Autum");
 	//extractor->LoadAnimation(0,"kachujin/Idle");
 
 	delete extractor;

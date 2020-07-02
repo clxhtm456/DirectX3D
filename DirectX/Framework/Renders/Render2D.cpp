@@ -28,10 +28,11 @@ bool Render2D::Init()
 	D3DDesc desc = D3D::GetDesc();
 
 	vpDesc.View = XMMatrixLookAtLH(XMVectorSet(0, 0, -1, 0), XMVectorSet(0, 0, 0, 0), XMVectorSet(0, 1, 0, 0));
-	vpDesc.View = XMMatrixTranspose(vpDesc.View);
+	//vpDesc.View = XMMatrixTranspose(vpDesc.View);
 
 	vpDesc.Projection = XMMatrixOrthographicOffCenterLH(0, desc.Width, 0, desc.Height, -1, 1);
 	vpDesc.Projection = XMMatrixTranspose(vpDesc.Projection);
+
 
 	vpBuffer = new ConstantBuffer(&vpDesc, sizeof(ViewProjectionDesc));
 
@@ -64,6 +65,7 @@ Render2D::~Render2D()
 
 void Render2D::Update()
 {
+	CalcWorldMatrix();
 }
 
 void Render2D::Render(Camera* viewer)
@@ -73,17 +75,18 @@ void Render2D::Render(Camera* viewer)
 
 void Render2D::Draw(Camera * viewer)
 {
+	//VPSet();
 	vpBuffer->SetVSBuffer(2);
 	WorldSet();
 	LightSet();
 
+	vertexBuffer->Render();
 	shader->Render();
 	if (diffuseMap != NULL)
 	{
 		D3D::GetDC()->PSSetShaderResources(0, 1, &diffuseMap);
 		D3D::GetDC()->PSSetSamplers(0, 1, &diffuseSampler);
 	}
-	vertexBuffer->Render();
 
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
