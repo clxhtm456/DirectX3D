@@ -51,6 +51,10 @@ void DirectionLight::PostUpdate()
 
 void DirectionLight::Update()
 {
+	float angle[3] = { direction.x,direction.y ,direction.z };
+	ImGui::SliderFloat3("Light", angle, -1, 1);
+
+	direction = Vector3(angle[0],angle[1],angle[2]);
 }
 
 void DirectionLight::LateUpdate()

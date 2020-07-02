@@ -41,6 +41,7 @@
     <ClCompile Include="Renders\Buffers.cpp" />
     <ClCompile Include="Renders\DebugLine.cpp" />
     <ClCompile Include="Renders\Material.cpp" />
+    <ClCompile Include="Renders\Render2D.cpp" />
     <ClCompile Include="Renders\Shader.cpp" />
     <ClCompile Include="Renders\ShaderState\BlendState.cpp" />
     <ClCompile Include="Renders\ShaderState\DepthStencilState.cpp" />
@@ -92,6 +93,7 @@
     <ClInclude Include="Renders\DebugLine.h" />
     <ClInclude Include="Renders\GlobalBuffer.h" />
     <ClInclude Include="Renders\Material.h" />
+    <ClInclude Include="Renders\Render2D.h" />
     <ClInclude Include="Renders\Shader.h" />
     <ClInclude Include="Renders\ShaderResourceDefine.h" />
     <ClInclude Include="Renders\ShaderState\BlendState.h" />

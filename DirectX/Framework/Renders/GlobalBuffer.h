@@ -23,6 +23,7 @@ public:
 	void SetView(Matrix value)
 	{
 		data.invView = XMMatrixInverse(nullptr, value);
+
 		data.view = XMMatrixTranspose(value);
 		data.invView = XMMatrixTranspose(data.invView);
 	}

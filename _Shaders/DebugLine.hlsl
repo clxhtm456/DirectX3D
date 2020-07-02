@@ -16,7 +16,7 @@ VertexOutput VS(VertexInput input)
 {
     VertexOutput output;
     //output.Position = WorldPosition(input.Postion);
-    output.Position = ViewProjection(input.Position);
+    output.Position = VPPosition(input.Position);
     output.Color = input.Color;
 
     return output;

@@ -9,6 +9,8 @@ Material::Material()
 
 
 	SetDiffuseMap("../../_Textures/White.png");
+	SetSpecularMap("../../_Textures/White_Specular.png");
+	SetNormalMap("../../_Textures/White_Normal.png");
 }
 
 Material::Material(wstring diffuseMap, wstring specularMap, wstring normalMap)

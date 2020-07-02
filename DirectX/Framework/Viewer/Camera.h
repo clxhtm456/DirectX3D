@@ -24,68 +24,62 @@ public:
 	virtual ~Camera();
 
 	virtual void Update();
+	virtual void Start() override;
+	virtual void PostUpdate() override;
+	virtual void LateUpdate() override;
+	virtual void Render(Camera* viewer) override;
+	virtual void PreRender(Camera* viewer) override;
+	virtual void PostRender(Camera* viewer) override;
+	virtual void RemoveFromParent() override;
 
 public:
 	void GetMatrix(Matrix* matrix);
-
-	XMVECTOR Foward() { return forward; }
-	XMVECTOR Right() { return right; }
-	XMVECTOR Up() { return up; }
-public:
 	void SetPosition(Vector3 position) override;
 	void SetRotation(Vector3 rotation) override;
 	void SetRotationDegree(Vector3 rotation) override;
 	void SetPosition(float x, float y, float z);
 	void SetRotation(float x, float y, float z);
 	void SetRotationDegree(float x, float y, float z);
-
 	void Resize();
 
-	UINT ChildType() override
-	{
-		return TYPE_VIEWER;
-	}
-public:
+	XMVECTOR Foward() { return forward; }
+	XMVECTOR Right() { return right; }
+	XMVECTOR Up() { return up; }
 	ViewProjectionBuffer* GetVPBuffer() { return viewProjection; }
-protected :
-	virtual void Move();
-	virtual void Rotate();
-	virtual void View();
-public:
+
 	Matrix ViewMatrix();
 	Matrix ProjectionMatrix();
 	class Perspective* GetPerspective() { return perspective; }
 	class Viewport* GetViewport() { return viewport; }
 
+	UINT ChildType() override
+	{
+		return TYPE_VIEWER;
+	}
+	
+protected :
+	virtual void Move();
+	virtual void Rotate();
+	virtual void View();
 private:
 	XMVECTOR forward = XMVectorSet(0, 0, 1,0);
 	XMVECTOR up = XMVectorSet(0, 1, 0,0);
 	XMVECTOR right = XMVectorSet(1, 0, 0,0);
 
 	Matrix matRotation;
-
+	Matrix matView;
 protected:
 	class Perspective* perspective;
 	class Viewport* viewport;
-	Matrix matView;
 	CameraOption default;
-
+	
 	ViewProjectionBuffer* viewProjection;
+private:
+	class RenderTarget* renderTarget;
+	class Render2D* renderImage;
 	
 
 
-	// Node을(를) 통해 상속됨
-	virtual void Start() override;
-	virtual void PostUpdate() override;
-
-	virtual void LateUpdate() override;
-
-	virtual void Render(Camera* viewer) override;
-
-	virtual void PreRender(Camera* viewer) override;
-
-	virtual void PostRender(Camera* viewer) override;
-
-	virtual void RemoveFromParent() override;
+	
 
 };

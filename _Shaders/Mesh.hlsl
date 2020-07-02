@@ -1,7 +1,6 @@
 #include "Header.hlsli"
 
-Texture2D diffuseMap : register(t0);
-SamplerState diffuseSamp : register(s0);
+
 
 struct VertexInput
 {
@@ -11,35 +10,30 @@ struct VertexInput
 	float3 Tangent : TANGENT;
 };
 
-struct VertexOutput
-{
-	float4 Position : SV_POSITION;
-	float2 Uv : UV;
-	float3 Normal : Normal;
-	float3 Tangent : TANGENT;
-};
 
 
-VertexOutput VS(VertexInput input)
+
+PixelInput VS(VertexInput input)
 {
-	VertexOutput output;
+	PixelInput output;
 	output.Position = WorldPosition(input.Position);
-	output.Position = ViewProjection(output.Position);
+	output.wPosition = output.Position;
+	output.Position = VPPosition(output.Position);
 
 	output.Uv = input.Uv;
-	output.Normal = mul(input.Normal, (float3x3)World);
-	output.Tangent = input.Tangent;
+	output.Normal = mul(input.Normal, (float3x3)CB_World.World);
+	output.Tangent = mul(input.Tangent, (float3x3)CB_World.World);
+	output.BiNormal = cross(output.Normal, output.Tangent);
+	output.ViewPos = ViewPosition();
 
 	return output;
 }
 
-float4 PS(VertexOutput input) : SV_TARGET
+
+float4 PS(PixelInput input) : SV_TARGET0
 {
-	float NdotL = dot(normalize(input.Normal), -lightDirection);
-
-	float4 albedo = diffuseMap.Sample(diffuseSamp, input.Uv);
-	float4 diffuse = albedo * NdotL * mDiffuse;
-
-
-	return float4(diffuse);
+	float3 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv).rgb;
+	float4 result = ComputeLight(input);
+	//float4 emissive = ComputeEmissive(input.Normal, input.wPosition);
+	return float4(diffuse,1)*result;
 }

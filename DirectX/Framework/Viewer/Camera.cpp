@@ -30,6 +30,8 @@ bool Camera::Init(CameraOption option)
 
 	viewProjection->SetProjection(perspective->GetMatrix());
 
+	renderTarget = new RenderTarget();
+
 	Rotate();
 	Move();
 
@@ -47,6 +49,9 @@ Camera::~Camera()
 	delete perspective;
 	delete viewport;
 	delete viewProjection;
+
+	delete renderTarget;
+	//delete renderImage;
 }
 
 void Camera::Update()

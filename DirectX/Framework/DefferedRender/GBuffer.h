@@ -3,7 +3,7 @@
 class GBuffer
 {
 public:
-	GBuffer( UINT width = 0, UINT height = 0);
+	GBuffer(Scene* scene, UINT width = 0, UINT height = 0);
 	~GBuffer();
 
 	void PackGBuffer();
@@ -60,6 +60,8 @@ private:
 	Shader * shader;
 	UINT width, height;
 
+	Scene* _scene;
+
 	RenderTarget* diffuseRTV;
 	RenderTarget* specularRTV;
 	RenderTarget* emissiveRTV;
@@ -87,5 +89,7 @@ private:
 	ConstantBuffer* spotLightBuffer;
 	//ID3DX11EffectConstantBuffer* sSpotLightBuffer;
 
-	//Render2D* debug2D[6];
+	class Render2D* debug2D[6];
+
+	ID3D11ShaderResourceView* srv;
 };

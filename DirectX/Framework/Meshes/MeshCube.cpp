@@ -16,6 +16,11 @@ MeshCube* MeshCube::Create()
 	return pRet;
 }
 
+MeshCube* MeshCube::CreateInstance()
+{
+	return nullptr;
+}
+
 bool MeshCube::Init()
 {
 	CreateBuffer();

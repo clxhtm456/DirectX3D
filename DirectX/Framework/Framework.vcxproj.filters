@@ -172,6 +172,9 @@
     <ClCompile Include="Viewer\DepthStencil.cpp">
       <Filter>Viewer</Filter>
     </ClCompile>
+    <ClCompile Include="Renders\Render2D.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\Keyboard.h">
@@ -323,6 +326,9 @@
       <Filter>Viewer</Filter>
     </ClInclude>
     <ClInclude Include="Renders\ShaderResourceDefine.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\Render2D.h">
       <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>

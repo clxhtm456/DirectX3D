@@ -33,6 +33,9 @@ public:
 
 	void Render();
 
+	void RenderPS();
+	void RenderVS();
+
 	HRESULT CompileShader(_In_ LPCWSTR srcFile, _In_ LPCSTR entryPoint, _In_ LPCSTR profile, _Outptr_ ID3DBlob** blob);
 	void CreateVertexShader();
 	void CreatePixelShader();

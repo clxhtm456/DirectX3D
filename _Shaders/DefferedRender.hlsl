@@ -1,7 +1,6 @@
 #include "Header.hlsli"
 
-Texture2D diffuseMap : register(t0);
-SamplerState diffuseSamp : register(s0);
+Texture2DArray defferedMap : register(t2);
 
 struct VertexInput
 {

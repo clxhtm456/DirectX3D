@@ -25,7 +25,10 @@ void RenderingNode::PostUpdate()
 
 void RenderingNode::Update()
 {
-	
+	if (_scene != nullptr)
+	{
+		_scene->GetDirectionLight()->SetBuffer(lightBuffer);
+	}
 }
 
 void RenderingNode::LateUpdate()
@@ -34,6 +37,7 @@ void RenderingNode::LateUpdate()
 
 void RenderingNode::Render(Camera* viewer)
 {
+
 	VPSet(viewer);
 	WorldSet();
 
@@ -135,11 +139,6 @@ void RenderingNode::CalcWorldMatrix()
 	_world = S * R * T;
 	worldBuffer->SetWorld(_world);
 
-	if (_scene != nullptr)
-	{
-		_scene->GetDirectionLight()->SetBuffer(lightBuffer);
-	}
-	
 }
 
 Matrix RenderingNode::GetWorld()

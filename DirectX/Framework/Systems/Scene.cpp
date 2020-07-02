@@ -54,6 +54,12 @@ void Scene::AutoUpdate()
 		if (object->GetRunning())
 			object->AutoUpdate();
 	}
+
+	for (auto object : _lightList)
+	{
+		if (object->GetRunning())
+			object->AutoUpdate();
+	}
 }
 
 void Scene::AutoPreRender()
@@ -214,7 +220,8 @@ void Scene::SetMainCamera(Camera* cam)
 void Scene::CreateMainLight()
 {
 	auto mainLight = DirectionLight::Create();
-	mainLight->Retain();
+	AddChild(mainLight);
+	//mainLight->Retain();
 
 	_directionLight = mainLight;
 }

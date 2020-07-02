@@ -1,6 +1,8 @@
 #include "Framework.h"
 #include "Mesh.h"
 
+UINT Mesh::instancingIndex = 0;
+
 Mesh::Mesh() : RenderingNode()
 {
 	shader = Shader::Add(L"Mesh");
