@@ -36,7 +36,7 @@ public:
 
 	void Set(UINT slot);
 
-	ID3D11ShaderResourceView*& GetSRV() { return SRV; }
+	ID3D11ShaderResourceView* GetSRV() { return SRV; }
 	UINT GetWidth() { return width; }
 	UINT GetHeight() { return height; }
 

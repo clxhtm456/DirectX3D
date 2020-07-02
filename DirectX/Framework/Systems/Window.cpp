@@ -196,20 +196,14 @@ void Window::MainRender()
 	mainExecute->Update();
 
 	mainExecute->PreRender();
-
 	
-	D3DDesc desc = D3D::GetDesc();
+	Context::Get()->Render();
+	mainExecute->Render();
+	DebugLine::Get()->Render();
 
-	D3D::Get()->SetRenderTarget();
-	D3D::Get()->Clear(desc.Background);
-	{
-		Context::Get()->Render();
-		mainExecute->Render();
-		DebugLine::Get()->Render();
+	mainExecute->PostRender();
+	Gui::Get()->Render();
 
-		mainExecute->PostRender();
-		Gui::Get()->Render();
-	}
 	ReleasePoolClear();
 	D3D::Get()->Present();
 }

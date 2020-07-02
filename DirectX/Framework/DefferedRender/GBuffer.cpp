@@ -39,12 +39,12 @@ GBuffer::GBuffer(Scene* scene,UINT width, UINT height)
 		debug2D[i]->SetPosition(75 + (float)i * 150, 75, 0);
 		debug2D[i]->SetScale(150, 150, 0);
 	}
-	debug2D[0]->SRV(diffuseRTV->SRV());
-	debug2D[1]->SRV(specularRTV->SRV());
-	debug2D[2]->SRV(emissiveRTV->SRV());
-	debug2D[3]->SRV(normalRTV->SRV());
-	debug2D[4]->SRV(tangentRTV->SRV());
-	debug2D[5]->SRV(depthStencil->SRV());
+	debug2D[0]->SetSRV(diffuseRTV->SRV());
+	debug2D[1]->SetSRV(specularRTV->SRV());
+	debug2D[2]->SetSRV(emissiveRTV->SRV());
+	debug2D[3]->SetSRV(normalRTV->SRV());
+	debug2D[4]->SetSRV(tangentRTV->SRV());
+	debug2D[5]->SetSRV(depthStencil->SRV());
 
 }
 

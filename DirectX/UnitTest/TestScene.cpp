@@ -13,7 +13,7 @@ void TestScene::Initialize()
 	cube->SetPosition(0, 5, 0);
 	cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
 	AddChild(cube);
-
+	
 	auto grid = MeshGrid::Create(10,10);
 	grid->SetScale(12, 1, 12);
 	grid->SetPosition(0, 0, 0);
@@ -36,8 +36,6 @@ void TestScene::Initialize()
 	cylinder->SetPosition(-30, 6, -15);
 	AddChild(cylinder);
 
-	auto render2D = Render2D::Create();
-	AddChild(render2D);
 
 	/*auto terrain = Terrain::Create(L"Terrain/Gray256.png");
 	terrain->BaseMap(L"Terrain/Dirt3.png");

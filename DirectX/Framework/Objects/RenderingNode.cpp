@@ -37,11 +37,6 @@ void RenderingNode::LateUpdate()
 
 void RenderingNode::Render(Camera* viewer)
 {
-
-	VPSet(viewer);
-	WorldSet();
-
-	LightSet();
 }
 
 void RenderingNode::PreRender(Camera* viewer)
@@ -54,6 +49,26 @@ void RenderingNode::PostRender(Camera* viewer)
 
 void RenderingNode::RemoveFromParent()
 {
+}
+
+void RenderingNode::Draw(Camera * viewer)
+{
+	VPSet(viewer);
+	WorldSet();
+
+	LightSet();
+
+	if (vertexBuffer != NULL && indexBuffer != NULL)
+	{
+		vertexBuffer->Render();
+		indexBuffer->Render();
+
+		shader->Render();
+
+
+		D3D::GetDC()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		D3D::GetDC()->DrawIndexed(indexCount, 0, 0);
+	}
 }
 
 void RenderingNode::SetPosition(Vector3 position)

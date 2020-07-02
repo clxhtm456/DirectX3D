@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "Perspective.h"
 #include "Viewport.h"
+#include "Renders/Render2D.h"
 
 Camera * Camera::Create(CameraOption option)
 {
@@ -20,17 +21,9 @@ Camera * Camera::Create(CameraOption option)
 
 bool Camera::Init(CameraOption option)
 {
-	default = option;
-	matView = XMMatrixIdentity();
-	matRotation = XMMatrixIdentity();
+	CreateCameraDefault(option);
 
-	perspective = new Perspective(option.Width, option.Height, option.zn, option.zf, option.fov);
-	viewport = new Viewport(option.Width, option.Height, option.x, option.y, option.minDepth, option.maxDepth);
-	viewProjection = new ViewProjectionBuffer();
-
-	viewProjection->SetProjection(perspective->GetMatrix());
-
-	renderTarget = new RenderTarget();
+	CreateRender2DOption();
 
 	Rotate();
 	Move();
@@ -51,6 +44,7 @@ Camera::~Camera()
 	delete viewProjection;
 
 	delete renderTarget;
+	renderImage->Release();
 	//delete renderImage;
 }
 
@@ -58,6 +52,8 @@ void Camera::Update()
 {
 	GetVPBuffer()->SetView(ViewMatrix());
 	GetVPBuffer()->SetProjection(ProjectionMatrix());
+
+	renderImage->Update();
 }
 
 
@@ -111,6 +107,30 @@ void Camera::Resize()
 	viewport->Set(D3D::Width(), D3D::Height(), default.x, default.y, default.minDepth, default.maxDepth);
 }
 
+
+void Camera::CreateCameraDefault(CameraOption option)
+{
+	default = option;
+	matView = XMMatrixIdentity();
+	matRotation = XMMatrixIdentity();
+
+	perspective = new Perspective(option.Width, option.Height, option.zn, option.zf, option.fov);
+	viewport = new Viewport(option.Width, option.Height, option.x, option.y, option.minDepth, option.maxDepth);
+	viewProjection = new ViewProjectionBuffer();
+
+	viewProjection->SetProjection(perspective->GetMatrix());
+}
+
+void Camera::CreateRender2DOption()
+{
+	renderTarget = new RenderTarget();
+	depthStencil = new DepthStencil();
+	renderImage = Render2D::Create();
+	renderImage->Retain();
+
+	renderImage->SetPosition(D3D::Width() * 0.5f, D3D::Height() * 0.5f, 0);
+	renderImage->SetScale(D3D::Width(), D3D::Height(), 1);
+}
 
 void Camera::Move()
 {
@@ -168,11 +188,21 @@ void Camera::LateUpdate()
 
 void Camera::Render(Camera* viewer)
 {
-	viewport->RSSetViewport();
+	D3D::Get()->SetRenderTarget();
+	D3D::Get()->Clear(D3D::GetDesc().Background);
+
+	auto srv = renderTarget->SRV();
+	renderImage->SetSRV(srv);
+	renderImage->Draw(this);
 }
 
 void Camera::PreRender(Camera* viewer)
 {
+	//D3D::Get()->SetRenderTarget();
+	//D3D::Get()->Clear(D3D::GetDesc().Background);
+
+	renderTarget->Set(depthStencil);
+	viewport->RSSetViewport();
 }
 
 void Camera::PostRender(Camera* viewer)

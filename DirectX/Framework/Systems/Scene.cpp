@@ -89,13 +89,14 @@ void Scene::AutoRender()
 	{
 		if (camera->GetRunning())
 		{
-			camera->AutoRender();
 
 			for (auto object : _childList)
 			{
 				if (object->GetRunning())
 					object->AutoRender(camera);
 			}
+
+			camera->AutoRender();
 		}
 	}
 }

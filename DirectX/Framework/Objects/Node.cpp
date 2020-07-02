@@ -74,7 +74,7 @@ void Node::AutoRender(Camera* viewer)
 
 	Render(viewer);
 
-	Draw();
+	Draw(viewer);
 
 	auto list = _childList;
 	for (auto object : list)
@@ -106,7 +106,7 @@ void Node::RemoveFromParent()
 }
 
 
-void Node::Draw()
+void Node::Draw(Camera* viewer)
 {
 }
 

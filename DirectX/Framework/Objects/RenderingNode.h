@@ -15,6 +15,7 @@ public:
 	virtual void PreRender(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
 	virtual void RemoveFromParent() override;
+	virtual void Draw(Camera* viewer) override;
 public:
 	void SetPosition(Vector3 position)override;
 	void SetRotation(Vector3 rotation)override;
@@ -35,10 +36,16 @@ public:
 	virtual void CalcWorldMatrix();
 protected:
 	Matrix GetWorld();
+protected:
 	Shader* shader;
-private:
+	VertexBuffer* vertexBuffer = NULL;
+	IndexBuffer* indexBuffer = NULL;
+
+	UINT vertexCount = 0;
+	UINT indexCount = 0;
+
 	WorldBuffer* worldBuffer;
 	LightBuffer* lightBuffer;
-
+private:
 	Matrix _world;
 };

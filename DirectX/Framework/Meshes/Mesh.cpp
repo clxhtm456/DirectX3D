@@ -53,16 +53,7 @@ void Mesh::Render(Camera* viewer)
 {
 	Super::Render(viewer);
 	
-
-	vertexBuffer->Render();
-	indexBuffer->Render();
-
-	shader->Render();
-
-	material->Render();
-
 	rasterizerState->SetState();
 
-	D3D::GetDC()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	D3D::GetDC()->DrawIndexed(indexCount, 0,0);
+	material->Render();
 }

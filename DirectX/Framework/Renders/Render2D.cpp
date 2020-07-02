@@ -35,6 +35,7 @@ bool Render2D::Init()
 
 	vpBuffer = new ConstantBuffer(&vpDesc, sizeof(ViewProjectionDesc));
 
+
 	VertexTexture vertices[6];
 	vertices[0].Position = Vector3(-0.5f, -0.5f, 0.0f);
 	vertices[1].Position = Vector3(-0.5f, +0.5f, 0.0f);
@@ -67,23 +68,29 @@ void Render2D::Update()
 
 void Render2D::Render(Camera* viewer)
 {
-	__super::Render(viewer);
+	Super::Render(viewer);
+}
 
+void Render2D::Draw(Camera * viewer)
+{
 	vpBuffer->SetVSBuffer(2);
+	WorldSet();
+	LightSet();
 
-	if (diffuseMap != nullptr)
+	shader->Render();
+	if (diffuseMap != NULL)
 	{
 		D3D::GetDC()->PSSetShaderResources(0, 1, &diffuseMap);
 		D3D::GetDC()->PSSetSamplers(0, 1, &diffuseSampler);
 	}
+	vertexBuffer->Render();
 
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	vertexBuffer->Render();
 
 	D3D::GetDC()->Draw(6, 0);
 }
 
-void Render2D::SRV(ID3D11ShaderResourceView * srv)
+void Render2D::SetSRV(ID3D11ShaderResourceView * srv)
 {
-	diffuseMap = (srv);
+	diffuseMap = srv;
 }

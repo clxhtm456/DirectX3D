@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29509.3
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1169
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework", "Framework\Framework.vcxproj", "{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}"
 EndProject
@@ -15,10 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4
 		..\_Shaders\DebugLine.hlsl = ..\_Shaders\DebugLine.hlsl
 		..\_Shaders\DefferedRender.hlsl = ..\_Shaders\DefferedRender.hlsl
 		..\_Shaders\FModel.hlsl = ..\_Shaders\FModel.hlsl
-		..\_Shaders\Header.hlsli = ..\_Shaders\Header.hlsli
 		..\_Shaders\Mesh.hlsl = ..\_Shaders\Mesh.hlsl
 		..\_Shaders\Model.hlsl = ..\_Shaders\Model.hlsl
 		..\_Shaders\Render2D.hlsl = ..\_Shaders\Render2D.hlsl
+		..\_Shaders\RenderingNode.hlsli = ..\_Shaders\RenderingNode.hlsli
 		..\_Shaders\Terrain.hlsl = ..\_Shaders\Terrain.hlsl
 	EndProjectSection
 EndProject

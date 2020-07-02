@@ -58,6 +58,8 @@ public:
 	}
 	
 protected :
+	void CreateCameraDefault(CameraOption option);
+	void CreateRender2DOption();
 	virtual void Move();
 	virtual void Rotate();
 	virtual void View();
@@ -75,6 +77,9 @@ protected:
 	
 	ViewProjectionBuffer* viewProjection;
 private:
+	class DepthStencil* depthStencil;
+
+
 	class RenderTarget* renderTarget;
 	class Render2D* renderImage;
 	

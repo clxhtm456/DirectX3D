@@ -24,7 +24,7 @@ private:
 	void AutoPreRender(class Camera* viewer = nullptr);
 	void AutoPostRender(class Camera* viewer = nullptr);
 protected:
-	virtual void Draw();
+	virtual void Draw(class Camera* viewr = nullptr);
 public:
 	Vector3 GetPosition();
 	Vector3 GetRotation();
@@ -42,6 +42,7 @@ public:
 	void SetScale(float x, float y, float z);
 
 	bool GetRunning() { return _running; }
+	Scene* GetScene() { return _scene; }
 public:
 	void AddChild(Node* child);
 	void DelChild(Node* child);

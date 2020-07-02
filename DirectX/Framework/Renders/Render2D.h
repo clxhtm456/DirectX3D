@@ -11,8 +11,9 @@ public:
 
 	void Update() override;
 	void Render(Camera* viewer) override;
+	void Draw(Camera* viewer) override;
 
-	virtual void SRV(ID3D11ShaderResourceView* srv);
+	virtual void SetSRV(ID3D11ShaderResourceView* srv);
 private:
 	struct ViewProjectionDesc
 	{
@@ -21,16 +22,14 @@ private:
 	} vpDesc;
 
 protected:
-	UINT pass;
-	Shader* shader;
-
 	Vector2 textureSize;
-
 private:
 	ConstantBuffer* vpBuffer;
 	
 	VertexBuffer* vertexBuffer;
 
-	ID3D11ShaderResourceView* diffuseMap = nullptr;
-	ID3D11SamplerState* diffuseSampler = nullptr;
+	ID3D11ShaderResourceView* diffuseMap = NULL;
+	ID3D11SamplerState* diffuseSampler = NULL;
+
+	DepthStencilState* depthState[2];
 };
