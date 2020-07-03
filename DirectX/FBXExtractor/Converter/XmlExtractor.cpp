@@ -8,8 +8,6 @@
 #define IOS_REF (*(pManager->GetIOSettings()))
 #endif
 
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-
 void XmlExtractor::Reset()
 {
 	m_scene = nullptr;

@@ -1,5 +1,5 @@
 
-
+//////////////////////////////VSBuffer
 struct ViewProjection
 {
 	matrix View;
@@ -20,7 +20,7 @@ cbuffer World : register(b1)
 {
 	World CB_World;
 }
-
+//////////////////////////////PSBuffer
 struct Light
 {
 	float3 lightDirection;
@@ -117,6 +117,7 @@ float4 ComputeLight(PixelInput input)
 	float4 output;
 	float3 lightDirection = -CB_Light.lightDirection;
 	float NdotL = dot(lightDirection, normalize(input.Normal));
+    //NdotL = saturate(NdotL);
 
 	float4 Ambient = CB_Light.ambientLight * CB_Material.Ambient;
 	float3 E = normalize(input.ViewPos - input.wPosition);

@@ -12,6 +12,8 @@ struct CameraOption
 	float zn = 0.1f;
 	float zf = 1000.0f;
 	float fov = (float)3.141592f * 0.25f;
+
+	bool useGBuffer = false;
 };
 
 class Camera : public Node
@@ -27,6 +29,7 @@ public:
 	virtual void Start() override;
 	virtual void PostUpdate() override;
 	virtual void LateUpdate() override;
+	void SetUpRender();
 	virtual void Render(Camera* viewer) override;
 	virtual void PreRender(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
@@ -58,7 +61,7 @@ public:
 	}
 	
 protected :
-	void CreateCameraDefault(CameraOption option);
+	void CreateCameraDefault();
 	void CreateRender2DOption();
 	virtual void Move();
 	virtual void Rotate();

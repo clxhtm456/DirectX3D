@@ -17,18 +17,9 @@ MeshCube* MeshCube::Create()
 	return pRet;
 }
 
-MeshCube* MeshCube::CreateInstance()
-{
-	return nullptr;
-}
-
 bool MeshCube::Init()
 {
-	if (InsCube::cubeInstanceIndex == 0)
-	{
-		auto insCube = InsCube::Create();
-	}
-	InsCube::cubeInstanceIndex++;
+	CreateBuffer();
 	return true;
 }
 

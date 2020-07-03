@@ -6,7 +6,6 @@ class MeshCube : public Mesh , public TerrainObject
 {
 public:
 	static MeshCube* Create();
-	static MeshCube* CreateInstance();
 	bool Init();
 public:
 	MeshCube();

@@ -202,6 +202,9 @@
     <ClCompile Include="Meshes\Instancing\InsSphere.cpp">
       <Filter>Meshes\Instancing</Filter>
     </ClCompile>
+    <ClCompile Include="Light\Shadow.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\Keyboard.h">
@@ -378,6 +381,9 @@
     </ClInclude>
     <ClInclude Include="Meshes\Instancing\InsSphere.h">
       <Filter>Meshes\Instancing</Filter>
+    </ClInclude>
+    <ClInclude Include="Light\Shadow.h">
+      <Filter>Light</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

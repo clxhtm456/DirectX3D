@@ -5,7 +5,6 @@ class InsCube : public InsMesh
 {
 public:
 	static InsCube* Create();
-	static InsCube* CreateInstance();
 	bool Init();
 public:
 	InsCube();

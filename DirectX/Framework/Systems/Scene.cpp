@@ -70,7 +70,7 @@ void Scene::AutoPreRender()
 	{
 		if (camera->GetRunning())
 		{
-			camera->AutoPreRender(nullptr);
+			camera->AutoPreRender(camera);
 
 			for (auto object : _childList)
 			{
@@ -89,14 +89,14 @@ void Scene::AutoRender()
 	{
 		if (camera->GetRunning())
 		{
-
+			camera->SetUpRender();
 			for (auto object : _childList)
 			{
 				if (object->GetRunning())
 					object->AutoRender(camera);
 			}
 
-			camera->AutoRender();
+			camera->AutoRender(camera);
 		}
 	}
 }
@@ -109,7 +109,7 @@ void Scene::AutoPostRender()
 	{
 		if (camera->GetRunning())
 		{
-			camera->AutoPostRender();
+			camera->AutoPostRender(camera);
 
 			for (auto object : _childList)
 			{

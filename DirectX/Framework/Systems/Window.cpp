@@ -5,6 +5,9 @@
 Scene* Window::mainExecute = NULL;
 vector<Node*> Window::releaseList;
 
+
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+
 WPARAM Window::Run(Scene * main)
 {
 	mainExecute = main;
@@ -197,12 +200,16 @@ void Window::MainRender()
 
 	mainExecute->PreRender();
 	
-	Context::Get()->Render();
-	mainExecute->Render();
-	DebugLine::Get()->Render();
+	D3D::Get()->SetRenderTarget();
+	D3D::Get()->Clear(Color(1, 1, 1, 1));
+	{
+		Context::Get()->Render();
+		mainExecute->Render();
+		DebugLine::Get()->Render();
 
-	mainExecute->PostRender();
-	Gui::Get()->Render();
+		mainExecute->PostRender();
+		Gui::Get()->Render();
+	}
 
 	ReleasePoolClear();
 	D3D::Get()->Present();

@@ -21,8 +21,8 @@ Camera * Camera::Create(CameraOption option)
 
 bool Camera::Init(CameraOption option)
 {
-	CreateCameraDefault(option);
-
+	default = option;
+	CreateCameraDefault();
 	CreateRender2DOption();
 
 	Rotate();
@@ -43,6 +43,9 @@ Camera::~Camera()
 	delete viewport;
 	delete viewProjection;
 
+	if (default.useGBuffer == false)
+		return;
+
 	delete renderTarget;
 	delete depthStencil;
 	delete renderViewport;
@@ -54,6 +57,9 @@ void Camera::Update()
 {
 	GetVPBuffer()->SetView(ViewMatrix());
 	GetVPBuffer()->SetProjection(ProjectionMatrix());
+
+	if (default.useGBuffer == false)
+		return;
 
 	renderImage->Update();
 }
@@ -110,14 +116,13 @@ void Camera::Resize()
 }
 
 
-void Camera::CreateCameraDefault(CameraOption option)
+void Camera::CreateCameraDefault()
 {
-	default = option;
 	matView = XMMatrixIdentity();
 	matRotation = XMMatrixIdentity();
 
-	perspective = new Perspective(option.Width, option.Height, option.zn, option.zf, option.fov);
-	viewport = new Viewport(option.Width, option.Height, option.x, option.y, option.minDepth, option.maxDepth);
+	perspective = new Perspective(default.Width, default.Height, default.zn, default.zf, default.fov);
+	viewport = new Viewport(default.Width, default.Height, default.x, default.y, default.minDepth, default.maxDepth);
 	viewProjection = new ViewProjectionBuffer();
 
 	viewProjection->SetProjection(perspective->GetMatrix());
@@ -125,6 +130,9 @@ void Camera::CreateCameraDefault(CameraOption option)
 
 void Camera::CreateRender2DOption()
 {
+	if (default.useGBuffer == false)
+		return;
+
 	renderTarget = new RenderTarget();
 	depthStencil = new DepthStencil();
 	renderViewport = new Viewport(D3D::Width(), D3D::Height(), default.x, default.y, default.minDepth, default.maxDepth);
@@ -134,6 +142,8 @@ void Camera::CreateRender2DOption()
 
 	renderImage->SetPosition(D3D::Width()*0.5f, D3D::Height()*0.5f, 0);
 	renderImage->SetScale(D3D::Width(), D3D::Height(), 1);
+
+	renderImage->SetSRV(renderTarget->SRV());
 }
 
 void Camera::Move()
@@ -190,15 +200,25 @@ void Camera::LateUpdate()
 {
 }
 
+void Camera::SetUpRender()
+{
+	if (default.useGBuffer == false)
+		return;
+
+	renderTarget->Set(depthStencil);
+	viewport->RSSetViewport();
+}
+
 void Camera::Render(Camera* viewer)
 {
+	if (default.useGBuffer == false)
+		return;
+
 	D3D::Get()->SetRenderTarget();
 	D3D::Get()->Clear(Color(0,0,1,1));
 
 	viewport->RSSetViewport();
 
-	auto srv = renderTarget->SRV();
-	renderImage->SetSRV(srv);
 	renderImage->Draw(this);
 }
 
@@ -207,8 +227,7 @@ void Camera::PreRender(Camera* viewer)
 	//D3D::Get()->SetRenderTarget();
 	//D3D::Get()->Clear(D3D::GetDesc().Background);
 
-	renderTarget->Set(depthStencil);
-	viewport->RSSetViewport();
+	
 }
 
 void Camera::PostRender(Camera* viewer)
