@@ -53,11 +53,11 @@ VertexOutput VS(VertexInput input)
 {
 	VertexOutput output;
 	output.Position = WorldPosition(input.Position);
-	output.Position = ViewProjection(output.Position);
+	output.Position = VPPosition(output.Position);
 	//output.Position = input.Position;
 
 	output.Uv = input.Uv;
-	output.Normal = mul(input.Normal, (float3x3)World);
+	output.Normal = mul(input.Normal, (float3x3)CB_World.World);
 
 	return output;
 }
@@ -67,7 +67,7 @@ float4 PS(VertexOutput input) : SV_TARGET
 	float3 diffuse = BaseMap.Sample(BaseSamp, input.Uv).rgb;
 	//float NdotL = dot(normalize(input.Normal), -GlobalLight.Direction);
 
-	float NdotL = dot(normalize(input.Normal), -lightDirection);
+	float NdotL = dot(normalize(input.Normal), -CB_Light.lightDirection);
 
 	return float4(diffuse * NdotL, 1);
 }

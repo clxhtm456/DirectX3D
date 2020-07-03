@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1169
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework", "Framework\Framework.vcxproj", "{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}"
 EndProject
@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4
 		..\_Shaders\FModel.hlsl = ..\_Shaders\FModel.hlsl
 		..\_Shaders\Mesh.hlsl = ..\_Shaders\Mesh.hlsl
 		..\_Shaders\Model.hlsl = ..\_Shaders\Model.hlsl
+		..\_Shaders\RedMesh.hlsl = ..\_Shaders\RedMesh.hlsl
 		..\_Shaders\Render2D.hlsl = ..\_Shaders\Render2D.hlsl
 		..\_Shaders\RenderingNode.hlsli = ..\_Shaders\RenderingNode.hlsli
 		..\_Shaders\Terrain.hlsl = ..\_Shaders\Terrain.hlsl
@@ -26,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FBXExtractor", "FBXExtracto
 	ProjectSection(ProjectDependencies) = postProject
 		{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5} = {4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PS", "PS", "{B36EC4EA-A1A1-4392-AD22-E7436A851463}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +65,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B36EC4EA-A1A1-4392-AD22-E7436A851463} = {D4E435F7-7118-4E13-901B-39445234D64D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E7C4C6F8-0135-4033-BA25-9F3F90F282CF}

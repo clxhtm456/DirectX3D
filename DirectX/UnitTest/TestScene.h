@@ -17,5 +17,7 @@ private:
 	void CreateFreedomCamera();
 private:
 	class Camera* freedomCam;
+
+	Mesh* cube;
 	
 };

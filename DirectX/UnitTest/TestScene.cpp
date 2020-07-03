@@ -8,11 +8,12 @@ void TestScene::Initialize()
 {
 	CreateFreedomCamera();
 
-	auto cube = MeshCube::Create();
+	cube = MeshCube::Create();
 	cube->SetScale(20, 10, 20);
 	cube->SetPosition(0, 5, 0);
 	cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
 	cube->GetMaterial()->SetSpecular(1, 1, 1, 1);
+	//cube->SetShader(L"RedMesh");
 	AddChild(cube);
 	
 	auto grid = MeshGrid::Create(10,10);
@@ -38,13 +39,11 @@ void TestScene::Initialize()
 	AddChild(cylinder);
 
 
-	/*auto terrain = Terrain::Create(L"Terrain/Gray256.png");
+	auto terrain = Terrain::Create(L"Terrain/Gray256.png");
 	terrain->BaseMap(L"Terrain/Dirt3.png");
 	terrain->SetPosition(0, 0, 0);
-	terrain->SetScale(2, 2, 2);*/
-
-	
-	//AddChild(terrain);
+	terrain->SetScale(2, 2, 2);
+	AddChild(terrain);
 
 	//auto kachujin = Model::Create("pikachu");
 	//kachujin->SetScale(0.05f, 0.05f, 0.05f);
@@ -58,6 +57,10 @@ void TestScene::Destroy()
 
 void TestScene::Update()
 {
+	if (Keyboard::Get()->Press(VK_UP))
+	{
+		cube->SetPSShader(L"RedMesh");
+	}
 }
 
 void TestScene::PreRender()

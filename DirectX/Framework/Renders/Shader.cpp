@@ -8,22 +8,38 @@ map<wstring, Shader*> Shader::totalShader;
 
 Shader::Shader(wstring shaderFile, string vsName, string psName)
 	: vsName(vsName), psName(psName), gsName(""),
-	geometryShader(nullptr), geometryBlob(nullptr)
+	vertexShader(nullptr),
+	pixelShader(nullptr),
+	inputLayout(nullptr),
+	vertexBlob(nullptr),
+	pixelBlob(nullptr),
+	geometryShader(nullptr), 
+	geometryBlob(nullptr)
 {
 	this->shaderFile = L"../../_Shaders/" + shaderFile + L".hlsl";
-	CreateVertexShader();
-	CreatePixelShader();
-	CreateInputLayout();
+	if (vsName != "")
+	{
+		CreateVertexShader();
+		CreateInputLayout();
+	}
+	if (psName != "")
+	{
+		CreatePixelShader();
+	}
 }
 
 Shader::~Shader()
 {
-	vertexShader->Release();
-	pixelShader->Release();
-	inputLayout->Release();
-
-	vertexBlob->Release();
-	pixelBlob->Release();
+	if(vertexShader != nullptr)
+		vertexShader->Release();
+	if(pixelShader != nullptr)
+		pixelShader->Release();
+	if(inputLayout != nullptr)
+		inputLayout->Release();
+	if(vertexBlob != nullptr)
+		vertexBlob->Release();
+	if(pixelBlob != nullptr)
+		pixelBlob->Release();
 
 	if (geometryShader != nullptr)
 		geometryShader->Release();
@@ -42,6 +58,28 @@ Shader* Shader::Add(wstring shaderFile, string vsName, string psName)
 	}
 }
 
+Shader* Shader::PSAdd(wstring shaderFile, string psName)
+{
+	if (totalShader.count(shaderFile) > 0)
+		return totalShader[shaderFile];
+	else
+	{
+		totalShader.insert({ shaderFile, new Shader(shaderFile, "", psName) });
+		return totalShader[shaderFile];
+	}
+}
+
+Shader* Shader::VSAdd(wstring shaderFile, string vsName)
+{
+	if (totalShader.count(shaderFile) > 0)
+		return totalShader[shaderFile];
+	else
+	{
+		totalShader.insert({ shaderFile, new Shader(shaderFile, vsName, "") });
+		return totalShader[shaderFile];
+	}
+}
+
 void Shader::Delete()
 {
 	for (auto shader : totalShader)
@@ -50,9 +88,11 @@ void Shader::Delete()
 
 void Shader::Render()
 {
-	RenderVS();
-	RenderPS();
-	
+	D3D::GetDC()->IASetInputLayout(inputLayout);
+	D3D::GetDC()->PSSetShader(pixelShader, nullptr, 0);
+	D3D::GetDC()->VSSetShader(vertexShader, nullptr, 0);
+	if (geometryShader != nullptr)
+		D3D::GetDC()->GSSetShader(geometryShader, nullptr, 0);
 }
 
 void Shader::RenderPS()

@@ -20,11 +20,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DefferedRender\GBuffer.cpp" />
+    <ClCompile Include="ExampleScene\ExampleScene.cpp" />
     <ClCompile Include="Framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Light\DirectLight.cpp" />
     <ClCompile Include="Light\Light.cpp" />
+    <ClCompile Include="Meshes\Instancing\InsCube.cpp" />
+    <ClCompile Include="Meshes\Instancing\InsCylinder.cpp" />
+    <ClCompile Include="Meshes\Instancing\InsGrid.cpp" />
+    <ClCompile Include="Meshes\Instancing\InsMesh.cpp" />
+    <ClCompile Include="Meshes\Instancing\InsQuad.cpp" />
+    <ClCompile Include="Meshes\Instancing\InsSphere.cpp" />
     <ClCompile Include="Meshes\Mesh.cpp" />
     <ClCompile Include="Meshes\MeshCube.cpp" />
     <ClCompile Include="Meshes\MeshCylinder.cpp" />
@@ -72,9 +79,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DefferedRender\GBuffer.h" />
+    <ClInclude Include="ExampleScene\ExampleScene.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Light\DirectLight.h" />
     <ClInclude Include="Light\Light.h" />
+    <ClInclude Include="Meshes\Instancing\InsCube.h" />
+    <ClInclude Include="Meshes\Instancing\InsCylinder.h" />
+    <ClInclude Include="Meshes\Instancing\InsGrid.h" />
+    <ClInclude Include="Meshes\Instancing\InsMesh.h" />
+    <ClInclude Include="Meshes\Instancing\InsQuad.h" />
+    <ClInclude Include="Meshes\Instancing\InsSphere.h" />
     <ClInclude Include="Meshes\Mesh.h" />
     <ClInclude Include="Meshes\MeshCube.h" />
     <ClInclude Include="Meshes\MeshCylinder.h" />

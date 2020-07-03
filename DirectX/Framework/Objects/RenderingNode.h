@@ -28,6 +28,8 @@ public:
 	void SetScale(float x, float y, float z);
 
 	virtual void SetShader(wstring file);
+	virtual void SetPSShader(wstring file);
+	virtual void SetVSShader(wstring file);
 
 	void WorldSet();
 	void VPSet(Camera* viewer);
@@ -37,7 +39,9 @@ public:
 protected:
 	Matrix GetWorld();
 protected:
-	Shader* shader;
+	Shader* shader = NULL;
+	Shader* psShader = NULL;
+	Shader* vsShader = NULL;
 	VertexBuffer* vertexBuffer = NULL;
 	IndexBuffer* indexBuffer = NULL;
 

@@ -63,7 +63,15 @@ void RenderingNode::Draw(Camera * viewer)
 		vertexBuffer->Render();
 		indexBuffer->Render();
 
-		shader->Render();
+
+		if (vsShader == NULL && psShader == NULL)
+			shader->Render();
+		else
+		{
+			vsShader->RenderVS();
+			psShader->RenderPS();
+		}
+		
 
 
 		D3D::GetDC()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -126,6 +134,22 @@ void RenderingNode::SetScale(float x, float y, float z)
 void RenderingNode::SetShader(wstring file)
 {
 	shader = Shader::Add(file);
+	vsShader = NULL;
+	psShader = NULL;
+}
+
+void RenderingNode::SetPSShader(wstring file)
+{
+	if(vsShader == NULL)
+		vsShader = shader;
+	psShader = Shader::PSAdd(file);
+}
+
+void RenderingNode::SetVSShader(wstring file)
+{
+	if (psShader == NULL)
+		psShader = shader;
+	vsShader = Shader::VSAdd(file);
 }
 
 void RenderingNode::WorldSet()

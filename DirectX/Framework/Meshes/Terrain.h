@@ -16,7 +16,7 @@ public:
 		UINT Type;
 
 		UINT Range;
-		UINT Padding[2];
+		UINT Padding[3];
 	}data;
 
 	BrushBuffer() : ConstantBuffer(&data, sizeof(Data))
@@ -38,6 +38,7 @@ public:
 		UINT Visible;
 		float Thickness;
 		float Size;
+		float Padding;
 	}data;
 
 	LineBuffer() : ConstantBuffer(&data, sizeof(Data))

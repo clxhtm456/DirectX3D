@@ -1,5 +1,6 @@
 #include "Framework.h"
 #include "MeshCube.h"
+#include "Instancing/InsCube.h"
 
 MeshCube* MeshCube::Create()
 {
@@ -23,7 +24,11 @@ MeshCube* MeshCube::CreateInstance()
 
 bool MeshCube::Init()
 {
-	CreateBuffer();
+	if (InsCube::cubeInstanceIndex == 0)
+	{
+		auto insCube = InsCube::Create();
+	}
+	InsCube::cubeInstanceIndex++;
 	return true;
 }
 

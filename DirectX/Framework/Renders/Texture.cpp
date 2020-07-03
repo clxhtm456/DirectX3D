@@ -67,19 +67,14 @@ ScratchImage Texture::LoadTextureFromFile(wstring file)
 
 Texture* Texture::Add(wstring file)
 {
-	if (file == L"")
-		return nullptr;
 
 	file = L"../../_Textures/" + file;
 
-	AddAbsPath(file);
+	return AddAbsPath(file);
 }
 
 Texture* Texture::AddAbsPath(wstring file)
 {
-	if (file == L"")
-		return nullptr;
-
 	if (!Path::ExistFile(String::ToString(file)))
 	{
 		file = L"../../_Textures/White.png";
@@ -162,17 +157,13 @@ vector<Vector4> Texture::ReadPixels()
 	ID3D11Texture2D* destTexture;
 	D3D::GetDevice()->CreateTexture2D(&destDesc, nullptr, &destTexture);
 
-	
 	D3D::GetDC()->CopySubresourceRegion(destTexture, 0, 0, 0, 0, srcTexture, 0, nullptr);
-
-	
 
 	UINT* colors = new UINT[width * height];
 	D3D11_MAPPED_SUBRESOURCE map;
+
 	D3D::GetDC()->Map(destTexture, 0, D3D11_MAP_READ, 0, &map);
-
 	memcpy(colors, map.pData, sizeof(UINT) * width * height);
-
 	D3D::GetDC()->Unmap(destTexture, 0);
 
 	for (UINT i = 0; i < width * height; i++)

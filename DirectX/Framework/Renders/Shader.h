@@ -25,10 +25,12 @@ private:
 
 	static map<wstring, Shader*> totalShader;
 
-	Shader(wstring shaderFile, string vsName = "VS", string psName = "PS");
+	Shader(wstring shaderFile, string vsName , string psName );
 	~Shader();
 public:
 	static Shader* Add(wstring shaderFile, string vsName = "VS", string psName = "PS");
+	static Shader* PSAdd(wstring shaderFile, string psName = "PS");
+	static Shader* VSAdd(wstring shaderFile, string vsName = "VS");
 	static void Delete();
 
 	void Render();
