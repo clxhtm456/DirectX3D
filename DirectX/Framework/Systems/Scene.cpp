@@ -9,9 +9,11 @@ void Scene::AutoInitialize()
 	CameraOption option;
 	option.Width = desc.Width;
 	option.Height = desc.Height;
+	//option.useGBuffer = true;
 
 	auto cam = Camera::Create(option);
-
+	cam->SetPosition(20, 37, -68);
+	cam->SetRotationDegree(30, -20, 0);
 
 	SetMainCamera(cam);
 	CreateMainLight();
@@ -34,6 +36,16 @@ void Scene::AutoDestroy()
 	}
 
 	for (auto object : _childList)
+	{
+		object->Release();
+	}
+
+	for (auto object : _lightList)
+	{
+		object->Release();
+	}
+
+	for (auto object : _reflectionList)
 	{
 		object->Release();
 	}
@@ -60,6 +72,12 @@ void Scene::AutoUpdate()
 		if (object->GetRunning())
 			object->AutoUpdate();
 	}
+
+	for (auto reflect : _reflectionList)
+	{
+		if (reflect->GetRunning())
+			reflect->AutoUpdate();
+	}
 }
 
 void Scene::AutoPreRender()
@@ -68,15 +86,22 @@ void Scene::AutoPreRender()
 
 	for (Camera* camera : _cameraList)
 	{
-		if (camera->GetRunning())
+		for (auto reflect : _reflectionList)
 		{
-			camera->AutoPreRender(camera);
-
+			reflect->SetUpRender();
 			for (auto object : _childList)
 			{
+				RenderingNode* renderObject = dynamic_cast<RenderingNode*>(object);
+
+				if (renderObject == NULL)
+					continue;
+				reflect->SetRNShader2Depth(renderObject);
 				if (object->GetRunning())
-					object->AutoPreRender(camera);
+					object->AutoRender(camera);
+
+				reflect->SetRNShader2Origin(renderObject);
 			}
+			reflect->AutoRender(camera);
 		}
 	}
 }
@@ -87,17 +112,14 @@ void Scene::AutoRender()
 
 	for (Camera* camera : _cameraList)
 	{
-		if (camera->GetRunning())
+		camera->SetUpRender();
+		for (auto object : _childList)
 		{
-			camera->SetUpRender();
-			for (auto object : _childList)
-			{
-				if (object->GetRunning())
-					object->AutoRender(camera);
-			}
-
-			camera->AutoRender(camera);
+			if (object->GetRunning())
+				object->AutoRender(camera);
 		}
+
+		camera->AutoRender(camera);
 	}
 }
 
@@ -107,15 +129,18 @@ void Scene::AutoPostRender()
 
 	for (Camera* camera : _cameraList)
 	{
-		if (camera->GetRunning())
-		{
-			camera->AutoPostRender(camera);
+		camera->AutoPostRender(camera);
 
-			for (auto object : _childList)
-			{
-				if (object->GetRunning())
-					object->AutoPostRender(camera);
-			}
+		for (auto object : _childList)
+		{
+			if (object->GetRunning())
+				object->AutoPostRender(camera);
+		}
+
+		for (auto reflect : _reflectionList)
+		{
+			if (reflect->GetRunning())
+				reflect->AutoPostRender(camera);
 		}
 	}
 }
@@ -155,6 +180,16 @@ void Scene::AddChild(Node* node)
 				return;
 		}
 		_lightList.push_back((Light*)node);
+		break;
+	}
+	case TYPE_REFLECTION :
+	{
+		for (auto _child : _reflectionList)
+		{
+			if (_child == node)
+				return;
+		}
+		_reflectionList.push_back((ReflectionNode*)node);
 		break;
 	}
 	}
@@ -201,6 +236,17 @@ void Scene::DelChild(Node* child)
 			auto it = std::next(_lightList.begin(), index);
 			(*it)->Release();
 			_lightList.erase(it);
+		}
+	}
+	case TYPE_REFLECTION:
+	{
+		int index = 0;
+		auto iter = std::find(_reflectionList.begin(), _reflectionList.end(), child);
+		if (iter != _reflectionList.end())
+		{
+			auto it = std::next(_reflectionList.begin(), index);
+			(*it)->Release();
+			_reflectionList.erase(it);
 		}
 	}
 	}

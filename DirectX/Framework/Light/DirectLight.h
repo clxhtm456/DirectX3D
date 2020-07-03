@@ -1,7 +1,7 @@
 #pragma once
 
 
-class DirectionLight : public Light
+class DirectionLight : public ReflectionNode
 {
 public:
 	static DirectionLight* Create();
@@ -13,23 +13,24 @@ private:
 
 public:
 	void SetBuffer(OUT class LightBuffer* buffer);
-
+	Vector3 GetDirection() { return direction; }
 private:
 	Vector3 direction = Vector3(-1, -1, 1);
-	float specExp = 8.0f;
-
-	Color ambient = Color(0.1f, 0.1f, 0.1f, 1.0f);
-
-	int isSpecularMap = 0;
-	int isNormalMap = 0;
+	Color ambient = Color(0, 0, 0, 1);
+	Color specular = Color(1, 1, 1, 1);
+	Vector3 position = Vector3(0, 0, 0);
+private:
+	class Shadow* shadow;
 
 protected:
+	void SetRNShader2Origin(RenderingNode* node) override;
 	// Node을(를) 통해 상속됨
 	void PostUpdate() override;
 	void Update() override;
 	void LateUpdate() override;
 	void Render(Camera* viewer) override;
-	void PreRender(Camera* viewer) override;
 	void PostRender(Camera* viewer) override;
-	void RemoveFromParent() override;
+
+	// ReflectionNode을(를) 통해 상속됨
+	virtual void SetUpRender() override;
 };

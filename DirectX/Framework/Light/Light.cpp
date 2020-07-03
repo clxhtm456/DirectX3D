@@ -29,14 +29,7 @@ void Light::Render(Camera* viewer)
 {
 }
 
-void Light::PreRender(Camera* viewer)
-{
-}
 
 void Light::PostRender(Camera* viewer)
-{
-}
-
-void Light::RemoveFromParent()
 {
 }

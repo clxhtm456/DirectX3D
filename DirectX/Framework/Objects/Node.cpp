@@ -81,14 +81,6 @@ void Node::AutoRender(Camera* viewer)
 		object->AutoRender(viewer);
 }
 
-void Node::AutoPreRender(Camera* viewer)
-{
-	PreRender(viewer);
-	auto list = _childList;
-	for (auto object : list)
-		object->AutoPreRender(viewer);
-}
-
 void Node::AutoPostRender(Camera* viewer)
 {
 	PostRender(viewer);
@@ -102,6 +94,10 @@ void Node::RemoveFromParent()
 	if (_parent != nullptr)
 	{
 		_parent->DelChild(this);
+	}
+	else if (_scene != nullptr)
+	{
+		_scene->DelChild(this);
 	}
 }
 

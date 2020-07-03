@@ -1,6 +1,5 @@
 #include "RenderingNode.hlsli"
-
-
+#include "Shadow.hlsl"
 
 struct VertexInput
 {
@@ -9,8 +8,6 @@ struct VertexInput
 	float3 Normal : Normal;
 	float3 Tangent : TANGENT;
 };
-
-
 
 
 PixelInput VS(VertexInput input)
@@ -29,11 +26,11 @@ PixelInput VS(VertexInput input)
 	return output;
 }
 
-
 float4 PS(PixelInput input) : SV_TARGET0
 {
 	float3 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv).rgb;
-	float4 result = ComputeLight(input);
+	float4 result = ComputeLight(input.Normal, input.ViewPos, input.wPosition);
 	//float4 emissive = ComputeEmissive(input.Normal, input.wPosition);
+	//return float4(1, 1, 0, 1);
 	return float4(diffuse,1)*result;
 }

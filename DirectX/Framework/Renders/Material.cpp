@@ -121,13 +121,34 @@ void Material::Render()
 	materialBuffer->SetPSBuffer(PS_MATERIALBUFFER);
 
 	if (diffuseMap != nullptr)
+	{
 		diffuseMap->Set(0);
-
+	}
+	else
+	{
+		ID3D11ShaderResourceView* const pSRV[1] = { NULL };
+		D3D::GetDC()->PSSetShaderResources(0, 1, pSRV);
+	}
+		
 	if (specularMap != nullptr)
+	{
 		specularMap->Set(1);
+	}
+	else
+	{
+		ID3D11ShaderResourceView* const pSRV[1] = { NULL };
+		D3D::GetDC()->PSSetShaderResources(0, 1, pSRV);
+	}
 
 	if (normalMap != nullptr)
+	{
 		normalMap->Set(2);
+	}
+	else
+	{
+		ID3D11ShaderResourceView* const pSRV[1] = { NULL };
+		D3D::GetDC()->PSSetShaderResources(0, 1, pSRV);
+	}
 }
 
 

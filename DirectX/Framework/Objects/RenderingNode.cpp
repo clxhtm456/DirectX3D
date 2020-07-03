@@ -25,7 +25,7 @@ void RenderingNode::PostUpdate()
 
 void RenderingNode::Update()
 {
-	if (_scene != nullptr)
+	if (_scene != nullptr && _scene->GetDirectionLight() != nullptr)
 	{
 		_scene->GetDirectionLight()->SetBuffer(lightBuffer);
 	}
@@ -39,15 +39,8 @@ void RenderingNode::Render(Camera* viewer)
 {
 }
 
-void RenderingNode::PreRender(Camera* viewer)
-{
-}
 
 void RenderingNode::PostRender(Camera* viewer)
-{
-}
-
-void RenderingNode::RemoveFromParent()
 {
 }
 
@@ -131,25 +124,70 @@ void RenderingNode::SetScale(float x, float y, float z)
 	SetScale(temp);
 }
 
-void RenderingNode::SetShader(wstring file)
+void RenderingNode::SetShader(wstring file, string vs, string ps)
 {
-	shader = Shader::Add(file);
+	Shader* nShader = Shader::Add(file,vs,ps);
+
+	SetShader(nShader);
+}
+
+void RenderingNode::SetPSShader(wstring file, string ps)
+{
+	Shader* nShader = Shader::PSAdd(file,ps);
+
+	SetPSShader(nShader);
+}
+
+void RenderingNode::SetVSShader(wstring file, string vs)
+{
+	Shader* nShader = Shader::VSAdd(file,vs);
+
+	SetVSShader(nShader);
+}
+
+void RenderingNode::SetShader(Shader* nShader)
+{
+	shader = nShader;
 	vsShader = NULL;
 	psShader = NULL;
 }
 
-void RenderingNode::SetPSShader(wstring file)
+void RenderingNode::SetPSShader(Shader* nShader)
 {
-	if(vsShader == NULL)
+	if (vsShader == NULL)
 		vsShader = shader;
-	psShader = Shader::PSAdd(file);
+	psShader = nShader;
+
+	//변경된 psshader가 vsshader와 같을경우 통합
+	if (psShader == vsShader)
+		SetShader(nShader);
 }
 
-void RenderingNode::SetVSShader(wstring file)
+void RenderingNode::SetVSShader(Shader* nShader)
 {
 	if (psShader == NULL)
 		psShader = shader;
-	vsShader = Shader::VSAdd(file);
+	vsShader = nShader;
+
+	//변경된 vsshader가 psshader와 같을경우 통합
+	if (psShader == vsShader)
+		SetShader(nShader);
+}
+
+Shader* RenderingNode::GetVSShader()
+{
+	if (vsShader == NULL)
+		return shader;
+	else
+		return vsShader;
+}
+
+Shader* RenderingNode::GetPSShader()
+{
+	if (psShader == NULL)
+		return shader;
+	else
+		return psShader;
 }
 
 void RenderingNode::WorldSet()

@@ -27,12 +27,14 @@ public:
 	void DelChild(Node* child);
 
 	void SetMainCamera(Camera* cam);
+	Camera* GetMainCamera() { return _mainCamera; }
 public:
 	void CreateMainLight();
 	DirectionLight* GetDirectionLight();
 private:
 	DirectionLight* _directionLight;
 	list<Node*> _childList;
+	list<ReflectionNode*> _reflectionList;
 	list<Light*> _lightList;
 	list<Camera*> _cameraList;
 	class Camera* _mainCamera = nullptr;

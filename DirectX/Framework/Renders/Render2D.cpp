@@ -35,6 +35,7 @@ bool Render2D::Init()
 
 
 	vpBuffer = new ConstantBuffer(&vpDesc, sizeof(ViewProjectionDesc));
+	worldBuffer = new WorldBuffer();
 
 
 	VertexTexture vertices[6];
@@ -61,24 +62,28 @@ Render2D::~Render2D()
 {
 	delete vertexBuffer;
 	delete vpBuffer;
+	delete worldBuffer;
 }
 
 void Render2D::Update()
 {
-	CalcWorldMatrix();
+	Matrix S, T;
+	S = XMMatrixScaling(XMVectorGetX(_scale), XMVectorGetY(_scale), XMVectorGetZ(_scale));
+	T = XMMatrixTranslation(XMVectorGetX(_position), XMVectorGetY(_position), XMVectorGetZ(_position));
+
+	_world = S * T;
+	worldBuffer->SetWorld(_world);
 }
 
 void Render2D::Render(Camera* viewer)
 {
-	Super::Render(viewer);
 }
 
 void Render2D::Draw(Camera * viewer)
 {
 	//VPSet();
 	vpBuffer->SetVSBuffer(2);
-	WorldSet();
-	LightSet();
+	worldBuffer->SetVSBuffer(1);
 
 	vertexBuffer->Render();
 	shader->Render();
@@ -96,4 +101,21 @@ void Render2D::Draw(Camera * viewer)
 void Render2D::SetSRV(ID3D11ShaderResourceView * srv)
 {
 	diffuseMap = srv;
+}
+
+void Render2D::Start()
+{
+}
+
+void Render2D::PostUpdate()
+{
+}
+
+void Render2D::LateUpdate()
+{
+}
+
+
+void Render2D::PostRender(Camera* viewer)
+{
 }

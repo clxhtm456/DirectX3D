@@ -201,11 +201,11 @@ void Window::MainRender()
 	mainExecute->PreRender();
 	
 	D3D::Get()->SetRenderTarget();
-	D3D::Get()->Clear(Color(1, 1, 1, 1));
+	D3D::Get()->Clear(Color(0.2, 0.2, 0.2, 1));
 	{
 		Context::Get()->Render();
 		mainExecute->Render();
-		DebugLine::Get()->Render();
+		//DebugLine::Get()->Render();
 
 		mainExecute->PostRender();
 		Gui::Get()->Render();

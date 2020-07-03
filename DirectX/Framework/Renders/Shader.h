@@ -38,6 +38,11 @@ public:
 	void RenderPS();
 	void RenderVS();
 
+	void RecompileVS(string vs);
+	void RecompilePS(string ps);
+
+	wstring GetShaderfile();
+
 	HRESULT CompileShader(_In_ LPCWSTR srcFile, _In_ LPCSTR entryPoint, _In_ LPCSTR profile, _Outptr_ ID3DBlob** blob);
 	void CreateVertexShader();
 	void CreatePixelShader();

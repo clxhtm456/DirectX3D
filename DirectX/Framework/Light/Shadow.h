@@ -8,21 +8,25 @@ public:
 
 	void Set();
 
-	ID3D11ShaderResourceView* SRV() { return renderTarget->SRV(); }
-
+	ID3D11ShaderResourceView* SRV() { return _light->GetRenderTargetSRV(); }
+	void SetShadowMap(ID3D11ShaderResourceView* srv);
 private:
 	void UpdateVolume();
 private:
-	struct Desc
+	struct VsDesc
 	{
 		Matrix View;
 		Matrix Projection;
+	}vsDesc;
 
+	struct PsDesc
+	{
 		Vector2 MapSize;
 		float Bias = -0.0006f;
 
 		UINT Quality = 2;
-	}desc;
+		Vector4 testColor;
+	}psDesc;
 private:
 	Shader * shader;
 	UINT width, height;
@@ -30,11 +34,10 @@ private:
 	Vector3 position;
 	float radius;
 
-	RenderTarget* renderTarget;
-	DepthStencil* depthStencil;
-	Viewport* viewport;
+	DirectionLight* _light;
 
-	ConstantBuffer* buffer;
+	ConstantBuffer* vsBuffer;
+	ConstantBuffer* psBuffer;
 	ID3D11ShaderResourceView* shadowMap;
 	ID3D11SamplerState* shadowSample;
 };

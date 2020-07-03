@@ -12,9 +12,7 @@ protected:
 	virtual void Update() override;
 	virtual void LateUpdate() override;
 	virtual void Render(Camera* viewer) override;
-	virtual void PreRender(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
-	virtual void RemoveFromParent() override;
 
 public:
 	UINT ChildType() override

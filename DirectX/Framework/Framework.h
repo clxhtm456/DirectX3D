@@ -73,6 +73,7 @@ typedef XMVECTOR Plane;
 #define TYPE_NODE	(1<<1)
 #define TYPE_VIEWER	(1<<2)
 #define TYPE_LIGHT	(1<<3)
+#define TYPE_REFLECTION	(1<<4)
 
 #define TEXTURE_DIR(texture)	"../../_Textures/" + texture
 
@@ -117,6 +118,7 @@ typedef XMVECTOR Plane;
 
 #include "Objects/Node.h"
 #include "Objects/RenderingNode.h"
+#include "Objects/ReflectionNode.h"
 
 #include "Light/Light.h"
 #include "Light/DirectLight.h"

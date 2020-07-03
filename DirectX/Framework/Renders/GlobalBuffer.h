@@ -77,25 +77,22 @@ class LightBuffer : public ConstantBuffer
 public:
 	struct Data
 	{
-		Vector3 direction;
-		float specExp;
-
 		Color ambient;
+		Color Specular;
 
-		int isSpecularMap;
-		int isNormalMap;
-
-		float padding[2];
+		Vector3 direction;
+		float padding;
+		Vector3 position;
+		float padding2;
 	}data;
 
 	LightBuffer() : ConstantBuffer(&data, sizeof(Data))
 	{
-		data.direction = Vector3(-1, -1, 1);
-		data.specExp = 8.0f;
+		data.ambient = Color(0, 0, 0, 1);
+		data.Specular = Color(1, 1, 1, 1);
+		data.direction = Vector3(0, -0.2, 0);
 
-		data.ambient = Color(0.1f, 0.1f, 0.1f, 1.0f);
-		data.isSpecularMap = 0;
-		data.isNormalMap = 0;
+		data.position = Vector3(0,0,0);
 	}
 };
 

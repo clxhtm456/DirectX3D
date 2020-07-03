@@ -12,9 +12,7 @@ public:
 	virtual void Update() override;
 	virtual void LateUpdate() override;
 	virtual void Render(Camera* viewer) override;
-	virtual void PreRender(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
-	virtual void RemoveFromParent() override;
 	virtual void Draw(Camera* viewer) override;
 public:
 	void SetPosition(Vector3 position)override;
@@ -27,9 +25,15 @@ public:
 	void SetRotationDegree(float x, float y, float z);
 	void SetScale(float x, float y, float z);
 
-	virtual void SetShader(wstring file);
-	virtual void SetPSShader(wstring file);
-	virtual void SetVSShader(wstring file);
+	virtual void SetShader(wstring file, string vs = "VS", string ps = "PS");
+	virtual void SetPSShader(wstring file, string ps = "PS");
+	virtual void SetVSShader(wstring file, string vs = "VS");
+	virtual void SetShader(Shader* nShader);
+	virtual void SetPSShader(Shader* nShader);
+	virtual void SetVSShader(Shader* nShader);
+
+	Shader* GetVSShader();
+	Shader* GetPSShader();
 
 	void WorldSet();
 	void VPSet(Camera* viewer);

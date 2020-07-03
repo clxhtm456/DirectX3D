@@ -13,15 +13,13 @@ protected:
 	virtual void Update() = 0;
 	virtual void LateUpdate() = 0;
 	virtual void Render(class Camera* viewer) = 0;
-	virtual void PreRender(class Camera* viewer) = 0;
 	virtual void PostRender(class Camera* viewer) = 0;
-	virtual void RemoveFromParent() = 0;
+	
 private:
 	void AutoPostUpdate();
 	void AutoUpdate();
 	void AutoLateUpdate();
 	void AutoRender(class Camera* viewer = nullptr);
-	void AutoPreRender(class Camera* viewer = nullptr);
 	void AutoPostRender(class Camera* viewer = nullptr);
 protected:
 	virtual void Draw(class Camera* viewr = nullptr);
@@ -41,6 +39,7 @@ public:
 	void SetRotationDegree(float x, float y, float z);
 	void SetScale(float x, float y, float z);
 
+	void RemoveFromParent();
 	bool GetRunning() { return _running; }
 	Scene* GetScene() { return _scene; }
 public:

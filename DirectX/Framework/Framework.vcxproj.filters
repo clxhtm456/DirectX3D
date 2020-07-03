@@ -205,6 +205,9 @@
     <ClCompile Include="Light\Shadow.cpp">
       <Filter>Light</Filter>
     </ClCompile>
+    <ClCompile Include="Objects\ReflectionNode.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\Keyboard.h">
@@ -384,6 +387,9 @@
     </ClInclude>
     <ClInclude Include="Light\Shadow.h">
       <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ReflectionNode.h">
+      <Filter>Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

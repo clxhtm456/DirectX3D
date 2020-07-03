@@ -141,7 +141,7 @@ void Camera::CreateRender2DOption()
 	renderImage->Retain();
 
 	renderImage->SetPosition(D3D::Width()*0.5f, D3D::Height()*0.5f, 0);
-	renderImage->SetScale(D3D::Width(), D3D::Height(), 1);
+	renderImage->SetScale(D3D::Width()*0.9f, D3D::Height()*0.9f, 1);
 
 	renderImage->SetSRV(renderTarget->SRV());
 }
@@ -178,6 +178,13 @@ void Camera::View()
 	matView = XMMatrixLookAtLH(_position, _position + (forward), up);
 }
 
+RenderTarget* Camera::GetRenderTarget()
+{
+	if (default.useGBuffer == false)
+		return nullptr;
+	return renderTarget;
+}
+
 Matrix Camera::ViewMatrix()
 {
 	return matView;
@@ -202,11 +209,16 @@ void Camera::LateUpdate()
 
 void Camera::SetUpRender()
 {
-	if (default.useGBuffer == false)
-		return;
 
-	renderTarget->Set(depthStencil);
-	viewport->RSSetViewport();
+	if (default.useGBuffer == false)
+	{
+		viewport->RSSetViewport();
+	}
+	else
+	{
+		renderTarget->Set(depthStencil);
+		viewport->RSSetViewport();
+	}
 }
 
 void Camera::Render(Camera* viewer)
@@ -222,18 +234,7 @@ void Camera::Render(Camera* viewer)
 	renderImage->Draw(this);
 }
 
-void Camera::PreRender(Camera* viewer)
-{
-	//D3D::Get()->SetRenderTarget();
-	//D3D::Get()->Clear(D3D::GetDesc().Background);
-
-	
-}
 
 void Camera::PostRender(Camera* viewer)
-{
-}
-
-void Camera::RemoveFromParent()
 {
 }

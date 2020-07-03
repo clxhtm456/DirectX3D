@@ -1,5 +1,6 @@
 #include "Framework.h"
 #include "DirectLight.h"
+#include "Shadow.h"
 
 DirectionLight* DirectionLight::Create()
 {
@@ -18,13 +19,8 @@ DirectionLight* DirectionLight::Create()
 
 bool DirectionLight::Init()
 {
-	direction = Vector3(-1, -1, 1);
-	specExp = 8.0f;
+	shadow = new Shadow(this,Vector3(0,0,0),100);
 
-	ambient = Color(0.1f, 0.1f, 0.1f, 1.0f);
-
-	isSpecularMap = 0;
-	isNormalMap = 0;
 	return true;
 }
 
@@ -34,15 +30,24 @@ DirectionLight::DirectionLight()
 
 DirectionLight::~DirectionLight()
 {
+	delete shadow;
 }
 
 void DirectionLight::SetBuffer(OUT LightBuffer* buffer)
 {
 	buffer->data.direction = direction;
 	buffer->data.ambient = ambient;
-	buffer->data.specExp = specExp;
-	buffer->data.isNormalMap = isNormalMap;
-	buffer->data.isSpecularMap = isSpecularMap;
+	buffer->data.Specular = specular;
+	buffer->data.position = position;
+}
+
+void DirectionLight::SetRNShader2Origin(RenderingNode* node)
+{
+	Super::SetRNShader2Origin(node);
+
+	vsShaderSlot->RecompileVS("VS_Shadow");
+	psShaderSlot->RecompilePS("PS_Shadow");
+
 }
 
 void DirectionLight::PostUpdate()
@@ -63,16 +68,16 @@ void DirectionLight::LateUpdate()
 
 void DirectionLight::Render(Camera* viewer)
 {
+	__super::Render(viewer);
 }
 
-void DirectionLight::PreRender(Camera* viewer)
-{
-}
 
 void DirectionLight::PostRender(Camera* viewer)
 {
 }
 
-void DirectionLight::RemoveFromParent()
+void DirectionLight::SetUpRender()
 {
+	__super::SetUpRender();
+	shadow->Set();
 }

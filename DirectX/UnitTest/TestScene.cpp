@@ -37,6 +37,12 @@ void TestScene::Initialize()
 	cylinder->SetPosition(-30, 6, -15);
 	AddChild(cylinder);
 
+	auto renderImage = Render2D::Create();
+	renderImage->SetSRV(GetDirectionLight()->GetRenderTargetSRV());
+	//renderImage->SetSRV(GetMainCamera()->GetRenderTarget()->SRV());
+	renderImage->SetPosition(150, D3D::Height() - 150, 0);
+	renderImage->SetScale(300, 300, 1);
+	AddChild(renderImage);
 
 	/*auto terrain = Terrain::Create(L"Terrain/Gray256.png");
 	terrain->BaseMap(L"Terrain/Dirt3.png");
@@ -85,7 +91,9 @@ void TestScene::CreateFreedomCamera()
 	freedomCam = Freedom::Create(option);
 	freedomCam->SetPosition(20, 37, -68);
 	freedomCam->SetRotationDegree(30, -20, 0);
-
+	//AddChild(freedomCam);
 	SetMainCamera(freedomCam);
+
+	//freedomCam->RemoveFromParent();
 
 }

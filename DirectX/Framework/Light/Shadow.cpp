@@ -2,18 +2,18 @@
 #include "Shadow.h"
 
 Shadow::Shadow(DirectionLight* light, Vector3 position, float radius, UINT width, UINT height):
+	_light(light),
 	position(position),
 	radius(radius),
 	width(width),
 	height(height)
 {
-	renderTarget = new RenderTarget(width, height);
-	depthStencil = new DepthStencil(width, height);
-	viewport = new Viewport((float)width, (float)height);
-	desc.MapSize = Vector2((float)width, (float)height);
+	psDesc.MapSize = Vector2((float)width, (float)height);
 
-	buffer = new ConstantBuffer(&desc, sizeof(Desc));
+	vsBuffer = new ConstantBuffer(&vsDesc, sizeof(VsDesc));
+	psBuffer = new ConstantBuffer(&psDesc, sizeof(PsDesc));
 
+	shadowMap = _light->GetDepthSRV();
 	//Create SamplerState
 	{
 		//CD3D11_SAMPLER_DESC//이미 생성되있는 샘플
@@ -33,56 +33,54 @@ Shadow::Shadow(DirectionLight* light, Vector3 position, float radius, UINT width
 
 Shadow::~Shadow()
 {
-	delete buffer;
-	delete renderTarget;
-	delete depthStencil;
-	delete viewport;
+	delete vsBuffer;
+	delete psBuffer;
 
 	shadowSample->Release();
 }
 
 void Shadow::Set()
 {
-	buffer->SetPSBuffer(2);
-
-	D3D::GetDC()->PSSetShaderResources(0, 1, &shadowMap);
-	D3D::GetDC()->PSSetSamplers(0, 1, &shadowSample);
-
-	renderTarget->Set(depthStencil);
-	viewport->RSSetViewport();
-
 	UpdateVolume();
 
-	buffer->Apply();
-	sBuffer->SetConstantBuffer(buffer->Buffer());
+	psBuffer->SetPSBuffer(2);
+	vsBuffer->SetVSBuffer(2);
 
-	//ImGui::SliderFloat("Bias", &desc.Bias, -0.1f, 1.0f,"%.4f");
+	D3D::GetDC()->PSSetShaderResources(3, 1, &shadowMap);
+	D3D::GetDC()->PSSetSamplers(3, 1, &shadowSample);
 
-	sShadowMap->SetResource(depthStencil->SRV());
-	sSamplerState->SetSampler(0, samplerState);
 
-	ImGui::InputInt("ShadowQuality", (int*)&desc.Quality);
-	desc.Quality %= 4;
+	ImGui::InputInt("ShadowQuality", (int*)&psDesc.Quality);
+	psDesc.Quality %= 4;
+}
+
+void Shadow::SetShadowMap(ID3D11ShaderResourceView* srv)
+{
+	shadowMap = srv;
 }
 
 void Shadow::UpdateVolume()
 {
-	Vector3 up = Vector3(0, 1, 0);
-	Vector3 direction = Context::Get()->Direction();//**빛에 대한 depth 를 구함
-	Vector3 tPosition = direction*radius * -2.0f;
+	if (_light == NULL)
+		return;
 
-	desc.View = XMMatrixLookAtLH(XMLoadFloat3(&tPosition), XMLoadFloat3(&position), XMLoadFloat3(&up));
+	XMVECTOR up = XMVectorSet(0, 1, 0,0);
+	XMVECTOR direction = XMLoadFloat3( &_light->GetDirection());//**빛에 대한 depth 를 구함
+	XMVECTOR tPosition = direction*radius * -2.0f;
+
+	vsDesc.View = XMMatrixLookAtLH(tPosition, XMLoadFloat3(&position), up);
 
 	XMVECTOR cube;
-	cube = XMVector3TransformCoord(XMLoadFloat3(&position), desc.View);
+	cube = XMVector3TransformCoord(XMLoadFloat3(&position), vsDesc.View);
 
-	float left = cube.x - radius;
-	float bottom = cube.y - radius;
-	float nea = cube.z - radius;
+	float left = XMVectorGetX(cube) - radius;
+	float bottom = XMVectorGetY(cube) - radius;
+	float nea = XMVectorGetZ( cube) - radius;
 
-	float right = cube.x + radius;
-	float top = cube.y + radius;
-	float fa = cube.z + radius;
+	float right = XMVectorGetX(cube) + radius;
+	float top = XMVectorGetY(cube) + radius;
+	float fa = XMVectorGetZ(cube) + radius;
 
-	D3DXMatrixOrthoLH(&desc.Projection, right - left, top - bottom, nea, fa);
+	vsDesc.Projection = XMMatrixOrthographicLH(right - left, top - bottom, nea, fa);
+	psDesc.testColor = Vector4(0, 1, 1, 1);
 }

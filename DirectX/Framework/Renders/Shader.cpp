@@ -108,6 +108,43 @@ void Shader::RenderVS()
 		D3D::GetDC()->GSSetShader(geometryShader, nullptr, 0);
 }
 
+void Shader::RecompileVS(string vs)
+{
+	if (vsName == vs)
+		return;
+
+	vsName = vs;
+
+	vertexShader->Release();
+	inputLayout->Release();
+	vertexBlob->Release();
+
+	CreateVertexShader();
+	CreateInputLayout();
+}
+
+void Shader::RecompilePS(string ps)
+{
+	if (psName == ps)
+		return;
+
+	psName = ps;
+	pixelShader->Release();
+	pixelBlob->Release();
+
+	CreatePixelShader();
+}
+
+wstring Shader::GetShaderfile()
+{
+	for (auto iter = totalShader.begin(); iter != totalShader.end(); iter++)
+	{
+		if ((*iter).second == this)
+			return (*iter).first;
+	}
+	return L"";
+}
+
 HRESULT Shader::CompileShader(_In_ LPCWSTR srcFile, _In_ LPCSTR entryPoint, _In_ LPCSTR profile, _Outptr_ ID3DBlob** blob)
 {
 	if (!srcFile || !entryPoint || !profile || !blob)

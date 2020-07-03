@@ -31,9 +31,7 @@ public:
 	virtual void LateUpdate() override;
 	void SetUpRender();
 	virtual void Render(Camera* viewer) override;
-	virtual void PreRender(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
-	virtual void RemoveFromParent() override;
 
 public:
 	void GetMatrix(Matrix* matrix);
@@ -59,7 +57,7 @@ public:
 	{
 		return TYPE_VIEWER;
 	}
-	
+	RenderTarget* GetRenderTarget();
 protected :
 	void CreateCameraDefault();
 	void CreateRender2DOption();
@@ -77,6 +75,7 @@ protected:
 	class Perspective* perspective;
 	class Viewport* viewport;
 	class Viewport* renderViewport;
+	
 	CameraOption default;
 	
 	ViewProjectionBuffer* viewProjection;

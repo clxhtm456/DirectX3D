@@ -21,20 +21,18 @@ cbuffer World : register(b1)
 	World CB_World;
 }
 //////////////////////////////PSBuffer
-struct Light
+struct LightDesc
 {
-	float3 lightDirection;
-	float specExp;
-
-	float4 ambientLight;
-
-	int isSpecularMap;
-	int isNormalMap;
+	float4 Ambient;
+	float4 Specular;
+	float3 Direction;
+	float Padding;
+	float3 Position;
 };
 
 cbuffer Light : register(b0)
 {
-	Light CB_Light;
+	LightDesc CB_Light;
 }
 
 struct MaterialDesc
@@ -112,15 +110,15 @@ struct PixelInput
 };
 
 
-float4 ComputeLight(PixelInput input)
+float4 ComputeLight(float3 normal, float3 viewPos, float4 wPosition)
 {
 	float4 output;
-	float3 lightDirection = -CB_Light.lightDirection;
-	float NdotL = dot(lightDirection, normalize(input.Normal));
+	float3 lightDirection = -CB_Light.Direction;
+	float NdotL = dot(lightDirection, normalize(normal));
     //NdotL = saturate(NdotL);
 
-	float4 Ambient = CB_Light.ambientLight * CB_Material.Ambient;
-	float3 E = normalize(input.ViewPos - input.wPosition);
+	float4 Ambient = CB_Light.Ambient * CB_Material.Ambient;
+	float3 E = normalize(viewPos - wPosition);
 	float4 Diffuse = CB_Material.Diffuse * NdotL;
 	float4 Specular = float4(0, 0, 0, 0);
 	float4 Emissive = float4(0, 0, 0, 0);
@@ -130,7 +128,7 @@ float4 ComputeLight(PixelInput input)
 		[flatten]
 		if (any(CB_Material.Specular.rgb))
 		{
-			float3 R = normalize(reflect(-lightDirection, input.Normal));
+			float3 R = normalize(reflect(-lightDirection, normal));
 			float RdotE = saturate(dot(R, E));
 
 			float specularVal = pow(RdotE, CB_Material.Specular.a);
@@ -141,7 +139,7 @@ float4 ComputeLight(PixelInput input)
 	[flatten]
 	if (any(CB_Material.Emissive.rgb))
 	{
-		float NdotE = dot(E, normalize(input.Normal));
+		float NdotE = dot(E, normalize(normal));
 
 		float emissiveVal = smoothstep(1.0f - CB_Material.Emissive.a, 1.0f, 1.0f - saturate(NdotE));
 
