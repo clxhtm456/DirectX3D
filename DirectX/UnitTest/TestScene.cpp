@@ -14,28 +14,28 @@ void TestScene::Initialize()
 	cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
 	cube->GetMaterial()->SetSpecular(1, 1, 1, 1);
 	AddChild(cube);
-	
+	/*
 	auto grid = MeshGrid::Create(10,10);
 	grid->SetScale(12, 1, 12);
 	grid->SetPosition(0, 0, 0);
 	grid->GetMaterial()->SetDiffuseMap("../../_Textures/Floor.png");
 	grid->GetMaterial()->SetNormalMap("../../_Textures/Floor_Normal.png");
 	grid->GetMaterial()->SetSpecularMap("../../_Textures/Floor_Specular.png");
-	AddChild(grid);
+	AddChild(grid);*/
 
-	auto sphere = MeshSphere::Create(0.5f,20,20);
+	/*auto sphere = MeshSphere::Create(0.5f,20,20);
 	sphere->SetScale(5, 5, 5);
 	sphere->SetPosition(-30,15,-15);
 	sphere->GetMaterial()->SetDiffuseMap("../../_Textures/Wall.png");
 	sphere->GetMaterial()->SetSpecularMap("../../_Textures/Wall_Specular.png");
 	sphere->GetMaterial()->SetNormalMap("../../_Textures/Wall_Normal.png");
 	sphere->GetMaterial()->SetEmissive(Color(1.0f, 0.0f, 0.0f, 1.0f));
-	AddChild(sphere);
+	AddChild(sphere);*/
 
-	auto cylinder = MeshCylinder::Create(0.5f,3.0f,20,20);
+	/*auto cylinder = MeshCylinder::Create(0.5f,3.0f,20,20);
 	cylinder->SetScale(5, 5, 5);
 	cylinder->SetPosition(-30, 6, -15);
-	AddChild(cylinder);
+	AddChild(cylinder);*/
 
 	auto renderImage = Render2D::Create();
 	renderImage->SetSRV(GetDirectionLight()->GetRenderTargetSRV());
@@ -50,10 +50,10 @@ void TestScene::Initialize()
 	terrain->SetScale(2, 2, 2);
 	AddChild(terrain);*/
 
-	//auto kachujin = Model::Create("pikachu");
+	auto kachujin = Model::Create("pikachu");
 	//kachujin->SetScale(0.05f, 0.05f, 0.05f);
 
-	//AddChild(kachujin);
+	AddChild(kachujin);
 }
 
 void TestScene::Destroy()

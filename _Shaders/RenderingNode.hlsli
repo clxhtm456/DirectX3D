@@ -28,6 +28,9 @@ struct LightDesc
 	float3 Direction;
 	float Padding;
 	float3 Position;
+
+	matrix LightView;
+	matrix LightProjection;
 };
 
 cbuffer Light : register(b0)

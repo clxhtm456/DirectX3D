@@ -1,61 +1,49 @@
+#include "RenderingNode.hlsli"
+
 cbuffer VPBuffer : register(b2)
 {
 	matrix DepthView;
 	matrix DepthProjection;
 }
-cbuffer WorldBuffer : register(b1)
-{
-	matrix DepthWorld;
-}
+//cbuffer WorldBuffer : register(b1)
+//{
+//	matrix DepthWorld;
+//}
 
 struct VertexInput
 {
 	float4 Position : POSITION;
 };
 
-struct PixelInput
+struct DepthInput
 {
 	float4 Position : SV_POSITION;
-	float4 DepthPosition : TEXTURE0;
+	float4 sPosition : POSITION1;
 };
 
 
-PixelInput VS(VertexInput input)
+DepthInput VS(VertexInput input)
 {
-	PixelInput output;
+	DepthInput output;
 
-	input.Position.w = 1.0f;
+	//input.Position.w = 1.0f;
 
-	output.Position = mul(input.Position, DepthWorld);
+	output.Position = mul(input.Position, CB_World.World);
 	output.Position = mul(output.Position, DepthView);
 	output.Position = mul(output.Position, DepthProjection);
 
-	output.DepthPosition = output.Position;
+	/*output.Position = mul(output.Position, CB_Light.LightView);
+	output.Position = mul(output.Position, CB_Light.LightProjection);*/
+
+	output.sPosition = output.Position;
 
 	return output;
 }
 
-float4 PS(PixelInput input) : SV_TARGET
+float4 PS(DepthInput input) : SV_TARGET
 {
-	float depthValue;
-	float4 color;
+	 float depth = input.Position.z / input.Position.w;
 
-	depthValue = input.DepthPosition.z / input.DepthPosition.w;
 
-	if (depthValue < 0.9f)
-	{
-		color = float4(1.0f, 0.0f, 0.0f, 1.0f);
-	}
-
-	if (depthValue > 0.9f)
-	{
-		color = float4(0.0f, 1.0f, 0.0f, 1.0f);
-	}
-
-	if (depthValue > 0.925f)
-	{
-		color = float4(0.0f, 0.0f, 1.0f, 1.0f);
-	}
-
-	return color;
+	return float4(depth, depth, depth, 1.0f);
 }

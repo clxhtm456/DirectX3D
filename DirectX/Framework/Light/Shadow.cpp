@@ -43,8 +43,8 @@ void Shadow::Set()
 {
 	UpdateVolume();
 
-	psBuffer->SetPSBuffer(2);
 	vsBuffer->SetVSBuffer(2);
+	psBuffer->SetPSBuffer(2);
 
 	D3D::GetDC()->PSSetShaderResources(3, 1, &shadowMap);
 	D3D::GetDC()->PSSetSamplers(3, 1, &shadowSample);

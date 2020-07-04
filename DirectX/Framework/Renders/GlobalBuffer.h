@@ -81,9 +81,11 @@ public:
 		Color Specular;
 
 		Vector3 direction;
-		float padding;
 		Vector3 position;
-		float padding2;
+
+		Matrix lightView;
+		Matrix lightProjection;
+		float padding[2];
 	}data;
 
 	LightBuffer() : ConstantBuffer(&data, sizeof(Data))
@@ -93,6 +95,9 @@ public:
 		data.direction = Vector3(0, -0.2, 0);
 
 		data.position = Vector3(0,0,0);
+
+		data.lightView = XMMatrixIdentity();
+		data.lightProjection = XMMatrixIdentity();
 	}
 };
 

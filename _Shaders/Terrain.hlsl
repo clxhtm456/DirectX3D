@@ -67,7 +67,7 @@ float4 PS(VertexOutput input) : SV_TARGET
 	float3 diffuse = BaseMap.Sample(BaseSamp, input.Uv).rgb;
 	//float NdotL = dot(normalize(input.Normal), -GlobalLight.Direction);
 
-	float NdotL = dot(normalize(input.Normal), -CB_Light.lightDirection);
+	float NdotL = dot(normalize(input.Normal), -CB_Light.Direction);
 
 	return float4(diffuse * NdotL, 1);
 }

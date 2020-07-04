@@ -45,26 +45,6 @@ struct ShadowPixelInput
 	float3 ViewPos : VIEWPOS;
 };
 
-ShadowPixelInput VS_Shadow(ShadowVertexInput input)
-{
-	ShadowPixelInput output;
-	output.Position = WorldPosition(input.Position);
-	output.wPosition = output.Position;
-	output.Position = VPPosition(output.Position);
-
-	output.Uv = input.Uv;
-	output.Normal = mul(input.Normal, (float3x3)CB_World.World);
-	output.Tangent = mul(input.Tangent, (float3x3)CB_World.World);
-	output.BiNormal = cross(output.Normal, output.Tangent);
-	output.ViewPos = ViewPosition();
-
-	output.sPosition = WorldPosition(input.Position);
-	output.sPosition = mul(output.sPosition, ShadowView);
-	output.sPosition = mul(output.sPosition, ShadowProjection);
-
-	return output;
-}
-
 float4 PS_Shadow(ShadowPixelInput input) : SV_Target
 {
 	float3 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv).rgb;

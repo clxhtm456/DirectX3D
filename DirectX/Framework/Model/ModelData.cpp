@@ -48,7 +48,23 @@ void ModelMeshPart::Render()
 
 void ModelMeshPart::Binding()
 {
-	vertexBuffer = new VertexBuffer(vertices.data(), sizeof(ModelVertexType), vertices.size(),0,false,true);
+	/*Vertex tvertices[4];
+	tvertices[0].Position = Vector3(-0.5f, -0.5f, 0.0f);
+	tvertices[1].Position = Vector3(-0.5f, +0.5f, 0.0f);
+	tvertices[2].Position = Vector3(+0.5f, -0.5f, 0.0f);
+	tvertices[3].Position = Vector3(+0.5f, +0.5f, 0.0f);
+
+	UINT tindices[6];
+	tindices[0] = 0;
+	tindices[1] = 1;
+	tindices[2] = 2;
+	tindices[3] = 2;
+	tindices[4] = 1;
+	tindices[5] = 3;
+
+	vertexBuffer = new VertexBuffer(tvertices, 4,sizeof(Vertex));
+	indexBuffer = new IndexBuffer(tindices, 6);*/
+	vertexBuffer = new VertexBuffer(vertices.data(), vertices.size(),sizeof(ModelVertexType));
 	indexBuffer = new IndexBuffer(indices.data(), indices.size());
 }
 

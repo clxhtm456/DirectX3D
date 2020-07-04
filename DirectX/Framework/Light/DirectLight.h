@@ -14,14 +14,21 @@ private:
 public:
 	void SetBuffer(OUT class LightBuffer* buffer);
 	Vector3 GetDirection() { return direction; }
+	void UseShadow(bool val) { useShadow = val; }
 private:
 	Vector3 direction = Vector3(-1, -1, 1);
 	Color ambient = Color(0, 0, 0, 1);
 	Color specular = Color(1, 1, 1, 1);
 	Vector3 position = Vector3(0, 0, 0);
+
+	Matrix lightView;
+	Matrix lightProjection;
+private:
+	bool useShadow = false;
 private:
 	class Shadow* shadow;
-
+private:
+	void CalcLightVP();
 protected:
 	void SetRNShader2Origin(RenderingNode* node) override;
 	// Node을(를) 통해 상속됨
