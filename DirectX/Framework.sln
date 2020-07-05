@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4
 		..\_Shaders\FModel.hlsl = ..\_Shaders\FModel.hlsl
 		..\_Shaders\Mesh.hlsl = ..\_Shaders\Mesh.hlsl
 		..\_Shaders\Model.hlsl = ..\_Shaders\Model.hlsl
+		..\_Shaders\ModelAnimation.hlsl = ..\_Shaders\ModelAnimation.hlsl
 		..\_Shaders\RedMesh.hlsl = ..\_Shaders\RedMesh.hlsl
 		..\_Shaders\Render2D.hlsl = ..\_Shaders\Render2D.hlsl
 		..\_Shaders\RenderingNode.hlsli = ..\_Shaders\RenderingNode.hlsli
@@ -25,14 +26,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4
 		..\_Shaders\Terrain.hlsl = ..\_Shaders\Terrain.hlsl
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FBXExtractor", "FBXExtractor\FBXExtractor.vcxproj", "{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5} = {4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PS", "PS", "{B36EC4EA-A1A1-4392-AD22-E7436A851463}"
 	ProjectSection(SolutionItems) = preProject
 		..\_Shaders\PSShadow.hlsl = ..\_Shaders\PSShadow.hlsl
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelExtractor", "ModelExtractor\ModelExtractor.vcxproj", "{47D9C802-2089-4722-B18C-F77E22BACD4B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5} = {4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}
 	EndProjectSection
 EndProject
 Global
@@ -59,14 +60,14 @@ Global
 		{EB7A4EF9-D765-4687-A483-1118A7DBB965}.Release|x64.Build.0 = Release|x64
 		{EB7A4EF9-D765-4687-A483-1118A7DBB965}.Release|x86.ActiveCfg = Release|Win32
 		{EB7A4EF9-D765-4687-A483-1118A7DBB965}.Release|x86.Build.0 = Release|Win32
-		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Debug|x64.ActiveCfg = Debug|x64
-		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Debug|x64.Build.0 = Debug|x64
-		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Debug|x86.ActiveCfg = Debug|Win32
-		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Debug|x86.Build.0 = Debug|Win32
-		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Release|x64.ActiveCfg = Release|x64
-		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Release|x64.Build.0 = Release|x64
-		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Release|x86.ActiveCfg = Release|Win32
-		{30B0228F-2E45-4C52-9DE4-A1D3BEB32708}.Release|x86.Build.0 = Release|Win32
+		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Debug|x64.ActiveCfg = Debug|x64
+		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Debug|x64.Build.0 = Debug|x64
+		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Debug|x86.ActiveCfg = Debug|Win32
+		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Debug|x86.Build.0 = Debug|Win32
+		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Release|x64.ActiveCfg = Release|x64
+		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Release|x64.Build.0 = Release|x64
+		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Release|x86.ActiveCfg = Release|Win32
+		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

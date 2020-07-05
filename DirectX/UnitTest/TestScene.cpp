@@ -50,8 +50,11 @@ void TestScene::Initialize()
 	terrain->SetScale(2, 2, 2);
 	AddChild(terrain);*/
 
-	auto kachujin = Model::Create("pikachu");
-	//kachujin->SetScale(0.05f, 0.05f, 0.05f);
+	auto kachujin = ModelAnim::Create("pikachu");
+	kachujin->SetPosition(20, 0, 0);
+	kachujin->AddClip("idle");
+	kachujin->PlayClip(1, true);
+	kachujin->SetScale(0.05f, 0.05f, 0.05f);
 
 	AddChild(kachujin);
 }
@@ -89,8 +92,8 @@ void TestScene::CreateFreedomCamera()
 	//option.useGBuffer = true;
 
 	freedomCam = Freedom::Create(option);
-	freedomCam->SetPosition(20, 37, -68);
-	freedomCam->SetRotationDegree(30, -20, 0);
+	freedomCam->SetPosition(27, 12, 20);
+	freedomCam->SetRotationDegree(20, -157, 0);
 	//AddChild(freedomCam);
 	SetMainCamera(freedomCam);
 

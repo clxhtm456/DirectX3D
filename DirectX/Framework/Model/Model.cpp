@@ -46,7 +46,6 @@ void Model::CalcWorldMatrix()
 {
 	Super::CalcWorldMatrix();
 	modelData->CopyGlobalBoneTo(boneTransforms, GetWorld());
-
 }
 
 void Model::Update()
@@ -60,11 +59,12 @@ void Model::Render(Camera* viewer)
 	VPSet(viewer);
 	LightSet();
 
+	boneTransforms[1].r[3] = XMVectorSet( 50.0f,0,0,0);
 	modelData->SetBones(boneTransforms.data(), boneTransforms.size());
 
-	vector<ModelMesh*> meshes = modelData->GetMeshes();
+	vector<ModelMesh*>* meshes = modelData->GetMeshes();
 
-	for (ModelMesh* mesh : meshes)
+	for (ModelMesh* mesh : *meshes)
 	{
 		int index = mesh->GetParentBoneIndex();
 

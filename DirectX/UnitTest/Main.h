@@ -1,7 +1,8 @@
 #pragma once
 #include "Systems/Scene.h"
+#include "Systems/IExecute.h"
 
-class Main : public Scene
+class Main : public IExecute
 {
 public:
 	virtual void Initialize() override;

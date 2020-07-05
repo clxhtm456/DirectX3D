@@ -1,6 +1,14 @@
 #include "Framework.h"
 #include "ModelData.h"
 
+//////////////////////////////////////////////////////
+/*
+
+				ModelMesh
+
+*/
+//////////////////////////////////////////////////////
+
 ModelMesh::ModelMesh()
 {
 }
@@ -22,6 +30,14 @@ void ModelMesh::Render()
 	for (ModelMeshPart* part : meshParts)
 		part->Render();
 }
+
+//////////////////////////////////////////////////////
+/*
+
+				ModelMeshPart
+
+*/
+//////////////////////////////////////////////////////
 
 ModelMeshPart::ModelMeshPart()
 {
@@ -67,6 +83,14 @@ void ModelMeshPart::Binding()
 	vertexBuffer = new VertexBuffer(vertices.data(), vertices.size(),sizeof(ModelVertexType));
 	indexBuffer = new IndexBuffer(indices.data(), indices.size());
 }
+
+//////////////////////////////////////////////////////
+/*
+
+				ModelData
+
+*/
+//////////////////////////////////////////////////////
 
 ModelData::ModelData(string modelDir)
 {
@@ -312,4 +336,222 @@ ModelBone* ModelData::BoneByName(string name)
 	}
 
 	return nullptr;
+}
+
+//////////////////////////////////////////////////////
+/*
+
+				ModelKeyFrame
+
+*/
+//////////////////////////////////////////////////////
+
+ModelKeyFrame::ModelKeyFrame()
+{
+}
+
+ModelKeyFrame::~ModelKeyFrame()
+{
+}
+
+Matrix ModelKeyFrame::GetInterpolatedMatrix(float time)
+{
+
+	UINT index1 = 0;
+	UINT index2 = 0;
+	float interpolatedTime = 0.0f;
+
+	CalcKeyFrameIndex(time, index1, index2, interpolatedTime);
+
+	return GetInterpolatedMatrix(index1, index2, interpolatedTime);
+}
+
+Matrix ModelKeyFrame::GetInterpolatedMatrix(UINT index1, UINT index2, float t)
+{
+	XMVECTOR scale;
+	
+	scale = XMVectorLerp(XMLoadFloat3(&transforms[index1].scale), XMLoadFloat3(&transforms[index2].scale), t);
+
+	XMVECTOR rotation;
+	rotation = XMQuaternionSlerp(XMLoadFloat4(&transforms[index1].rotation), XMLoadFloat4(&transforms[index2].rotation), t);
+
+	XMVECTOR position;
+	position = XMVectorLerp(XMLoadFloat3(&transforms[index1].position), XMLoadFloat3(&transforms[index2].position), t);
+
+	Matrix S, R, T;
+	S = XMMatrixScaling(XMVectorGetX(scale), XMVectorGetY(scale), XMVectorGetZ(scale));
+	R = XMMatrixRotationQuaternion(rotation);
+	T = XMMatrixTranslation(XMVectorGetX(position), XMVectorGetY(position), XMVectorGetZ(position));
+
+	return S * R * T;
+}
+
+UINT ModelKeyFrame::GetKeyFrameIndex(float time)
+{
+	UINT start = 0, end = frameCount - 1;
+	if (time >= transforms[end].time)
+		return end;
+
+	do
+	{
+		UINT middle = (start + end) / 2;
+
+		if (end - start <= 1)
+			break;
+		else if (transforms[middle].time < time)
+			start = middle;
+		else if (transforms[middle].time > time)
+			end = middle;
+		else
+		{
+			start = middle;
+			break;
+		}
+	} while ((end - start) > 1);
+
+	return start;
+}
+
+void ModelKeyFrame::CalcKeyFrameIndex(float time, OUT UINT& index1, OUT UINT& index2, OUT float& interpolatedTime)
+{
+	index1 = GetKeyFrameIndex(time);
+	index2 = index1 + 1;
+
+	if (index1 >= frameCount - 1)
+	{
+		index1 = index2 = frameCount - 1;
+		interpolatedTime = 1.0f;
+	}
+	else
+	{
+		float time1 = time - transforms[index1].time;
+		float time2 = transforms[index2].time - transforms[index1].time;
+
+		interpolatedTime = time1 / time2;
+	}
+}
+//////////////////////////////////////////////////////
+/*
+
+				ModelClip
+
+*/
+//////////////////////////////////////////////////////
+ModelClip::ModelClip(string file) : 
+	playTime(0.0f), 
+	isRepeat(false), 
+	speed(1.0f), 
+	isLockRoot(false),
+	EndEvent(nullptr)
+{
+	ReadAnimation(file);
+}
+
+
+ModelClip::~ModelClip()
+{
+	for (auto key : keyFrameMap)
+		delete key.second;
+}
+
+Matrix ModelClip::GetKeyFrameMatrix(ModelBone* bone)
+{
+	string boneName = bone->name;
+
+	if (keyFrameMap.find(boneName) == keyFrameMap.end())
+	{
+		return XMMatrixIdentity();
+	}
+
+	ModelKeyFrame* keyFrame = keyFrameMap[boneName];
+
+	playTime += speed * Time::Delta();
+
+	if (isRepeat)
+	{
+		if (playTime >= duration)
+		{
+			while (playTime - duration >= 0)
+				playTime -= duration;
+		}
+	}
+	else
+	{
+		if (playTime >= duration)
+		{
+			playTime = duration;
+			if (EndEvent != nullptr)
+			{
+				playTime = 0.0f;
+				EndEvent();
+			}
+		}
+	}
+
+	Matrix invGlobal = bone->global;
+	invGlobal = XMMatrixInverse(nullptr, invGlobal);
+
+	Matrix animation = keyFrame->GetInterpolatedMatrix(playTime);
+
+	Matrix parent;
+	int parentIndex = bone->parentIndex;
+	if (parentIndex < 0)
+	{
+		if (isLockRoot)
+			parent = XMMatrixIdentity();
+		else
+			parent = animation;
+	}
+	else
+	{
+		parent = animation * bone->parent->global;
+	}
+
+	return invGlobal * parent;
+}
+
+void ModelClip::UpdateKeyFrame(ModelBone* bone)
+{
+	bone->local = GetKeyFrameMatrix(bone);
+}
+
+void ModelClip::ReadAnimation(string file)
+{
+	BinaryReader* r = new BinaryReader();
+	r->Open(String::ToWString(file));
+
+	name = r->String();
+	duration = r->Float();
+	frameRate = r->Float();
+	frameCount = r->Int();
+
+	UINT count = r->UInt();
+	for (UINT i = 0; i < count; i++)
+	{
+		ModelKeyFrame* key = new ModelKeyFrame();
+		key->boneName = r->String();
+		key->duration = duration;
+		key->frameCount = frameCount;
+		key->frameRate = frameRate;
+
+		UINT size = r->UInt();
+		if (size > 0)
+		{
+			key->transforms.resize(size);
+
+			void* ptr = (void*)key->transforms.data();
+			r->BYTE(&ptr, sizeof(FbxKeyFrameData) * size);
+
+		}
+		keyFrameMap.insert({ key->boneName, key });
+	}
+
+	delete r;
+}
+
+void ModelClip::Reset()
+{
+	isRepeat = false;
+	speed = 1.0f;
+	playTime = 0.0f;
 }

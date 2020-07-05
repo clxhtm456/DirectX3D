@@ -3,7 +3,7 @@
 class Window
 {
 public:
-	static WPARAM Run(class Scene* main);
+	static WPARAM Run(class IExecute* main);
 
 private:
 	static void Create();
@@ -20,5 +20,5 @@ public:
 	static void ReleasePoolClear();
 
 private:
-	static class Scene* mainExecute;
+	static class IExecute* mainExecute;
 };

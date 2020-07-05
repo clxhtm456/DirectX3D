@@ -62,13 +62,10 @@ typedef XMFLOAT3 Vector3;
 typedef XMFLOAT4 Vector4;
 typedef XMFLOAT4 Color;
 typedef XMMATRIX Matrix;
-typedef XMVECTOR Quaternion;
+typedef XMFLOAT4 Quaternion;
 typedef XMVECTOR Plane;
 
-#define DECVEC3(__result__,__vec1__,__vec2__)\
-{\
-	XMStoreFloat3(&__result__, XMLoadFloat3(&__vec1__) - XMLoadFloat3(&__vec2__));\
-}
+#define LERP(s, e, t) (s + (e - s)*t)
 
 #define TYPE_NODE	(1<<1)
 #define TYPE_VIEWER	(1<<2)
@@ -137,5 +134,6 @@ typedef XMVECTOR Plane;
 #include "Meshes/Terrain.h"
 
 #include "Model/Model.h"
+#include "Model/ModelAnim.h"
 
 #include "Systems/Scene.h"

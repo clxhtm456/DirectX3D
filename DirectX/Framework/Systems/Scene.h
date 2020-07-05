@@ -5,6 +5,9 @@ class Scene
 private:
 	friend class Main;
 public:
+	Scene();
+	virtual ~Scene();
+public:
 	virtual void Initialize() = 0;
 	virtual void Ready() = 0;
 	virtual void Destroy() = 0;

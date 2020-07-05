@@ -43,7 +43,9 @@
     <ClCompile Include="Model\FModel.cpp" />
     <ClCompile Include="Model\FModelData.cpp" />
     <ClCompile Include="Model\Model.cpp" />
+    <ClCompile Include="Model\ModelAnim.cpp" />
     <ClCompile Include="Model\ModelData.cpp" />
+    <ClCompile Include="Model\ModelTweener.cpp" />
     <ClCompile Include="Objects\Node.cpp" />
     <ClCompile Include="Objects\ReflectionNode.cpp" />
     <ClCompile Include="Objects\RenderingNode.cpp" />
@@ -103,7 +105,9 @@
     <ClInclude Include="Model\FModel.h" />
     <ClInclude Include="Model\FModelData.h" />
     <ClInclude Include="Model\Model.h" />
+    <ClInclude Include="Model\ModelAnim.h" />
     <ClInclude Include="Model\ModelData.h" />
+    <ClInclude Include="Model\ModelTweener.h" />
     <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Objects\ReflectionNode.h" />
     <ClInclude Include="Objects\RenderingNode.h" />
@@ -123,6 +127,7 @@
     <ClInclude Include="Systems\Context.h" />
     <ClInclude Include="Systems\D3D.h" />
     <ClInclude Include="Systems\Gui.h" />
+    <ClInclude Include="Systems\IExecute.h" />
     <ClInclude Include="Systems\Keyboard.h" />
     <ClInclude Include="Systems\Mouse.h" />
     <ClInclude Include="Systems\Scene.h" />

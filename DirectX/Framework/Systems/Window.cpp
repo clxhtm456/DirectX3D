@@ -1,14 +1,15 @@
 #include "Framework.h"
 #include "Window.h"
 #include "Scene.h"
+#include "Systems/IExecute.h"
 
-Scene* Window::mainExecute = NULL;
+IExecute* Window::mainExecute = NULL;
 vector<Node*> Window::releaseList;
 
 
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 
-WPARAM Window::Run(Scene * main)
+WPARAM Window::Run(IExecute* main)
 {
 	mainExecute = main;
 	Create();

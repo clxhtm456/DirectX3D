@@ -208,6 +208,12 @@
     <ClCompile Include="Objects\ReflectionNode.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
+    <ClCompile Include="Model\ModelAnim.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\ModelTweener.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\Keyboard.h">
@@ -390,6 +396,15 @@
     </ClInclude>
     <ClInclude Include="Objects\ReflectionNode.h">
       <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Systems\IExecute.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\ModelAnim.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\ModelTweener.h">
+      <Filter>Model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

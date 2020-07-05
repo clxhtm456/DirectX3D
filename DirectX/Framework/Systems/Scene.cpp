@@ -277,3 +277,11 @@ DirectionLight* Scene::GetDirectionLight()
 {
 	return _directionLight;
 }
+
+Scene::Scene()
+{
+}
+
+Scene::~Scene()
+{
+}
