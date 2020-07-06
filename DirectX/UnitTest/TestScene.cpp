@@ -6,7 +6,7 @@
 
 void TestScene::Initialize()
 {
-	CreateFreedomCamera();
+	//CreateFreedomCamera();
 
 	cube = MeshCube::Create();
 	cube->SetScale(20, 10, 20);
@@ -53,8 +53,8 @@ void TestScene::Initialize()
 
 	auto kachujin = ModelAnim::Create("pikachu");
 	kachujin->SetPosition(20, 0, 0);
-	//kachujin->AddClip("idle");
-	//kachujin->PlayClip(1, true);
+	kachujin->AddClip("idle");
+	kachujin->PlayClip(1, true);
 	kachujin->SetScale(0.05f, 0.05f, 0.05f);
 
 	AddChild(kachujin);

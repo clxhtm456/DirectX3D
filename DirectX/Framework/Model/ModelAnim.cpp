@@ -56,18 +56,11 @@ void ModelAnim::Update()
 
 	vector<ModelBone*>* bones = (modelData->GetBones());
 
-	/*for (UINT i = 0; i < 2; i++)
+	for (UINT i = 0; i < bones->size(); i++)
 	{
 		ModelBone* bone = bones->at(i);
 		tweener->UpdateBlending(bone);
-	}*/
-
-
-	/*ModelBone* bone = bones->at(1);
-	auto matrix = bone->local;
-	XMVECTOR& position = matrix.r[3];
-	position += XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-	bone->local = matrix;*/
+	}
 
 	CalcWorldMatrix();
 }

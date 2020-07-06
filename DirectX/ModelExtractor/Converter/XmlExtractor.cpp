@@ -680,137 +680,220 @@ FbxClip* XmlExtractor::ReadAnimation(UINT index)
 
 void XmlExtractor::ReadMesh(FbxNode* node, int parentBone)
 {
-	if (node->GetMesh() == nullptr) return;
+	//if (node->GetMesh() == nullptr) return;
 
-	FbxMeshData* meshData = new FbxMeshData();
-	fbxsdk::FbxMesh* srcMesh = node->GetMesh();
-	const int lVertexCount = srcMesh->GetControlPointsCount();
-	const int lPolygonCount = srcMesh->GetPolygonCount();
+	//FbxMeshData* meshData = new FbxMeshData();
+	//fbxsdk::FbxMesh* srcMesh = node->GetMesh();
+	//const int lVertexCount = srcMesh->GetControlPointsCount();
+	//const int lPolygonCount = srcMesh->GetPolygonCount();
 
-	int vertexCounter = 0;
+	//int vertexCounter = 0;
 
-	meshData->name = node->GetName();
-	meshData->parentBone = parentBone;
+	//meshData->name = node->GetName();
+	//meshData->parentBone = parentBone;
 
-	meshData->mesh = srcMesh;
+	//meshData->mesh = srcMesh;
 
-	vector<FbxMeshPartData*> meshPart;
+	//vector<FbxMeshPartData*> meshPart;
 
-	int count = m_scene->GetMaterialCount();
-	for (int i = 0; i < m_scene->GetMaterialCount(); i++)
+	//int count = m_scene->GetMaterialCount();
+	//for (int i = 0; i < m_scene->GetMaterialCount(); i++)
+	//{
+	//	fbxsdk::FbxSurfaceMaterial* material = m_scene->GetMaterial(i);
+
+	//	FbxVector4* lControlPoints = srcMesh->GetControlPoints();
+
+	//	std::unordered_map<int, UINT> indexMapping;
+
+	//	vector<FbxVertex*> vertices;
+	//	
+	//	FbxMeshPartData* meshPartData = new FbxMeshPartData();
+
+	//	vector<Vector3> positions;
+	//	for (UINT v = 0; v < lVertexCount; v++)
+	//	{
+	//		Vector3 position;
+
+	//		position.x = static_cast<float>(lControlPoints[v].Buffer()[0]);
+	//		position.y = static_cast<float>(lControlPoints[v].Buffer()[1]);
+	//		position.z = static_cast<float>(lControlPoints[v].Buffer()[2]);
+
+	//		positions.push_back(position);
+	//	}
+
+	//	for (UINT lPolygonIndex = 0; lPolygonIndex < lPolygonCount; lPolygonIndex++)
+	//	{
+	//		const int lVerticeCount = srcMesh->GetPolygonSize(lPolygonIndex);
+	//		for (UINT lVerticeIndex = 0; lVerticeIndex < lVerticeCount; lVerticeIndex++)//3
+	//		{
+	//			int controlPointIndex = srcMesh->GetPolygonVertex(lPolygonIndex, lVerticeIndex);
+
+	//			UINT indexBuffer;
+
+	//			FbxVertex* vertex = new FbxVertex();
+	//			
+
+	//			vertex->vertex.Position = positions[controlPointIndex];
+	//			
+	//			ReadNormal(srcMesh, controlPointIndex, vertexCounter, vertex->vertex.Normal);
+
+	//			//ReadTangent(srcMesh, controlPointIndex, vertexCounter, vertex.Tangent);
+
+	//			//ReadUv(srcMesh, controlPointIndex, srcMesh->GetTextureUVIndex(lPolygonIndex, lVerticeIndex), vertex->vertex.Uv);
+	//			int uvIndex = srcMesh->GetTextureUVIndex(lPolygonIndex, lVerticeIndex);
+	//			vertex->vertex.Uv = FbxUtility::GetUV(srcMesh, controlPointIndex, uvIndex);
+
+	//			vertex->materialName = FbxUtility::GetMaterialName(srcMesh, lPolygonIndex, controlPointIndex);
+	//			
+
+	//			auto lookup = indexMapping.find(vertexCounter);
+	//			if (lookup != indexMapping.end()) 
+	//			{ 
+	//				meshPartData->indices.push_back(lookup->second);
+	//			}
+	//			else 
+	//			{ 
+	//				unsigned int index = vertexCounter;
+	//				indexMapping[vertexCounter] = index;
+	//				meshPartData->indices.push_back(index);
+	//				meshPartData->vertices.push_back(vertex->vertex);
+	//			}
+
+	//			vertexCounter++;
+	//			vertices.push_back(vertex);
+	//		}
+	//		UINT index0 = vertices.size() - 3;
+	//		UINT index1 = vertices.size() - 2;
+	//		UINT index2 = vertices.size() - 1;
+
+	//		ModelVertexType vertex0 = vertices[index0]->vertex;
+	//		ModelVertexType vertex1 = vertices[index1]->vertex;
+	//		ModelVertexType vertex2 = vertices[index2]->vertex;
+
+	//		XMVECTOR p0 = XMVectorSet (vertex0.Position.x, vertex0.Position.y, vertex0.Position.z,0);
+	//		XMVECTOR p1 = XMVectorSet (vertex1.Position.x, vertex1.Position.y, vertex1.Position.z,0);
+	//		XMVECTOR p2 = XMVectorSet (vertex2.Position.x, vertex2.Position.y, vertex2.Position.z,0);
+
+	//		Vector2 uv0 = vertex0.Uv;
+	//		Vector2 uv1 = vertex1.Uv;
+	//		Vector2 uv2 = vertex2.Uv;
+
+	//		XMVECTOR e0 = p1 - p0;
+	//		XMVECTOR e1 = p2 - p0;
+
+	//		float u0 = uv1.x - uv0.x;
+	//		float u1 = uv2.x - uv0.x;
+	//		float v0 = uv1.y - uv0.y;
+	//		float v1 = uv2.y - uv0.y;
+
+	//		float d = 1.0f / (u0 * v1 - v0 * u1);
+
+	//		XMVECTOR tangent;
+	//		tangent = (v1 * e0 - v0 * e1) * d;
+
+	//		XMStoreFloat3(&vertices[index0]->vertex.Tangent,(XMLoadFloat3(&vertices[index0]->vertex.Tangent) + tangent));
+	//		XMStoreFloat3(&vertices[index1]->vertex.Tangent, (XMLoadFloat3(&vertices[index1]->vertex.Tangent) + tangent));
+	//		XMStoreFloat3(&vertices[index2]->vertex.Tangent, (XMLoadFloat3(&vertices[index2]->vertex.Tangent) + tangent));
+	//	}
+
+	//	for (FbxVertex* vertex : vertices)
+	//	{
+	//		XMVECTOR t = XMVectorSet(vertex->vertex.Tangent.x, vertex->vertex.Tangent.y, vertex->vertex.Tangent.z,0);
+	//		XMVECTOR n = XMVectorSet(vertex->vertex.Normal.x, vertex->vertex.Normal.y, vertex->vertex.Normal.z, 0);
+
+	//		XMVECTOR temp = (t - n * XMVector2Dot(n, t));
+	//		temp = XMVector3Normalize(temp);
+
+	//		XMStoreFloat3(&vertex->vertex.Tangent, temp);
+	//	}
+	//	meshData->vertices = vertices;
+	//	//meshPart.push_back(meshPartData);
+	//	//meshData->meshParts = meshPart;
+	//}
+	//meshes.push_back(meshData);
+
+	FbxMesh* mesh = node->GetMesh();
+
+	vector<FbxVertex*> vertices;
+	for (int p = 0; p < mesh->GetPolygonCount(); p++)
 	{
-		fbxsdk::FbxSurfaceMaterial* material = m_scene->GetMaterial(i);
-
-		FbxVector4* lControlPoints = srcMesh->GetControlPoints();
-
-		std::unordered_map<int, UINT> indexMapping;
-
-		vector<FbxVertex*> vertices;
-		
-		FbxMeshPartData* meshPartData = new FbxMeshPartData();
-
-		vector<Vector3> positions;
-		for (UINT v = 0; v < lVertexCount; v++)
+		for (int vi = 2; vi >= 0; vi--)
 		{
-			Vector3 position;
+			FbxVertex* vertex = new FbxVertex();
 
-			position.x = static_cast<float>(lControlPoints[v].Buffer()[0]);
-			position.y = static_cast<float>(lControlPoints[v].Buffer()[1]);
-			position.z = static_cast<float>(lControlPoints[v].Buffer()[2]);
+			int cpIndex = mesh->GetPolygonVertex(p, vi);
+			vertex->controlPoint = cpIndex;
 
-			positions.push_back(position);
+			FbxVector4 position = mesh->GetControlPointAt(cpIndex);
+			Vector3 temp = FbxUtility::ToVector3(position);
+			XMVECTOR coordPos = XMVector3TransformCoord(XMLoadFloat3(&temp), FbxUtility::Negative());
+			XMStoreFloat3(&vertex->vertex.Position, coordPos);
+
+			FbxVector4 normal;
+			mesh->GetPolygonVertexNormal(p, vi, normal);
+			normal.Normalize();
+			temp = FbxUtility::ToVector3(normal);
+			XMVECTOR coordNor = XMVector3TransformCoord(XMLoadFloat3(&temp), FbxUtility::Negative());
+			XMStoreFloat3(&vertex->vertex.Normal, coordNor);
+
+			vertex->materialName = FbxUtility::GetMaterialName(mesh, p, cpIndex);
+
+			int uvIndex = mesh->GetTextureUVIndex(p, vi);
+			vertex->vertex.Uv = FbxUtility::GetUV(mesh, cpIndex, uvIndex);
+
+			vertices.push_back(vertex);
 		}
+		UINT index0 = vertices.size() - 3;
+		UINT index1 = vertices.size() - 2;
+		UINT index2 = vertices.size() - 1;
 
-		for (UINT lPolygonIndex = 0; lPolygonIndex < lPolygonCount; lPolygonIndex++)
-		{
-			const int lVerticeCount = srcMesh->GetPolygonSize(lPolygonIndex);
-			for (UINT lVerticeIndex = 0; lVerticeIndex < lVerticeCount; lVerticeIndex++)//3
-			{
-				int controlPointIndex = srcMesh->GetPolygonVertex(lPolygonIndex, lVerticeIndex);
+		ModelVertexType vertex0 = vertices[index0]->vertex;
+		ModelVertexType vertex1 = vertices[index1]->vertex;
+		ModelVertexType vertex2 = vertices[index2]->vertex;
 
-				UINT indexBuffer;
+		XMVECTOR p0 = XMVectorSet (vertex0.Position.x, vertex0.Position.y, vertex0.Position.z,0);
+		XMVECTOR p1 = XMVectorSet (vertex1.Position.x, vertex1.Position.y, vertex1.Position.z,0);
+		XMVECTOR p2 = XMVectorSet (vertex2.Position.x, vertex2.Position.y, vertex2.Position.z,0);
 
-				FbxVertex* vertex = new FbxVertex();
-				
+		Vector2 uv0 = vertex0.Uv;
+		Vector2 uv1 = vertex1.Uv;
+		Vector2 uv2 = vertex2.Uv;
 
-				vertex->vertex.Position = positions[controlPointIndex];
-				
-				ReadNormal(srcMesh, controlPointIndex, vertexCounter, vertex->vertex.Normal);
+		XMVECTOR e0 = p1 - p0;
+		XMVECTOR e1 = p2 - p0;
 
-				//ReadTangent(srcMesh, controlPointIndex, vertexCounter, vertex.Tangent);
+		float u0 = uv1.x - uv0.x;
+		float u1 = uv2.x - uv0.x;
+		float v0 = uv1.y - uv0.y;
+		float v1 = uv2.y - uv0.y;
 
-				//ReadUv(srcMesh, controlPointIndex, srcMesh->GetTextureUVIndex(lPolygonIndex, lVerticeIndex), vertex->vertex.Uv);
-				int uvIndex = srcMesh->GetTextureUVIndex(lPolygonIndex, lVerticeIndex);
-				vertex->vertex.Uv = FbxUtility::GetUV(srcMesh, controlPointIndex, uvIndex);
+		float d = 1.0f / (u0 * v1 - v0 * u1);
 
-				vertex->materialName = FbxUtility::GetMaterialName(srcMesh, lPolygonIndex, controlPointIndex);
-				
+		XMVECTOR tangent;
+		tangent = (v1 * e0 - v0 * e1) * d;
 
-				auto lookup = indexMapping.find(vertexCounter);
-				if (lookup != indexMapping.end()) 
-				{ 
-					meshPartData->indices.push_back(lookup->second);
-				}
-				else 
-				{ 
-					unsigned int index = vertexCounter;
-					indexMapping[vertexCounter] = index;
-					meshPartData->indices.push_back(index);
-					meshPartData->vertices.push_back(vertex->vertex);
-				}
-
-				vertexCounter++;
-				vertices.push_back(vertex);
-			}
-			UINT index0 = vertices.size() - 3;
-			UINT index1 = vertices.size() - 2;
-			UINT index2 = vertices.size() - 1;
-
-			ModelVertexType vertex0 = vertices[index0]->vertex;
-			ModelVertexType vertex1 = vertices[index1]->vertex;
-			ModelVertexType vertex2 = vertices[index2]->vertex;
-
-			XMVECTOR p0 = XMVectorSet (vertex0.Position.x, vertex0.Position.y, vertex0.Position.z,0);
-			XMVECTOR p1 = XMVectorSet (vertex1.Position.x, vertex1.Position.y, vertex1.Position.z,0);
-			XMVECTOR p2 = XMVectorSet (vertex2.Position.x, vertex2.Position.y, vertex2.Position.z,0);
-
-			Vector2 uv0 = vertex0.Uv;
-			Vector2 uv1 = vertex1.Uv;
-			Vector2 uv2 = vertex2.Uv;
-
-			XMVECTOR e0 = p1 - p0;
-			XMVECTOR e1 = p2 - p0;
-
-			float u0 = uv1.x - uv0.x;
-			float u1 = uv2.x - uv0.x;
-			float v0 = uv1.y - uv0.y;
-			float v1 = uv2.y - uv0.y;
-
-			float d = 1.0f / (u0 * v1 - v0 * u1);
-
-			XMVECTOR tangent;
-			tangent = (v1 * e0 - v0 * e1) * d;
-
-			XMStoreFloat3(&vertices[index0]->vertex.Tangent,(XMLoadFloat3(&vertices[index0]->vertex.Tangent) + tangent));
-			XMStoreFloat3(&vertices[index1]->vertex.Tangent, (XMLoadFloat3(&vertices[index1]->vertex.Tangent) + tangent));
-			XMStoreFloat3(&vertices[index2]->vertex.Tangent, (XMLoadFloat3(&vertices[index2]->vertex.Tangent) + tangent));
-		}
-
-		for (FbxVertex* vertex : vertices)
-		{
-			XMVECTOR t = XMVectorSet(vertex->vertex.Tangent.x, vertex->vertex.Tangent.y, vertex->vertex.Tangent.z,0);
-			XMVECTOR n = XMVectorSet(vertex->vertex.Normal.x, vertex->vertex.Normal.y, vertex->vertex.Normal.z, 0);
-
-			XMVECTOR temp = (t - n * XMVector2Dot(n, t));
-			temp = XMVector3Normalize(temp);
-
-			XMStoreFloat3(&vertex->vertex.Tangent, temp);
-		}
-		meshData->vertices = vertices;
-		//meshPart.push_back(meshPartData);
-		//meshData->meshParts = meshPart;
+		XMStoreFloat3(&vertices[index0]->vertex.Tangent,(XMLoadFloat3(&vertices[index0]->vertex.Tangent) + tangent));
+		XMStoreFloat3(&vertices[index1]->vertex.Tangent, (XMLoadFloat3(&vertices[index1]->vertex.Tangent) + tangent));
+		XMStoreFloat3(&vertices[index2]->vertex.Tangent, (XMLoadFloat3(&vertices[index2]->vertex.Tangent) + tangent));
 	}
-	meshes.push_back(meshData);
+
+	for (FbxVertex* vertex : vertices)
+	{
+		XMVECTOR t = XMVectorSet(vertex->vertex.Tangent.x, vertex->vertex.Tangent.y, vertex->vertex.Tangent.z,0);
+		XMVECTOR n = XMVectorSet(vertex->vertex.Normal.x, vertex->vertex.Normal.y, vertex->vertex.Normal.z, 0);
+
+		XMVECTOR temp = (t - n * XMVector2Dot(n, t));
+		temp = XMVector3Normalize(temp);
+
+		XMStoreFloat3(&vertex->vertex.Tangent, temp);
+	}
+
+	FbxMeshData* data = new FbxMeshData();
+	data->name = node->GetName();
+	data->parentBone = parentBone;
+	data->vertices = vertices;
+	data->mesh = mesh;
+	meshes.push_back(data);
 }
 
 string XmlExtractor::WriteTexture(FbxProperty& pProperty)

@@ -59,7 +59,6 @@ void Model::Render(Camera* viewer)
 	VPSet(viewer);
 	LightSet();
 
-	boneTransforms[1].r[3] = XMVectorSet( 50.0f,0,0,0);
 	modelData->SetBones(boneTransforms.data(), boneTransforms.size());
 
 	vector<ModelMesh*>* meshes = modelData->GetMeshes();
