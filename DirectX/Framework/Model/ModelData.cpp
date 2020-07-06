@@ -517,6 +517,10 @@ void ModelClip::UpdateKeyFrame(ModelBone* bone)
 
 void ModelClip::ReadAnimation(string file)
 {
+	if (Path::ExistFile(file) == false)
+	{
+
+	}
 	BinaryReader* r = new BinaryReader();
 	r->Open(String::ToWString(file));
 

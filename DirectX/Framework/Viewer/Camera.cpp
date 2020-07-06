@@ -28,6 +28,8 @@ bool Camera::Init(CameraOption option)
 	Rotate();
 	Move();
 
+	SetAllCameraMask();
+
 	return true;
 }
 
@@ -178,10 +180,31 @@ void Camera::View()
 	matView = XMMatrixLookAtLH(_position, _position + (forward), up);
 }
 
+bool Camera::CheckMask(UINT targetMask)
+{
+	return cameraMask & targetMask;
+}
+
+void Camera::AddMask(UINT mask)
+{
+	cameraMask |= mask;
+}
+
+void Camera::DelMask(UINT mask)
+{
+
+	cameraMask &= ~mask;
+}
+
+void Camera::SetAllCameraMask()
+{
+	AddMask(TYPEMASK::ALL);
+}
 RenderTarget* Camera::GetRenderTarget()
 {
 	if (default.useGBuffer == false)
 		return nullptr;
+
 	return renderTarget;
 }
 

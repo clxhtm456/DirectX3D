@@ -10,10 +10,10 @@ Terrain::Terrain()
 	lineBuffer = new LineBuffer();
 }
 
-Terrain * Terrain::Create(wstring heightFile)
+Terrain * Terrain::Create(float horizontal, float vertical)
 {
 	auto pRet = new Terrain();
-	if (pRet && pRet->Init(heightFile))
+	if (pRet && pRet->Init(horizontal, vertical))
 	{
 		pRet->AutoRelease();
 	}
@@ -25,10 +25,10 @@ Terrain * Terrain::Create(wstring heightFile)
 	return pRet;
 }
 
-bool Terrain::Init(wstring heightFile)
+bool Terrain::Init(float horizontal, float vertical)
 {
 	shader = Shader::Add(L"Terrain");
-	heightMap = Texture::Add(heightFile);
+	//heightMap = Texture::Add(heightFile);
 
 	CreateVertexData();
 	CreateIndexData();
@@ -216,10 +216,14 @@ Vector3 Terrain::GetPickedPosition()
 	return fResult;
 }
 
+void Terrain::SetHeight(float x, float z, float height)
+{
+}
+
 void Terrain::CreateVertexData()
 {
 	//heightMap의 색상 정보 받아오기
-	vector<Vector4> heights = heightMap->ReadPixels();
+	//vector<Vector4> heights = heightMap->ReadPixels();
 
 	width = heightMap->GetWidth();
 	height = heightMap->GetHeight();
@@ -236,7 +240,8 @@ void Terrain::CreateVertexData()
 			UINT pixel = width * (height - z - 1) + x;
 
 			vertices[index].Position.x = (float)x;
-			vertices[index].Position.y = (heights[pixel].x * 256.0f) / 10.0f;
+			//vertices[index].Position.y = (heights[pixel].x * 256.0f) / 10.0f;
+			vertices[index].Position.y = 0;
 			vertices[index].Position.z = (float)z;
 
 			vertices[index].Uv.x = (float)x / (float)width;

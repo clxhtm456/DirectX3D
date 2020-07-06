@@ -17,6 +17,8 @@ Node::Node() :
 		{
 			Start();
 		});
+
+	SetDefaultMask();
 }
 
 Node::~Node()
@@ -224,6 +226,22 @@ void Node::AddEvent(const std::function<void()>& func, float timer)
 {
 	auto event = pair<std::function<void()>, float>(func, timer);
 	_eventList.push_back(event);
+}
+
+
+void Node::AddMask(UINT mask)
+{
+	objectMask |= mask;
+}
+
+void Node::DelMask(UINT mask)
+{
+	objectMask &= ~mask;
+}
+
+void Node::SetDefaultMask()
+{
+	AddMask(TYPEMASK::DEFAULT);
 }
 
 void Node::AutoRelease()

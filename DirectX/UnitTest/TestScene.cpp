@@ -13,6 +13,7 @@ void TestScene::Initialize()
 	cube->SetPosition(0, 5, 0);
 	cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
 	cube->GetMaterial()->SetSpecular(1, 1, 1, 1);
+	cube->DelMask(TYPEMASK::DEFAULT);
 	AddChild(cube);
 	/*
 	auto grid = MeshGrid::Create(10,10);
@@ -52,8 +53,8 @@ void TestScene::Initialize()
 
 	auto kachujin = ModelAnim::Create("pikachu");
 	kachujin->SetPosition(20, 0, 0);
-	kachujin->AddClip("idle");
-	kachujin->PlayClip(1, true);
+	//kachujin->AddClip("idle");
+	//kachujin->PlayClip(1, true);
 	kachujin->SetScale(0.05f, 0.05f, 0.05f);
 
 	AddChild(kachujin);

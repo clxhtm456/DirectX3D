@@ -71,6 +71,14 @@ private:
 
 	Matrix matRotation;
 	Matrix matView;
+public:
+	bool CheckMask(UINT targetMask);
+	void AddMask(UINT mask);
+	void DelMask(UINT mask);
+	UINT GetCameraMask() { return cameraMask; }
+	void SetAllCameraMask();
+private:
+	UINT cameraMask = 0;
 protected:
 	class Perspective* perspective;
 	class Viewport* viewport;
@@ -85,9 +93,6 @@ private:
 
 	class RenderTarget* renderTarget;
 	class Render2D* renderImage;
-	
-
-
 	
 
 };

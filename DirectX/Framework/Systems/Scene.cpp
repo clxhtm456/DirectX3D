@@ -115,7 +115,7 @@ void Scene::AutoRender()
 		camera->SetUpRender();
 		for (auto object : _childList)
 		{
-			if (object->GetRunning())
+			if (camera->CheckMask(object->GetObjectMask()))
 				object->AutoRender(camera);
 		}
 

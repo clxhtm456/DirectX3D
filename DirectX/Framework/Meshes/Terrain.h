@@ -54,8 +54,8 @@ public:
 class Terrain : public RenderingNode
 {
 public:
-	static Terrain* Create(wstring heightFile);
-	bool Init(wstring heightFile);
+	static Terrain* Create(float horizontal, float vertical);
+	bool Init(float horizontal, float vertical);
 public:
 	typedef VertexTextureNormal TerrainVertex;
 
@@ -72,6 +72,11 @@ public:
 	float GetHeight(Vector3& position);
 	float GetHeightPick(Vector3& position);
 	Vector3 GetPickedPosition();
+
+	void SetHeight(float x, float z, float height);
+
+	UINT GetHorizontalSize() { return width; }
+	UINT GetVerticalSize() { return height; }
 
 private:
 	void CreateVertexData();

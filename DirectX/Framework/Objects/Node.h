@@ -52,6 +52,13 @@ public:
 		return TYPE_NODE;
 	}
 public:
+	UINT GetObjectMask() { return objectMask; }
+	void AddMask(UINT mask);
+	void DelMask(UINT mask);
+	void SetDefaultMask();
+private:
+	UINT objectMask = 0;
+public:
 	void AutoRelease();
 	void Release();
 	void Retain();

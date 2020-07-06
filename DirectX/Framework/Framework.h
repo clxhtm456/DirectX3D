@@ -74,6 +74,25 @@ typedef XMVECTOR Plane;
 
 #define TEXTURE_DIR(texture)	"../../_Textures/" + texture
 
+#define CAMERA_MASK1	(1<<1)
+#define CAMERA_MASK2	(1<<2)
+#define CAMERA_MASK3	(1<<3)
+#define CAMERA_MASK4	(1<<4)
+#define CAMERA_MASK5	(1<<5)
+#define CAMERA_MASK6	(1<<6)
+#define CAMERA_MASK7	(1<<7)
+#define CAMERA_MASK8	(1<<8)
+#define CAMERA_MASK9	(1<<9)
+#define CAMERA_MASK10	(1<<10)
+#define CAMERA_MASK11	(1<<11)
+#define CAMERA_MASK12	(1<<12)
+
+typedef enum TYPEMASK
+{
+	DEFAULT = CAMERA_MASK1,
+	ALL = CAMERA_MASK1 | CAMERA_MASK2 | CAMERA_MASK3 | CAMERA_MASK4 | CAMERA_MASK5 | CAMERA_MASK6 | CAMERA_MASK7 | CAMERA_MASK8 | CAMERA_MASK9 | CAMERA_MASK10 | CAMERA_MASK11 | CAMERA_MASK12
+};
+
 //ImGui
 #include <ImGui_New/imgui.h>
 #include <ImGui_New/imgui_impl_dx11.h>
