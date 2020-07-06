@@ -7,7 +7,6 @@ protected:
 	virtual ~Light();
 protected:
 	// Node을(를) 통해 상속됨
-	virtual void Start() override;
 	virtual void PostUpdate() override;
 	virtual void Update() override;
 	virtual void LateUpdate() override;

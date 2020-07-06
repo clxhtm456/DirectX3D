@@ -7,14 +7,16 @@ private:
 protected:
 	Node();
 	virtual ~Node();
+
+	bool Init();
 protected:
-	virtual void Start() = 0;
+	virtual void Start();
 	virtual void PostUpdate() = 0;
 	virtual void Update() = 0;
 	virtual void LateUpdate() = 0;
 	virtual void Render(class Camera* viewer) = 0;
 	virtual void PostRender(class Camera* viewer) = 0;
-	
+	virtual void Destroy();
 private:
 	void AutoPostUpdate();
 	void AutoUpdate();
@@ -68,7 +70,10 @@ protected:
 	XMVECTOR _scale;
 protected:
 	Scene* _scene;
-
+public://callbackList
+	std::function<void()> OnDestroy = NULL;
+	std::function<void()> OnStart = NULL;
+	std::function<void()> OnChangePosition = NULL;
 private:
 	unsigned int _referenceCount;
 	Node* _parent;

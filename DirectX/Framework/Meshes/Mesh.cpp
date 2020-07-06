@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Mesh.h"
 
-UINT Mesh::instancingIndex = 0;
+#include "InstancingObject.h"
 
 Mesh::Mesh() : RenderingNode()
 {
@@ -56,4 +56,11 @@ void Mesh::Render(Camera* viewer)
 	rasterizerState->SetState();
 
 	material->Render();
+}
+
+Node* Mesh::CreateInstance()
+{
+	Node* object = InstancingObject::Create(this);
+
+	return object;
 }

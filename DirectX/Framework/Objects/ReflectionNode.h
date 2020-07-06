@@ -14,7 +14,6 @@ public:
 	virtual void SetRNShader2Depth(RenderingNode* node);
 	virtual void SetRNShader2Origin(RenderingNode* node);
 protected:
-	virtual void Start() override;
 	virtual void PostUpdate() override;
 	virtual void Update() override;
 	virtual void LateUpdate() override;

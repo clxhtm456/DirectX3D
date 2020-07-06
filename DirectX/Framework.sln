@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1169
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework", "Framework\Framework.vcxproj", "{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}"
 EndProject
@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4
 		..\_Shaders\RenderingNode.hlsli = ..\_Shaders\RenderingNode.hlsli
 		..\_Shaders\Shadow.hlsl = ..\_Shaders\Shadow.hlsl
 		..\_Shaders\Terrain.hlsl = ..\_Shaders\Terrain.hlsl
+		..\_Shaders\TerrainEdit.hlsl = ..\_Shaders\TerrainEdit.hlsl
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PS", "PS", "{B36EC4EA-A1A1-4392-AD22-E7436A851463}"
@@ -36,7 +37,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelExtractor", "ModelExtr
 		{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5} = {4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MapEditor", "MapEditor\MapEditor.vcxproj", "{471A70F5-2534-4B1B-9359-1821B11D8CA4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TerrainEditor", "TerrainEditor\TerrainEditor.vcxproj", "{AB7F9017-0574-4D14-AD96-28560D209193}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5} = {4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}
 	EndProjectSection
@@ -73,14 +74,14 @@ Global
 		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Release|x64.Build.0 = Release|x64
 		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Release|x86.ActiveCfg = Release|Win32
 		{47D9C802-2089-4722-B18C-F77E22BACD4B}.Release|x86.Build.0 = Release|Win32
-		{471A70F5-2534-4B1B-9359-1821B11D8CA4}.Debug|x64.ActiveCfg = Debug|x64
-		{471A70F5-2534-4B1B-9359-1821B11D8CA4}.Debug|x64.Build.0 = Debug|x64
-		{471A70F5-2534-4B1B-9359-1821B11D8CA4}.Debug|x86.ActiveCfg = Debug|Win32
-		{471A70F5-2534-4B1B-9359-1821B11D8CA4}.Debug|x86.Build.0 = Debug|Win32
-		{471A70F5-2534-4B1B-9359-1821B11D8CA4}.Release|x64.ActiveCfg = Release|x64
-		{471A70F5-2534-4B1B-9359-1821B11D8CA4}.Release|x64.Build.0 = Release|x64
-		{471A70F5-2534-4B1B-9359-1821B11D8CA4}.Release|x86.ActiveCfg = Release|Win32
-		{471A70F5-2534-4B1B-9359-1821B11D8CA4}.Release|x86.Build.0 = Release|Win32
+		{AB7F9017-0574-4D14-AD96-28560D209193}.Debug|x64.ActiveCfg = Debug|x64
+		{AB7F9017-0574-4D14-AD96-28560D209193}.Debug|x64.Build.0 = Debug|x64
+		{AB7F9017-0574-4D14-AD96-28560D209193}.Debug|x86.ActiveCfg = Debug|Win32
+		{AB7F9017-0574-4D14-AD96-28560D209193}.Debug|x86.Build.0 = Debug|Win32
+		{AB7F9017-0574-4D14-AD96-28560D209193}.Release|x64.ActiveCfg = Release|x64
+		{AB7F9017-0574-4D14-AD96-28560D209193}.Release|x64.Build.0 = Release|x64
+		{AB7F9017-0574-4D14-AD96-28560D209193}.Release|x86.ActiveCfg = Release|Win32
+		{AB7F9017-0574-4D14-AD96-28560D209193}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

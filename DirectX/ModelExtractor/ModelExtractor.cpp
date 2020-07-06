@@ -5,8 +5,6 @@
 
 void ModelExtractor::Initialize()
 {
-	string name = "pikachu";
-
 	/*Exporter* reader = new Exporter("Models/" + name + ".fbx");
 	reader->ExporterMaterial(name + "/" + name);*/
 	//reader->ExporterMesh(name + "/" + name);
@@ -15,12 +13,9 @@ void ModelExtractor::Initialize()
 	loader.LoadFbx("unitychan", extractor);*/
 
 	auto extractor = XmlExtractor::Create();
-	extractor->LoadModel("pikachu");
+	extractor->LoadAnimation(0,"Pikachu/idle");
 	delete extractor;
 
-	extractor = XmlExtractor::Create();
-	extractor->LoadAnimation(0, "idle");
-	delete extractor;
 }
 
 void ModelExtractor::Destroy()

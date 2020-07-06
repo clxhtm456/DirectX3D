@@ -23,10 +23,29 @@ Node::Node() :
 
 Node::~Node()
 {
+	Destroy();
+}
+
+bool Node::Init()
+{
+	return true;
+}
+
+void Node::Start()
+{
+	if (OnStart != NULL)
+		OnStart();
+}
+
+
+void Node::Destroy()
+{
+	if(OnDestroy != NULL)
+		OnDestroy();
+
 	for (auto object : _childList)
 		object->Release();
 }
-
 
 void Node::AutoPostUpdate()
 {
@@ -142,11 +161,17 @@ Vector3 Node::GetScale()
 void Node::SetPosition(Vector3 position)
 {
 	_position = XMLoadFloat3(&position);
+
+	if (OnChangePosition != NULL)
+		OnChangePosition();
 }
 
 void Node::SetRotation(Vector3 rotation)
 {
 	_rotation = XMLoadFloat3(&rotation);
+
+	if (OnChangePosition != NULL)
+		OnChangePosition();
 }
 
 void Node::SetRotationDegree(Vector3 rotation)
@@ -156,11 +181,17 @@ void Node::SetRotationDegree(Vector3 rotation)
 	rotation.z = Math::ToRadian(rotation.z);
 
 	_rotation = XMLoadFloat3(&rotation);
+
+	if (OnChangePosition != NULL)
+		OnChangePosition();
 }
 
 void Node::SetScale(Vector3 scale)
 {
 	_scale = XMLoadFloat3(&scale);
+
+	if (OnChangePosition != NULL)
+		OnChangePosition();
 }
 
 void Node::SetPosition(float x, float y, float z)

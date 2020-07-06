@@ -27,6 +27,7 @@
     <ClCompile Include="Light\DirectLight.cpp" />
     <ClCompile Include="Light\Light.cpp" />
     <ClCompile Include="Light\Shadow.cpp" />
+    <ClCompile Include="Meshes\InstancingObject.cpp" />
     <ClCompile Include="Meshes\Instancing\InsCube.cpp" />
     <ClCompile Include="Meshes\Instancing\InsCylinder.cpp" />
     <ClCompile Include="Meshes\Instancing\InsGrid.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="Light\DirectLight.h" />
     <ClInclude Include="Light\Light.h" />
     <ClInclude Include="Light\Shadow.h" />
+    <ClInclude Include="Meshes\InstancingObject.h" />
     <ClInclude Include="Meshes\Instancing\InsCube.h" />
     <ClInclude Include="Meshes\Instancing\InsCylinder.h" />
     <ClInclude Include="Meshes\Instancing\InsGrid.h" />
@@ -158,7 +160,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

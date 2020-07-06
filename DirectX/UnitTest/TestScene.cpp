@@ -6,17 +6,17 @@
 
 void TestScene::Initialize()
 {
-	//CreateFreedomCamera();
+	CreateFreedomCamera();
 
 	cube = MeshCube::Create();
 	cube->SetScale(20, 10, 20);
 	cube->SetPosition(0, 5, 0);
 	cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
 	cube->GetMaterial()->SetSpecular(1, 1, 1, 1);
-	cube->DelMask(TYPEMASK::DEFAULT);
+	//cube->DelMask(TYPEMASK::DEFAULT);
 	AddChild(cube);
-	/*
-	auto grid = MeshGrid::Create(10,10);
+	
+	/*auto grid = MeshGrid::Create(10,10);
 	grid->SetScale(12, 1, 12);
 	grid->SetPosition(0, 0, 0);
 	grid->GetMaterial()->SetDiffuseMap("../../_Textures/Floor.png");
@@ -45,17 +45,18 @@ void TestScene::Initialize()
 	renderImage->SetScale(300, 300, 1);
 	AddChild(renderImage);
 
-	/*auto terrain = Terrain::Create(L"Terrain/Gray256.png");
+	/*auto terrain = Terrain::Create(512,512);
 	terrain->BaseMap(L"Terrain/Dirt3.png");
 	terrain->SetPosition(0, 0, 0);
-	terrain->SetScale(2, 2, 2);
+	terrain->SetScale(1, 1, 1);
 	AddChild(terrain);*/
 
-	auto kachujin = ModelAnim::Create("pikachu");
+	auto kachujin = ModelAnim::Create("Arthas/Idle/arthaslichking");
 	kachujin->SetPosition(20, 0, 0);
-	kachujin->AddClip("idle");
-	kachujin->PlayClip(1, true);
-	kachujin->SetScale(0.05f, 0.05f, 0.05f);
+	//kachujin->AddClip("Arthas/Idle/Attack2H1");
+	//kachujin->AddClip("idle");
+	//kachujin->PlayClip(0, true);
+	kachujin->SetScale(0.5f, 0.5f, 0.5f);
 
 	AddChild(kachujin);
 }
@@ -93,8 +94,10 @@ void TestScene::CreateFreedomCamera()
 	//option.useGBuffer = true;
 
 	freedomCam = Freedom::Create(option);
-	freedomCam->SetPosition(27, 12, 20);
-	freedomCam->SetRotationDegree(20, -157, 0);
+	freedomCam->SetPosition(20, 37, -68);
+	freedomCam->SetRotationDegree(30, -20, 0);
+	/*freedomCam->SetPosition(27, 12, 20);
+	freedomCam->SetRotationDegree(20, -157, 0);*/
 	//AddChild(freedomCam);
 	SetMainCamera(freedomCam);
 

@@ -103,10 +103,6 @@ void Render2D::SetSRV(ID3D11ShaderResourceView * srv)
 	diffuseMap = srv;
 }
 
-void Render2D::Start()
-{
-}
-
 void Render2D::PostUpdate()
 {
 }

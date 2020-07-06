@@ -86,9 +86,13 @@ void DirectionLight::PostUpdate()
 void DirectionLight::Update()
 {
 	float angle[3] = { direction.x,direction.y ,direction.z };
-	ImGui::SliderFloat3("Light", angle, -1, 1);
+	ImGui::SliderFloat3("LightRot", angle, -1, 1);
+
+	float lightPos[3] = { position.x,position.y ,position.z };
+	ImGui::SliderFloat3("LightPos", lightPos, -100, 100);
 
 	direction = Vector3(angle[0],angle[1],angle[2]);
+	position = Vector3(lightPos[0], lightPos[1], lightPos[2]);
 	CalcLightVP();
 }
 

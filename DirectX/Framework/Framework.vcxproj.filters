@@ -214,6 +214,9 @@
     <ClCompile Include="Model\ModelTweener.cpp">
       <Filter>Model</Filter>
     </ClCompile>
+    <ClCompile Include="Meshes\InstancingObject.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\Keyboard.h">
@@ -405,6 +408,9 @@
     </ClInclude>
     <ClInclude Include="Model\ModelTweener.h">
       <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Meshes\InstancingObject.h">
+      <Filter>Meshes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

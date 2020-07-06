@@ -26,7 +26,6 @@ public:
 	virtual ~Camera();
 
 	virtual void Update();
-	virtual void Start() override;
 	virtual void PostUpdate() override;
 	virtual void LateUpdate() override;
 	void SetUpRender();

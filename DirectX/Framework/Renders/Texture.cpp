@@ -119,6 +119,9 @@ void Texture::Delete()
 
 void Texture::DeleteOne(Texture * texture)
 {
+	if (texture == NULL)
+		return; 
+
 	for (auto iter = totalSRV.begin(); iter != totalSRV.end(); iter++)
 	{
 		if ((*iter).second == texture->GetSRV())

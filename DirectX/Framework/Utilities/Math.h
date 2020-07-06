@@ -18,7 +18,6 @@ public:
 	static XMCOLOR RandomColor3();
 	static XMCOLOR RandomColor4();
 
-
 	static float Clamp(float value, float min, float max);
 
 	static void LerpMatrix(OUT XMMATRIX& out, const XMMATRIX& m1, const XMMATRIX& m2, float amount);

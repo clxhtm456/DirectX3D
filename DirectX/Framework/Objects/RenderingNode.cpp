@@ -16,6 +16,8 @@ RenderingNode::~RenderingNode()
 
 void RenderingNode::Start()
 {
+	Super::Start();
+
 	CalcWorldMatrix();
 }
 

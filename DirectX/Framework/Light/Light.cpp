@@ -9,10 +9,6 @@ Light::~Light()
 {
 }
 
-void Light::Start()
-{
-}
-
 void Light::PostUpdate()
 {
 }

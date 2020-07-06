@@ -218,10 +218,6 @@ Matrix Camera::ProjectionMatrix()
 	return perspective->GetMatrix();
 }
 
-void Camera::Start()
-{
-}
-
 void Camera::PostUpdate()
 {
 }

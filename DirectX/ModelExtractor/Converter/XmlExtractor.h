@@ -65,7 +65,7 @@ public:
 	void WriteMesh(wstring savePath, bool bOverWrite);
 	void WriteClip(class FbxClip* clip, wstring savePath);
 
-	class FbxClip* ReadAnimation(UINT index);
+	class FbxClip* ReadAnimation(UINT index, OUT string& animationName);
 	void ReadMesh(FbxNode* node, int parentBone);
 	void ReadBone(FbxNode* node, int index, int parent);
 	void ReadSkin();

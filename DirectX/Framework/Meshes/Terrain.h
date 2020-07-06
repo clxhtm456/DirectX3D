@@ -54,8 +54,8 @@ public:
 class Terrain : public RenderingNode
 {
 public:
-	static Terrain* Create(float horizontal, float vertical);
-	bool Init(float horizontal, float vertical);
+	static Terrain* Create(UINT horizontal, UINT vertical);
+	bool Init(UINT horizontal, UINT vertical);
 public:
 	typedef VertexTextureNormal TerrainVertex;
 

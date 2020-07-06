@@ -408,10 +408,29 @@ void XmlExtractor::LoadModel(string filePath)
 	}
 	else
 	{
+		FBXSDK_printf("StartExtractMaterial\n");
 		WriteMaterial( L"../../_Assets/Materials/" + String::ToWString(filePath) + L".mat", true);
+		FBXSDK_printf("StartExtractMesh\n");
 		WriteMesh( L"../../_Assets/Meshes/" + String::ToWString(filePath) + L".mesh", true);
-		FbxClip* clip = ReadAnimation(0);
-		WriteClip(clip, L"../../_Assets/Clips/" + String::ToWString(filePath) + L".clip");
+		UINT animCount = m_scene->GetMemberCount<FbxAnimStack>();
+		auto dir = String::ToWString( Path::GetDirectoryName(filePath));
+		if (animCount > 0)
+		{
+			bool check = true;
+			FBXSDK_printf("AnimationCount : %d\nStartExtractAnimation\n",animCount);
+			for (int i = 0; i < animCount; i++)
+			{
+				string animationName;
+				FbxClip* clip = ReadAnimation(i, animationName);
+				FBXSDK_printf("Complete Extract %s Animation\n", animationName.c_str());
+				WriteClip(clip, L"../../_Assets/Clips/" + dir+String::ToWString(animationName) + L".clip");
+			}
+			/*string animationName;
+			FbxClip* clip = ReadAnimation(19, animationName);
+			FBXSDK_printf("Complete Extract %s Animation\n", animationName.c_str());
+			WriteClip(clip, L"../../_Assets/Clips/" + dir + String::ToWString(animationName) + L".clip");*/
+		}
+		
 	}
 	m_animStacks.clear();
 }
@@ -434,8 +453,9 @@ void XmlExtractor::LoadAnimation(UINT index, string filePath)
 	}
 	else
 	{
-		FbxClip* clip = ReadAnimation(index);
-		WriteClip(clip, L"../../_Assets/Clips/" + String::ToWString(filePath) + L".clip");
+		string animationName;
+		FbxClip* clip = ReadAnimation(index, animationName);
+		WriteClip(clip, L"../../_Assets/Clips/" + String::ToWString(animationName) + L".clip");
 	}
 	m_animStacks.clear();
 }
@@ -648,18 +668,18 @@ void XmlExtractor::WriteClip(FbxClip* clip, wstring savePath)
 	delete w;
 }
 
-FbxClip* XmlExtractor::ReadAnimation(UINT index)
+FbxClip* XmlExtractor::ReadAnimation(UINT index, OUT string& animationName)
 {
-	UINT stackCount = (UINT)m_importer->GetAnimStackCount();
+	FbxAnimStack* lAnimStack = m_scene->GetMember<FbxAnimStack>(index);
+	FbxString clipName = lAnimStack->GetName();
+	FbxTakeInfo* takeInfo = m_scene->GetTakeInfo(clipName);
+	animationName = clipName;
 
 	FbxTime::EMode mode = m_scene->GetGlobalSettings().GetTimeMode();
 	float frameRate = (float)FbxTime::GetFrameRate(mode);
 
 	FbxClip* clip = new FbxClip();
 	clip->frameRate = frameRate;
-
-	FbxTakeInfo* takeInfo = m_importer->GetTakeInfo(index);
-	clip->name = takeInfo->mName.Buffer();
 
 	FbxTimeSpan span = takeInfo->mLocalTimeSpan;
 	FbxTime tempDuration = span.GetDuration();
@@ -674,6 +694,8 @@ FbxClip* XmlExtractor::ReadAnimation(UINT index)
 
 	clip->duration = duration;
 	clip->frameCount = (end - start) + 1;
+
+	lAnimStack->Reset(takeInfo);
 
 	return clip;
 }
@@ -976,7 +998,8 @@ void XmlExtractor::ReadKeyFrameData(FbxClip* clip, FbxNode* node, int start, int
 		}
 	}
 
-	for (int i = 0; i < node->GetChildCount(); i++)
+	int childCount = node->GetChildCount();
+	for (int i = 0; i < childCount; i++)
 		ReadKeyFrameData(clip, node->GetChild(i), start, end);
 }
 

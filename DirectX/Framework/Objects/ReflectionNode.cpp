@@ -36,10 +36,6 @@ void ReflectionNode::SetRNShader2Origin(RenderingNode* node)
 	node->SetPSShader(psShaderSlot);
 }
 
-void ReflectionNode::Start()
-{
-}
-
 void ReflectionNode::PostUpdate()
 {
 }

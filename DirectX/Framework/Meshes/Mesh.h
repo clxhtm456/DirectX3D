@@ -18,6 +18,8 @@ public:
 
 	void Update() override;
 	void Render(Camera* viewer) override;
+public:
+	Node* CreateInstance();
 
 protected:
 	virtual void CreateMesh() = 0;
@@ -30,5 +32,5 @@ protected:
 
 	RasterizerState* rasterizerState;
 private:
-	static UINT instancingIndex;
+	UINT instancingCount;
 };

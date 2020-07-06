@@ -28,11 +28,6 @@ bool ModelAnim::Init(string modelDir)
 	GetModelData()->GetBuffer()->SetBlend(true);
 	tweener = new ModelTweener();
 
-	AddClip(modelDir);
-
-	PlayClip(0, true);
-
-
 	return true;
 }
 
@@ -71,12 +66,15 @@ UINT ModelAnim::AddClip(string file)
 	ModelClip* clip = new ModelClip(file);
 	clips.push_back(clip);
 
+	if(clips.size() == 1)
+		PlayClip(0, true);
+
 	return clips.size() - 1;
 }
 
 void ModelAnim::PlayClip(UINT index, bool isRepeat, float blendTime, float speed, float startTime)
 {
-	if (clips.size() - 1 < index)
+	if ((clips.size() - 1) < index)
 		return;
 
 	tweener->Play(clips[index], isRepeat, blendTime, speed, startTime);

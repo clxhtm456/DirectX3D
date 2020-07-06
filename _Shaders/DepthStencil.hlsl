@@ -29,10 +29,10 @@ DepthInput VS(VertexInput input)
 	input.Position.w = 1.0f;
 
 	output.Position = mul(input.Position, CB_World.World);
-	/*output.Position = mul(output.Position, DepthView);
-	output.Position = mul(output.Position, DepthProjection);*/
+	output.Position = mul(output.Position, DepthView);
+	output.Position = mul(output.Position, DepthProjection);
 	
-	output.Position = VPPosition(output.Position);
+	//output.Position = VPPosition(output.Position);
 	/*output.Position = mul(output.Position, CB_Light.LightView);
 	output.Position = mul(output.Position, CB_Light.LightProjection);*/
 

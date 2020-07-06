@@ -10,7 +10,7 @@ Terrain::Terrain()
 	lineBuffer = new LineBuffer();
 }
 
-Terrain * Terrain::Create(float horizontal, float vertical)
+Terrain * Terrain::Create(UINT horizontal, UINT vertical)
 {
 	auto pRet = new Terrain();
 	if (pRet && pRet->Init(horizontal, vertical))
@@ -25,16 +25,18 @@ Terrain * Terrain::Create(float horizontal, float vertical)
 	return pRet;
 }
 
-bool Terrain::Init(float horizontal, float vertical)
+bool Terrain::Init(UINT horizontal, UINT vertical)
 {
 	shader = Shader::Add(L"Terrain");
 	//heightMap = Texture::Add(heightFile);
+
+	width = horizontal;
+	height = vertical;
 
 	CreateVertexData();
 	CreateIndexData();
 	CreateNormalData();
 
-	Texture::DeleteOne(heightMap);
 	vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(TerrainVertex), 0, true);
 	indexBuffer = new IndexBuffer(indices, indexCount);
 	return true;
@@ -224,9 +226,6 @@ void Terrain::CreateVertexData()
 {
 	//heightMap의 색상 정보 받아오기
 	//vector<Vector4> heights = heightMap->ReadPixels();
-
-	width = heightMap->GetWidth();
-	height = heightMap->GetHeight();
 
 	//Create VData
 	vertexCount = width * height;
