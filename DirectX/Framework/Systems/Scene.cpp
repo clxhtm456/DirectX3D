@@ -96,7 +96,7 @@ void Scene::AutoPreRender()
 				if (renderObject == NULL)
 					continue;
 				reflect->SetRNShader2Depth(renderObject);
-				if (object->GetRunning())
+				if (camera->CheckMask(object->GetObjectMask()))
 					object->AutoRender(camera);
 
 				reflect->SetRNShader2Origin(renderObject);

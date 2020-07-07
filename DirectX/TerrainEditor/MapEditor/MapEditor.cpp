@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "MapEditor.h"
 
+#include "Meshes/Terrain.h"
+
 #define DEFAULT_HORIZONTAL	512
 #define DEFAULT_VERTICAL	512
 #define DEFAULT_DISTANCE	DEFAULT_VERTICAL*540/512
@@ -183,10 +185,10 @@ void MapEditor::SaveMapFile()
 
 void MapEditor::CreateNewMap()
 {
-	/*std::function<void(wstring)> function = std::bind(&MapEditor::CreateNewMapFile, this, std::placeholders::_1);
-	Path::SaveFileDialog(L"Default.map", L"MapFile\0 * .map", L"../../_Assets/", function, D3D::GetHandle());*/
+	std::function<void(wstring)> function = std::bind(&MapEditor::CreateNewMapFile, this, std::placeholders::_1);
+	Path::SaveFileDialog(L"Default.map", L"MapFile\0 * .map", L"../../_Assets/", function, D3D::GetHandle());
 
-	terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL);
+	/*terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL);
 	terrain->SetShader(L"TerrainEdit");
 
 	auto posX = DEFAULT_HORIZONTAL * 0.5f;
@@ -194,5 +196,5 @@ void MapEditor::CreateNewMap()
 	auto posZ = DEFAULT_DISTANCE * cosf(40.0f);
 
 	m_scene->AddChild(terrain);
-	m_scene->GetMainCamera()->SetPosition(posX, posY, posZ);
+	m_scene->GetMainCamera()->SetPosition(posX, posY, posZ);*/
 }

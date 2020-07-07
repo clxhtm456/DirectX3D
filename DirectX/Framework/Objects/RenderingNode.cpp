@@ -210,17 +210,5 @@ void RenderingNode::LightSet()
 
 void RenderingNode::CalcWorldMatrix()
 {
-	Matrix S, R, T;
-	S = XMMatrixScaling(XMVectorGetX(_scale), XMVectorGetY(_scale), XMVectorGetZ(_scale));
-	R = XMMatrixRotationRollPitchYaw(XMVectorGetX(_rotation), XMVectorGetY(_rotation), XMVectorGetZ(_rotation));
-	T = XMMatrixTranslation(XMVectorGetX(_position), XMVectorGetY(_position), XMVectorGetZ(_position));
-
-	_world = S * R * T;
-	worldBuffer->SetWorld(_world);
-
-}
-
-Matrix RenderingNode::GetWorld()
-{
-	return _world;
+	worldBuffer->SetWorld(GetWorld());
 }

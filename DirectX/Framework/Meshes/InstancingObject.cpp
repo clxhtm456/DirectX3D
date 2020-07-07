@@ -1,10 +1,10 @@
 #include "Framework.h"
 #include "InstancingObject.h"
 
-InstancingObject* InstancingObject::Create(Mesh* master)
+InstancingObject* InstancingObject::Create()
 {
 	auto pRet = new InstancingObject();
-	if (pRet && pRet->Init(master))
+	if (pRet && pRet->Init())
 	{
 		pRet->AutoRelease();
 	}
@@ -16,15 +16,10 @@ InstancingObject* InstancingObject::Create(Mesh* master)
 	return pRet;
 }
 
-bool InstancingObject::Init(Mesh* master)
+bool InstancingObject::Init()
 {
 	if (!Super::Init())
 		return false;
-
-	if (master == nullptr)
-		return false;
-
-	this->master = master;
 
 	return true;
 }

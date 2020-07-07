@@ -41,8 +41,6 @@ public:
 
 	virtual void CalcWorldMatrix();
 protected:
-	Matrix GetWorld();
-protected:
 	Shader* shader = NULL;
 	Shader* psShader = NULL;
 	Shader* vsShader = NULL;
@@ -54,6 +52,5 @@ protected:
 
 	WorldBuffer* worldBuffer;
 	LightBuffer* lightBuffer;
-private:
-	Matrix _world;
+
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAX_MESH_INSTANCE 500
+
 class Mesh : public RenderingNode
 {
 public:
@@ -15,9 +17,10 @@ public:
 	Material* GetMaterial() {
 		return material;
 	}
-
+	void Destroy() override;
 	void Update() override;
 	void Render(Camera* viewer) override;
+	void Draw(Camera* viewer) override;
 public:
 	Node* CreateInstance();
 
@@ -32,5 +35,13 @@ protected:
 
 	RasterizerState* rasterizerState;
 private:
+	void IncreaseInstancing(Node* object);
+	void DecreaseInstancing(Node* object);
+	void UpdateInstancingMatrix();
 	UINT instancingCount;
+
+	VertexBuffer* instancingBuffer;
+	Matrix worlds[MAX_MESH_INSTANCE];
+
+	std::vector<Node*> instanceNode;
 };

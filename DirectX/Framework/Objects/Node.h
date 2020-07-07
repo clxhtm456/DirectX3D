@@ -71,9 +71,11 @@ protected:
 protected:
 	Scene* _scene;
 public://callbackList
-	std::function<void()> OnDestroy = NULL;
-	std::function<void()> OnStart = NULL;
-	std::function<void()> OnChangePosition = NULL;
+	std::function<void(Node* self)> OnDestroy = NULL;
+	std::function<void(Node* self)> OnStart = NULL;
+	std::function<void(Matrix)> OnChangePosition = NULL;
+public:
+	Matrix GetWorld() { return _world; }
 private:
 	unsigned int _referenceCount;
 	Node* _parent;
@@ -83,4 +85,5 @@ private:
 
 	bool _running;
 	bool _visible;
+	Matrix _world;
 };

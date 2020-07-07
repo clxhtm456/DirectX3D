@@ -13,7 +13,7 @@ void ModelExtractor::Initialize()
 	loader.LoadFbx("unitychan", extractor);*/
 
 	auto extractor = XmlExtractor::Create();
-	extractor->LoadAnimation(0,"Pikachu/idle");
+	extractor->LoadModel("Autum");
 	delete extractor;
 
 }

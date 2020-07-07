@@ -34,14 +34,14 @@ bool Node::Init()
 void Node::Start()
 {
 	if (OnStart != NULL)
-		OnStart();
+		OnStart(this);
 }
 
 
 void Node::Destroy()
 {
 	if(OnDestroy != NULL)
-		OnDestroy();
+		OnDestroy(this);
 
 	for (auto object : _childList)
 		object->Release();
@@ -162,16 +162,30 @@ void Node::SetPosition(Vector3 position)
 {
 	_position = XMLoadFloat3(&position);
 
+	Matrix S, R, T;
+	S = XMMatrixScaling(XMVectorGetX(_scale), XMVectorGetY(_scale), XMVectorGetZ(_scale));
+	R = XMMatrixRotationRollPitchYaw(XMVectorGetX(_rotation), XMVectorGetY(_rotation), XMVectorGetZ(_rotation));
+	T = XMMatrixTranslation(XMVectorGetX(_position), XMVectorGetY(_position), XMVectorGetZ(_position));
+
+	_world = S * R * T;
+
 	if (OnChangePosition != NULL)
-		OnChangePosition();
+		OnChangePosition(_world);
 }
 
 void Node::SetRotation(Vector3 rotation)
 {
 	_rotation = XMLoadFloat3(&rotation);
 
+	Matrix S, R, T;
+	S = XMMatrixScaling(XMVectorGetX(_scale), XMVectorGetY(_scale), XMVectorGetZ(_scale));
+	R = XMMatrixRotationRollPitchYaw(XMVectorGetX(_rotation), XMVectorGetY(_rotation), XMVectorGetZ(_rotation));
+	T = XMMatrixTranslation(XMVectorGetX(_position), XMVectorGetY(_position), XMVectorGetZ(_position));
+
+	_world = S * R * T;
+
 	if (OnChangePosition != NULL)
-		OnChangePosition();
+		OnChangePosition(_world);
 }
 
 void Node::SetRotationDegree(Vector3 rotation)
@@ -182,16 +196,30 @@ void Node::SetRotationDegree(Vector3 rotation)
 
 	_rotation = XMLoadFloat3(&rotation);
 
+	Matrix S, R, T;
+	S = XMMatrixScaling(XMVectorGetX(_scale), XMVectorGetY(_scale), XMVectorGetZ(_scale));
+	R = XMMatrixRotationRollPitchYaw(XMVectorGetX(_rotation), XMVectorGetY(_rotation), XMVectorGetZ(_rotation));
+	T = XMMatrixTranslation(XMVectorGetX(_position), XMVectorGetY(_position), XMVectorGetZ(_position));
+
+	_world = S * R * T;
+
 	if (OnChangePosition != NULL)
-		OnChangePosition();
+		OnChangePosition(_world);
 }
 
 void Node::SetScale(Vector3 scale)
 {
 	_scale = XMLoadFloat3(&scale);
 
+	Matrix S, R, T;
+	S = XMMatrixScaling(XMVectorGetX(_scale), XMVectorGetY(_scale), XMVectorGetZ(_scale));
+	R = XMMatrixRotationRollPitchYaw(XMVectorGetX(_rotation), XMVectorGetY(_rotation), XMVectorGetZ(_rotation));
+	T = XMMatrixTranslation(XMVectorGetX(_position), XMVectorGetY(_position), XMVectorGetZ(_position));
+
+	_world = S * R * T;
+
 	if (OnChangePosition != NULL)
-		OnChangePosition();
+		OnChangePosition(_world);
 }
 
 void Node::SetPosition(float x, float y, float z)

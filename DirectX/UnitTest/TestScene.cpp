@@ -15,6 +15,10 @@ void TestScene::Initialize()
 	cube->GetMaterial()->SetSpecular(1, 1, 1, 1);
 	//cube->DelMask(TYPEMASK::DEFAULT);
 	AddChild(cube);
+
+	auto cubeInst = cube->CreateInstance();
+	AddChild(cubeInst);
+
 	
 	/*auto grid = MeshGrid::Create(10,10);
 	grid->SetScale(12, 1, 12);
@@ -51,7 +55,7 @@ void TestScene::Initialize()
 	terrain->SetScale(1, 1, 1);
 	AddChild(terrain);*/
 
-	auto kachujin = ModelAnim::Create("Arthas/Idle/arthaslichking");
+	auto kachujin = ModelAnim::Create("pikachu");
 	kachujin->SetPosition(20, 0, 0);
 	//kachujin->AddClip("Arthas/Idle/Attack2H1");
 	//kachujin->AddClip("idle");

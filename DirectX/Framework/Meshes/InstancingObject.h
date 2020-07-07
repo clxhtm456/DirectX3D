@@ -5,8 +5,8 @@ class InstancingObject :public Node
 public:
 	friend class Mesh;
 private:
-	static InstancingObject* Create(Mesh* master);
-	bool Init(Mesh* master);
+	static InstancingObject* Create();
+	bool Init();
 private:
 	InstancingObject();
 	virtual ~InstancingObject();
@@ -18,6 +18,5 @@ protected:
 	virtual void PostRender(Camera* viewer) override;
 	void Destroy() override;
 private:
-	Mesh* master;
 
 };
