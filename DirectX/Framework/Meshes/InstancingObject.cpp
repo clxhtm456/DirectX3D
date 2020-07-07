@@ -52,8 +52,3 @@ void InstancingObject::Render(Camera* viewer)
 void InstancingObject::PostRender(Camera* viewer)
 {
 }
-
-void InstancingObject::Destroy()
-{
-	//master->
-}

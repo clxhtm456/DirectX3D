@@ -110,6 +110,10 @@ void Node::AutoPostRender(Camera* viewer)
 		object->AutoPostRender(viewer);
 }
 
+void Node::Draw(Camera* viewr)
+{
+}
+
 void Node::RemoveFromParent()
 {
 	if (_parent != nullptr)
@@ -122,10 +126,6 @@ void Node::RemoveFromParent()
 	}
 }
 
-
-void Node::Draw(Camera* viewer)
-{
-}
 
 Vector3 Node::GetPosition()
 {

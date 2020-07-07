@@ -10,6 +10,9 @@
     <ClCompile Include="Converter\XmlExtractor.cpp">
       <Filter>Extractor</Filter>
     </ClCompile>
+    <ClCompile Include="AssimpModelLoader\TextureLoader.cpp">
+      <Filter>Assimp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h" />
@@ -21,10 +24,16 @@
     <ClInclude Include="Converter\XmlExtractor.h">
       <Filter>Extractor</Filter>
     </ClInclude>
+    <ClInclude Include="AssimpModelLoader\TextureLoader.h">
+      <Filter>Assimp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Extractor">
       <UniqueIdentifier>{96de9a5c-2b05-4cfe-8147-d9fd275496d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assimp">
+      <UniqueIdentifier>{7d168ff7-7708-4247-970b-e80d9aaab6dd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

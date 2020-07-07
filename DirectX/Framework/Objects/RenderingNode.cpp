@@ -74,6 +74,7 @@ void RenderingNode::Draw(Camera * viewer)
 	}
 }
 
+
 void RenderingNode::SetPosition(Vector3 position)
 {
 	Node::SetPosition(position);

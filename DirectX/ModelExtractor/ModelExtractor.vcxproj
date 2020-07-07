@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AssimpModelLoader\TextureLoader.cpp" />
     <ClCompile Include="Converter\FbxUtility.cpp" />
     <ClCompile Include="Converter\XmlExtractor.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -135,6 +136,7 @@
     <ClCompile Include="ModelExtractor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssimpModelLoader\TextureLoader.h" />
     <ClInclude Include="Converter\FbxUtility.h" />
     <ClInclude Include="Converter\XmlExtractor.h" />
     <ClInclude Include="Main.h" />

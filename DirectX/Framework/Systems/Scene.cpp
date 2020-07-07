@@ -267,6 +267,7 @@ void Scene::SetMainCamera(Camera* cam)
 void Scene::CreateMainLight()
 {
 	auto mainLight = DirectionLight::Create();
+	mainLight->UseShadow(true);
 	AddChild(mainLight);
 	//mainLight->Retain();
 

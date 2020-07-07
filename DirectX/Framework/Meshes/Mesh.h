@@ -9,7 +9,7 @@ public:
 
 public:
 	Mesh();
-	~Mesh();
+	virtual ~Mesh();
 
 	bool CreateBuffer();
 
@@ -17,16 +17,15 @@ public:
 	Material* GetMaterial() {
 		return material;
 	}
-	void Destroy() override;
 	void Update() override;
 	void Render(Camera* viewer) override;
 	void Draw(Camera* viewer) override;
+	void CalcWorldMatrix() override;
 public:
 	Node* CreateInstance();
 
 protected:
 	virtual void CreateMesh() = 0;
-	
 protected:
 	MeshVertex* vertices;
 	UINT* indices;
@@ -35,6 +34,7 @@ protected:
 
 	RasterizerState* rasterizerState;
 private:
+	void StartInstancingMode();
 	void IncreaseInstancing(Node* object);
 	void DecreaseInstancing(Node* object);
 	void UpdateInstancingMatrix();
@@ -43,5 +43,7 @@ private:
 	VertexBuffer* instancingBuffer;
 	Matrix worlds[MAX_MESH_INSTANCE];
 
-	std::vector<Node*> instanceNode;
+	std::map<Node*, Matrix> instanceMatrixList;
+
+	bool bInstancingMode;
 };

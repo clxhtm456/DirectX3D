@@ -16,7 +16,7 @@ protected:
 	virtual void LateUpdate() = 0;
 	virtual void Render(class Camera* viewer) = 0;
 	virtual void PostRender(class Camera* viewer) = 0;
-	virtual void Destroy();
+	void Destroy();
 private:
 	void AutoPostUpdate();
 	void AutoUpdate();
@@ -65,9 +65,9 @@ public:
 	void Release();
 	void Retain();
 protected:
-	XMVECTOR _position;
-	XMVECTOR _rotation;
-	XMVECTOR _scale;
+	XMVECTOR _position = XMVectorSet(0,0,0,0);
+	XMVECTOR _rotation = XMVectorSet(0, 0, 0, 0);
+	XMVECTOR _scale = XMVectorSet(1, 1, 1, 0);
 protected:
 	Scene* _scene;
 public://callbackList
@@ -85,5 +85,6 @@ private:
 
 	bool _running;
 	bool _visible;
+protected:
 	Matrix _world;
 };

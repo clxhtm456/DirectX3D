@@ -65,6 +65,9 @@ void DirectionLight::CalcLightVP()
 	float fa = XMVectorGetZ(cube) + radius;
 
 	lightProjection = XMMatrixOrthographicLH(right - left, top - bottom, nea, fa);
+
+	lightView = XMMatrixTranspose(lightView);
+	lightProjection = XMMatrixTranspose(lightProjection);
 }
 
 void DirectionLight::SetRNShader2Origin(RenderingNode* node)

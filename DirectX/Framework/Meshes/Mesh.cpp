@@ -7,16 +7,20 @@
 
 Mesh::Mesh() : RenderingNode()
 {
-	shader = Shader::Add(L"Mesh");
+	shader = Shader::Add(L"InstMesh");
 	material = new Material();
 	rasterizerState = new RasterizerState();
 
 	instancingCount = 0;
 
+	bInstancingMode = false;
+
 	for (UINT i = 0; i < MAX_MESH_INSTANCE; i++)
 		worlds[i] = XMMatrixIdentity();
 
 	instancingBuffer = new VertexBuffer(worlds, MAX_MESH_INSTANCE, sizeof(Matrix), 1, true);
+
+	instancingCount = 1;
 }
 
 Mesh::~Mesh()
@@ -30,6 +34,18 @@ Mesh::~Mesh()
 	delete material;
 
 	delete rasterizerState;
+
+	delete instancingBuffer;
+	vector<Node*> releaseList;
+	for (auto iter = instanceMatrixList.begin(); iter != instanceMatrixList.end(); iter++)
+	{
+		releaseList.push_back((*iter).first);
+	}
+	//메모리 꼬임방지용
+	for (auto object : releaseList)
+	{
+		object->Release();
+	}
 }
 
 
@@ -68,16 +84,14 @@ void Mesh::Render(Camera* viewer)
 
 void Mesh::Draw(Camera * viewer)
 {
-	if (instancingCount < 1)
-		return;
-
 	VPSet(viewer);
-
+	//WorldSet();
 	LightSet();
 
 	if (vertexBuffer != NULL && indexBuffer != NULL)
 	{
 		vertexBuffer->Render();
+		
 		indexBuffer->Render();
 
 
@@ -90,35 +104,78 @@ void Mesh::Draw(Camera * viewer)
 		}
 
 		D3D::GetDC()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		D3D::GetDC()->DrawIndexedInstanced(indexCount, instancingCount, 0, 0,0);
+
+		instancingBuffer->Render();
+		D3D::GetDC()->DrawIndexedInstanced(indexCount, instancingCount, 0, 0, 0);
 	}
+}
+
+void Mesh::CalcWorldMatrix()
+{
+	if (bInstancingMode == true)
+		return;
+
+	worlds[0] = GetWorld();
+	worlds[0] = XMMatrixTranspose(worlds[0]);
+
+	D3D11_MAPPED_SUBRESOURCE subResource;
+	D3D::GetDC()->Map(instancingBuffer->Buffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
+	{
+		memcpy(subResource.pData, worlds, sizeof(Matrix) * MAX_MESH_INSTANCE);
+	}
+	D3D::GetDC()->Unmap(instancingBuffer->Buffer(), 0);
 }
 
 Node* Mesh::CreateInstance()
 {
+	StartInstancingMode();
+
 	Node* object = InstancingObject::Create();
 
+	int a = 0;
 	IncreaseInstancing(object);
 	object->OnDestroy = std::bind(&Mesh::DecreaseInstancing, this,std::placeholders::_1);
-	object->OnChangePosition = [=](Matrix matrix)->void
+	object->OnChangePosition = [&,object](Matrix matrix)->void
 	{
 		for (UINT i = 0; i < MAX_MESH_INSTANCE; i++)
 			worlds[i] = XMMatrixIdentity();
 
-		for (UINT i = 0; i < instancingCount; i++)
+		instanceMatrixList.at(object) = matrix;
+
+		int i = 0;
+		for (auto iter = instanceMatrixList.begin(); iter != instanceMatrixList.end(); iter++, i++)
 		{
-			memcpy(&worlds[i], &instanceNode[i]->GetWorld(), sizeof(Matrix));
+			memcpy(&worlds[i], &(*iter).second, sizeof(Matrix));
+			worlds[i] = XMMatrixTranspose(worlds[i]);
 		}
 
-		instancingBuffer->Render();
+		D3D11_MAPPED_SUBRESOURCE subResource;
+		D3D::GetDC()->Map(instancingBuffer->Buffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
+		{
+			memcpy(subResource.pData, worlds, sizeof(Matrix) * MAX_MESH_INSTANCE);
+		}
+		D3D::GetDC()->Unmap(instancingBuffer->Buffer(), 0);
+
 	};
 
 	return object;
 }
 
+void Mesh::StartInstancingMode()
+{
+	if (bInstancingMode == false)
+	{
+		bInstancingMode = true;
+		instancingCount = 0;
+	}
+	else
+		return;
+
+}
+
 void Mesh::IncreaseInstancing(Node* object)
 {
-	instanceNode.push_back(object);
+	instanceMatrixList.insert(std::pair<Node*, Matrix>(object, object->GetWorld()));
 
 	instancingCount++;
 }
@@ -127,14 +184,8 @@ void Mesh::DecreaseInstancing(Node* object)
 {
 	assert(instancingCount > 0);
 
-	for (auto iter = instanceNode.begin(); iter != instanceNode.end(); iter++)
-	{
-		if (*iter == object)
-		{
-			instanceNode.erase(iter);
-			instancingCount--;
-		}
-	}
+	instanceMatrixList.erase(object);
+	instancingCount--;
 }
 
 void Mesh::UpdateInstancingMatrix()

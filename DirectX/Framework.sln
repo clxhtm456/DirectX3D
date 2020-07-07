@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4
 		..\_Shaders\DefferedRender.hlsl = ..\_Shaders\DefferedRender.hlsl
 		..\_Shaders\DepthStencil.hlsl = ..\_Shaders\DepthStencil.hlsl
 		..\_Shaders\FModel.hlsl = ..\_Shaders\FModel.hlsl
+		..\_Shaders\InstMesh.hlsl = ..\_Shaders\InstMesh.hlsl
 		..\_Shaders\Mesh.hlsl = ..\_Shaders\Mesh.hlsl
 		..\_Shaders\Model.hlsl = ..\_Shaders\Model.hlsl
 		..\_Shaders\ModelAnimation.hlsl = ..\_Shaders\ModelAnimation.hlsl

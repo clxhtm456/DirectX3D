@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "MapEditor.h"
 
-#include "Meshes/Terrain.h"
-
 #define DEFAULT_HORIZONTAL	512
 #define DEFAULT_VERTICAL	512
 #define DEFAULT_DISTANCE	DEFAULT_VERTICAL*540/512
@@ -146,7 +144,6 @@ void MapEditor::CreateNewMapFile(wstring fileDir)
 	Path::CreateFolders(Path::GetDirectoryName(fileDir));
 
 	terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL);
-	terrain->SetShader(L"TerrainEdit");
 
 	auto posX = DEFAULT_HORIZONTAL * 0.5f;
 	auto posZ = (DEFAULT_VERTICAL + (DEFAULT_VERTICAL * sin(50))) * -1.0f;

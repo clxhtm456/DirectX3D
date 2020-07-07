@@ -7,7 +7,7 @@ IExecute* Window::mainExecute = NULL;
 vector<Node*> Window::releaseList;
 
 
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+//#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 
 WPARAM Window::Run(IExecute* main)
 {

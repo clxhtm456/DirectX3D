@@ -37,4 +37,5 @@ protected:
 	class RenderTarget* renderTarget;
 
 	bool isDeffered;
+
 };

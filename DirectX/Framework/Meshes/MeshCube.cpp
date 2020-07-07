@@ -23,7 +23,8 @@ bool MeshCube::Init()
 	return true;
 }
 
-MeshCube::MeshCube()
+MeshCube::MeshCube():
+	Mesh()
 {
 
 }

@@ -82,7 +82,6 @@ struct FbxKeyFrame
 	string boneName;
 	vector<FbxKeyFrameData> transforms;
 
-	
 };
 
 struct FbxClip

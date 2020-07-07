@@ -118,6 +118,7 @@ float4 ComputeLight(float3 normal, float3 viewPos, float4 wPosition)
 	float4 output;
 	float3 lightDirection = -CB_Light.Direction;
 	float NdotL = dot(lightDirection, normalize(normal));
+	//NdotL = 1;
     //NdotL = saturate(NdotL);
 
 	float4 Ambient = CB_Light.Ambient * CB_Material.Ambient;

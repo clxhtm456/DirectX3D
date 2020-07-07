@@ -200,6 +200,11 @@ void Camera::SetAllCameraMask()
 {
 	AddMask(TYPEMASK::ALL);
 }
+
+void Camera::Draw(Camera* viewr)
+{
+}
+
 RenderTarget* Camera::GetRenderTarget()
 {
 	if (default.useGBuffer == false)

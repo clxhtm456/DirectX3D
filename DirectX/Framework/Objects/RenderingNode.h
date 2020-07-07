@@ -25,12 +25,12 @@ public:
 	void SetRotationDegree(float x, float y, float z);
 	void SetScale(float x, float y, float z);
 
-	virtual void SetShader(wstring file, string vs = "VS", string ps = "PS");
-	virtual void SetPSShader(wstring file, string ps = "PS");
-	virtual void SetVSShader(wstring file, string vs = "VS");
-	virtual void SetShader(Shader* nShader);
-	virtual void SetPSShader(Shader* nShader);
-	virtual void SetVSShader(Shader* nShader);
+	void SetShader(wstring file, string vs = "VS", string ps = "PS");
+	void SetPSShader(wstring file, string ps = "PS");
+	void SetVSShader(wstring file, string vs = "VS");
+	void SetShader(Shader* nShader);
+	void SetPSShader(Shader* nShader);
+	void SetVSShader(Shader* nShader);
 
 	Shader* GetVSShader();
 	Shader* GetPSShader();

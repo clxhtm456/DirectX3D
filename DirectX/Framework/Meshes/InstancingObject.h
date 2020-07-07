@@ -16,7 +16,6 @@ protected:
 	virtual void LateUpdate() override;
 	virtual void Render(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
-	void Destroy() override;
 private:
 
 };

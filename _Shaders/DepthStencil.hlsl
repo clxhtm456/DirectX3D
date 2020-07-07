@@ -13,11 +13,13 @@ cbuffer VPBuffer : register(b2)
 struct VertexInput
 {
 	float4 Position : POSITION;
+
+	matrix Transform : INSTANCE;
 };
 
 struct DepthInput
 {
-	float4 Position : SV_POSITION;
+	float4 Position : SV_POSITION0;
 	float4 sPosition : POSITION1;
 };
 
@@ -28,13 +30,9 @@ DepthInput VS(VertexInput input)
 
 	input.Position.w = 1.0f;
 
-	output.Position = mul(input.Position, CB_World.World);
+	output.Position = mul(input.Position,input.Transform);
 	output.Position = mul(output.Position, DepthView);
 	output.Position = mul(output.Position, DepthProjection);
-	
-	//output.Position = VPPosition(output.Position);
-	/*output.Position = mul(output.Position, CB_Light.LightView);
-	output.Position = mul(output.Position, CB_Light.LightProjection);*/
 
 	output.sPosition = output.Position;
 
@@ -43,8 +41,7 @@ DepthInput VS(VertexInput input)
 
 float4 PS(DepthInput input) : SV_TARGET
 {
-	 float depth = input.Position.z / input.Position.w;
-
+	float depth = input.Position.z / input.Position.w;
 
 	return float4(depth, depth, depth, 1.0f);
 }
