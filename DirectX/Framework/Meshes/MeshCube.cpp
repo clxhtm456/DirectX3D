@@ -1,6 +1,5 @@
 #include "Framework.h"
 #include "MeshCube.h"
-#include "Instancing/InsCube.h"
 
 MeshCube* MeshCube::Create()
 {

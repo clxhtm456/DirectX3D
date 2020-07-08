@@ -13,6 +13,10 @@ public:
 	void Render(Camera* viewer) override;
 	void Draw(Camera* viewer) override;
 
+	void PostUpdate() override;
+	void LateUpdate() override;
+	void PostRender(Camera* viewer) override;
+
 	virtual void SetSRV(ID3D11ShaderResourceView* srv);
 private:
 	struct ViewProjectionDesc
@@ -40,7 +44,5 @@ private:
 	Matrix _world;
 
 	// Node을(를) 통해 상속됨
-	virtual void PostUpdate() override;
-	virtual void LateUpdate() override;
-	virtual void PostRender(Camera* viewer) override;
+	
 };

@@ -255,7 +255,7 @@ void Camera::Render(Camera* viewer)
 
 	viewport->RSSetViewport();
 
-	renderImage->Draw(this);
+	renderImage->PostRender(this);
 }
 
 

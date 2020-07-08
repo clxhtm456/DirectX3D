@@ -1,6 +1,6 @@
 #pragma once
 
-class Shadow
+class Shadow  : public AlignedAllocationPolicy<16>
 {
 public:
 	Shadow(DirectionLight* light ,Vector3 position, float radius, UINT width = 1024, UINT height = 1024);
@@ -24,7 +24,7 @@ private:
 		Vector2 MapSize;
 		float Bias = -0.0006f;
 
-		UINT Quality = 2;
+		UINT Quality = 0;
 		Vector4 testColor;
 	}psDesc;
 private:

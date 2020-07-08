@@ -1,6 +1,6 @@
 #pragma once
 
-class Node
+class Node : public AlignedAllocationPolicy<16>
 {
 private:
 	friend class Scene;

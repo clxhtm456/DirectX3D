@@ -54,10 +54,16 @@ void TestScene::Initialize()
 
 	auto renderImage = Render2D::Create();
 	renderImage->SetSRV(GetDirectionLight()->GetRenderTargetSRV());
-	//renderImage->SetSRV(GetMainCamera()->GetRenderTarget()->SRV());
 	renderImage->SetPosition(150, D3D::Height() - 150, 0);
 	renderImage->SetScale(300, 300, 1);
 	AddChild(renderImage);
+
+	//auto renderImage2 = Render2D::Create();
+	//auto cameraRender = GetMainCamera()->GetRenderTarget();
+	//renderImage2->SetSRV(cameraRender->SRV());
+	//renderImage2->SetPosition(480, D3D::Height() - 150, 0);
+	//renderImage2->SetScale(300, 300, 1);
+	//AddChild(renderImage2);
 
 	//auto terrain = Terrain::Create(512,512);
 	//terrain->BaseMap(L"Terrain/Dirt3.png");
@@ -109,7 +115,8 @@ void TestScene::CreateFreedomCamera()
 	//option.useGBuffer = true;
 
 	freedomCam = Freedom::Create(option);
-	freedomCam->SetPosition(20, 37, -68);
+	//freedomCam->SetPosition(20, 37, -68);
+	freedomCam->SetPosition(20, 20, -20);
 	freedomCam->SetRotationDegree(30, -20, 0);
 	/*freedomCam->SetPosition(27, 12, 20);
 	freedomCam->SetRotationDegree(20, -157, 0);*/

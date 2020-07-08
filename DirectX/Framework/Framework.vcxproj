@@ -27,13 +27,6 @@
     <ClCompile Include="Light\DirectLight.cpp" />
     <ClCompile Include="Light\Light.cpp" />
     <ClCompile Include="Light\Shadow.cpp" />
-    <ClCompile Include="Meshes\InstancingObject.cpp" />
-    <ClCompile Include="Meshes\Instancing\InsCube.cpp" />
-    <ClCompile Include="Meshes\Instancing\InsCylinder.cpp" />
-    <ClCompile Include="Meshes\Instancing\InsGrid.cpp" />
-    <ClCompile Include="Meshes\Instancing\InsMesh.cpp" />
-    <ClCompile Include="Meshes\Instancing\InsQuad.cpp" />
-    <ClCompile Include="Meshes\Instancing\InsSphere.cpp" />
     <ClCompile Include="Meshes\Mesh.cpp" />
     <ClCompile Include="Meshes\MeshCube.cpp" />
     <ClCompile Include="Meshes\MeshCylinder.cpp" />
@@ -47,6 +40,7 @@
     <ClCompile Include="Model\ModelAnim.cpp" />
     <ClCompile Include="Model\ModelData.cpp" />
     <ClCompile Include="Model\ModelTweener.cpp" />
+    <ClCompile Include="Objects\EmptyNode.cpp" />
     <ClCompile Include="Objects\Node.cpp" />
     <ClCompile Include="Objects\ReflectionNode.cpp" />
     <ClCompile Include="Objects\RenderingNode.cpp" />
@@ -89,13 +83,6 @@
     <ClInclude Include="Light\DirectLight.h" />
     <ClInclude Include="Light\Light.h" />
     <ClInclude Include="Light\Shadow.h" />
-    <ClInclude Include="Meshes\InstancingObject.h" />
-    <ClInclude Include="Meshes\Instancing\InsCube.h" />
-    <ClInclude Include="Meshes\Instancing\InsCylinder.h" />
-    <ClInclude Include="Meshes\Instancing\InsGrid.h" />
-    <ClInclude Include="Meshes\Instancing\InsMesh.h" />
-    <ClInclude Include="Meshes\Instancing\InsQuad.h" />
-    <ClInclude Include="Meshes\Instancing\InsSphere.h" />
     <ClInclude Include="Meshes\Mesh.h" />
     <ClInclude Include="Meshes\MeshCube.h" />
     <ClInclude Include="Meshes\MeshCylinder.h" />
@@ -110,6 +97,7 @@
     <ClInclude Include="Model\ModelAnim.h" />
     <ClInclude Include="Model\ModelData.h" />
     <ClInclude Include="Model\ModelTweener.h" />
+    <ClInclude Include="Objects\EmptyNode.h" />
     <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Objects\ReflectionNode.h" />
     <ClInclude Include="Objects\RenderingNode.h" />
@@ -126,6 +114,7 @@
     <ClInclude Include="Renders\ShaderState\SamplerState.h" />
     <ClInclude Include="Renders\Texture.h" />
     <ClInclude Include="Renders\VertexLayouts.h" />
+    <ClInclude Include="Systems\AlignAllocationPolicy.h" />
     <ClInclude Include="Systems\Context.h" />
     <ClInclude Include="Systems\D3D.h" />
     <ClInclude Include="Systems\Gui.h" />
@@ -160,7 +149,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

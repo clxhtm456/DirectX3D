@@ -107,6 +107,7 @@ typedef enum TYPEMASK
 #include "Systems/Gui.h"
 #include "Systems/Context.h"
 #include "Systems/Window.h"
+#include "Systems/AlignAllocationPolicy.h"
 
 //
 #include "Renders/ShaderResourceDefine.h"

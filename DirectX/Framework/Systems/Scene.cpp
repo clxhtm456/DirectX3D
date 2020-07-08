@@ -133,7 +133,7 @@ void Scene::AutoPostRender()
 
 		for (auto object : _childList)
 		{
-			if (object->GetRunning())
+			if (camera->CheckMask(object->GetObjectMask()))
 				object->AutoPostRender(camera);
 		}
 

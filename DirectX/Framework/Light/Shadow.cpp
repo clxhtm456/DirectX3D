@@ -83,4 +83,7 @@ void Shadow::UpdateVolume()
 
 	vsDesc.Projection = XMMatrixOrthographicLH(right - left, top - bottom, nea, fa);
 	psDesc.testColor = Vector4(0, 1, 1, 1);
+
+	XMVECTOR test;
+	test = XMVector3TransformCoord(XMLoadFloat3(&position), vsDesc.Projection);
 }

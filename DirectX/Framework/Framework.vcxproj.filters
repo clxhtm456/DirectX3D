@@ -34,9 +34,6 @@
     <Filter Include="ExampleScene">
       <UniqueIdentifier>{dcc7eacf-3e96-4bf3-83f7-6a77f2dc81e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Meshes\Instancing">
-      <UniqueIdentifier>{49480033-4376-46c8-a691-526781cf6bfe}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Keyboard.cpp">
@@ -184,24 +181,6 @@
     <ClCompile Include="ExampleScene\ExampleScene.cpp">
       <Filter>ExampleScene</Filter>
     </ClCompile>
-    <ClCompile Include="Meshes\Instancing\InsCube.cpp">
-      <Filter>Meshes\Instancing</Filter>
-    </ClCompile>
-    <ClCompile Include="Meshes\Instancing\InsCylinder.cpp">
-      <Filter>Meshes\Instancing</Filter>
-    </ClCompile>
-    <ClCompile Include="Meshes\Instancing\InsGrid.cpp">
-      <Filter>Meshes\Instancing</Filter>
-    </ClCompile>
-    <ClCompile Include="Meshes\Instancing\InsMesh.cpp">
-      <Filter>Meshes\Instancing</Filter>
-    </ClCompile>
-    <ClCompile Include="Meshes\Instancing\InsQuad.cpp">
-      <Filter>Meshes\Instancing</Filter>
-    </ClCompile>
-    <ClCompile Include="Meshes\Instancing\InsSphere.cpp">
-      <Filter>Meshes\Instancing</Filter>
-    </ClCompile>
     <ClCompile Include="Light\Shadow.cpp">
       <Filter>Light</Filter>
     </ClCompile>
@@ -214,8 +193,8 @@
     <ClCompile Include="Model\ModelTweener.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="Meshes\InstancingObject.cpp">
-      <Filter>Meshes</Filter>
+    <ClCompile Include="Objects\EmptyNode.cpp">
+      <Filter>Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -376,24 +355,6 @@
     <ClInclude Include="ExampleScene\ExampleScene.h">
       <Filter>ExampleScene</Filter>
     </ClInclude>
-    <ClInclude Include="Meshes\Instancing\InsCube.h">
-      <Filter>Meshes\Instancing</Filter>
-    </ClInclude>
-    <ClInclude Include="Meshes\Instancing\InsCylinder.h">
-      <Filter>Meshes\Instancing</Filter>
-    </ClInclude>
-    <ClInclude Include="Meshes\Instancing\InsGrid.h">
-      <Filter>Meshes\Instancing</Filter>
-    </ClInclude>
-    <ClInclude Include="Meshes\Instancing\InsMesh.h">
-      <Filter>Meshes\Instancing</Filter>
-    </ClInclude>
-    <ClInclude Include="Meshes\Instancing\InsQuad.h">
-      <Filter>Meshes\Instancing</Filter>
-    </ClInclude>
-    <ClInclude Include="Meshes\Instancing\InsSphere.h">
-      <Filter>Meshes\Instancing</Filter>
-    </ClInclude>
     <ClInclude Include="Light\Shadow.h">
       <Filter>Light</Filter>
     </ClInclude>
@@ -409,8 +370,11 @@
     <ClInclude Include="Model\ModelTweener.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Meshes\InstancingObject.h">
-      <Filter>Meshes</Filter>
+    <ClInclude Include="Objects\EmptyNode.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Systems\AlignAllocationPolicy.h">
+      <Filter>Systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

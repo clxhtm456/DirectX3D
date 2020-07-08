@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Mesh.h"
 
-#include "InstancingObject.h"
+#include "Objects/EmptyNode.h"
 
 
 
@@ -130,7 +130,7 @@ Node* Mesh::CreateInstance()
 {
 	StartInstancingMode();
 
-	Node* object = InstancingObject::Create();
+	Node* object = EmptyNode::Create();
 
 	int a = 0;
 	IncreaseInstancing(object);

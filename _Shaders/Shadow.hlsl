@@ -53,7 +53,7 @@ float4 PS_Shadow(ShadowPixelInput input) : SV_Target
 	float4 result = ComputeLight(input.Normal, input.ViewPos, input.wPosition);
 	float4 color = float4(diffuse, 1) * result;
 
-	//return float4(1, 0, 0, 1);
+    //return float4(diffuse,1);
 	input.sPosition.xyz /= input.sPosition.w;
 
 	[flatten]
@@ -73,7 +73,7 @@ float4 PS_Shadow(ShadowPixelInput input) : SV_Target
 	if (Quality == 0)
 	{
 		depth = ShadowMap.Sample(LinearSampler, input.sPosition.xy).r;
-		factor = (float)input.sPosition.z <= depth;
+		//factor = (float)input.sPosition.z <= depth;
 	}
 	else if (Quality == 1)
 	{
@@ -109,5 +109,6 @@ float4 PS_Shadow(ShadowPixelInput input) : SV_Target
 	factor = saturate(factor + depth);
 
 	return float4(color.rgb * factor ,1);
+	//return float4(1, 0, 0 ,1);
 	
 }
