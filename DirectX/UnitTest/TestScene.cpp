@@ -53,17 +53,18 @@ void TestScene::Initialize()
 	AddChild(cylinder);*/
 
 	auto renderImage = Render2D::Create();
-	renderImage->SetSRV(GetDirectionLight()->GetRenderTargetSRV());
+	auto depthRenderTarget = GetDirectionLight()->GetDepthSRV();
+	renderImage->SetSRV(depthRenderTarget);
 	renderImage->SetPosition(150, D3D::Height() - 150, 0);
 	renderImage->SetScale(300, 300, 1);
 	AddChild(renderImage);
 
-	//auto renderImage2 = Render2D::Create();
-	//auto cameraRender = GetMainCamera()->GetRenderTarget();
-	//renderImage2->SetSRV(cameraRender->SRV());
-	//renderImage2->SetPosition(480, D3D::Height() - 150, 0);
-	//renderImage2->SetScale(300, 300, 1);
-	//AddChild(renderImage2);
+	/*auto renderImage2 = Render2D::Create();
+	auto cameraRender = GetMainCamera()->GetRenderTarget();
+	renderImage2->SetSRV(cameraRender->SRV());
+	renderImage2->SetPosition(480, D3D::Height() - 150, 0);
+	renderImage2->SetScale(300, 300, 1);
+	AddChild(renderImage2);*/
 
 	//auto terrain = Terrain::Create(512,512);
 	//terrain->BaseMap(L"Terrain/Dirt3.png");

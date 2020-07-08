@@ -13,7 +13,7 @@ Shadow::Shadow(DirectionLight* light, Vector3 position, float radius, UINT width
 	vsBuffer = new ConstantBuffer(&vsDesc, sizeof(VsDesc));
 	psBuffer = new ConstantBuffer(&psDesc, sizeof(PsDesc));
 
-	shadowMap = _light->GetDepthSRV();
+	shadowMap = _light->GetRenderTarget()->SRV();
 	//Create SamplerState
 	{
 		//CD3D11_SAMPLER_DESC//이미 생성되있는 샘플

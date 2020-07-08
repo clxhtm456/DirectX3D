@@ -8,7 +8,6 @@ public:
 
 	void Set();
 
-	ID3D11ShaderResourceView* SRV() { return _light->GetRenderTargetSRV(); }
 	void SetShadowMap(ID3D11ShaderResourceView* srv);
 private:
 	void UpdateVolume();

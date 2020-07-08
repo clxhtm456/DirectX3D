@@ -22,7 +22,7 @@ protected:
 public:
 	Shader* GetDepthShader() { return depthShader; }
 	ID3D11ShaderResourceView* GetDepthSRV();
-	ID3D11ShaderResourceView* GetRenderTargetSRV();
+	class RenderTarget* GetRenderTarget();
 protected:
 	Shader* depthShader;//DepthStencilShader
 

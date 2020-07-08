@@ -69,7 +69,7 @@ ID3D11ShaderResourceView* ReflectionNode::GetDepthSRV()
 	return depthStencil->SRV();
 }
 
-ID3D11ShaderResourceView* ReflectionNode::GetRenderTargetSRV()
+RenderTarget* ReflectionNode::GetRenderTarget()
 {
-	return renderTarget->SRV();
+	return renderTarget;
 }
