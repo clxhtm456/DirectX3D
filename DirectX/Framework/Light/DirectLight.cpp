@@ -39,35 +39,13 @@ void DirectionLight::SetBuffer(OUT LightBuffer* buffer)
 	buffer->data.ambient = ambient;
 	buffer->data.Specular = specular;
 	buffer->data.position = position;
-
-	buffer->data.lightView = lightView;
-	buffer->data.lightProjection = lightProjection;
 }
 
-void DirectionLight::CalcLightVP()
+
+void DirectionLight::SetRNShader2Depth(RenderingNode * node)
 {
-	float radius = 100;
-	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
-	XMVECTOR vDirection = XMLoadFloat3(&direction);//**빛에 대한 depth 를 구함
-	XMVECTOR tPosition = vDirection * radius * -2.0f;
-
-	lightView = XMMatrixLookAtLH(tPosition, XMLoadFloat3(&position), up);
-
-	XMVECTOR cube;
-	cube = XMVector3TransformCoord(XMLoadFloat3(&position), lightView);
-
-	float left = XMVectorGetX(cube) - radius;
-	float bottom = XMVectorGetY(cube) - radius;
-	float nea = XMVectorGetZ(cube) - radius;
-
-	float right = XMVectorGetX(cube) + radius;
-	float top = XMVectorGetY(cube) + radius;
-	float fa = XMVectorGetZ(cube) + radius;
-
-	lightProjection = XMMatrixOrthographicLH(right - left, top - bottom, nea, fa);
-
-	lightView = XMMatrixTranspose(lightView);
-	lightProjection = XMMatrixTranspose(lightProjection);
+	Super::SetRNShader2Depth(node);
+	node->GetRasterizerState()->FrontCounterClockwise(true);
 }
 
 void DirectionLight::SetRNShader2Origin(RenderingNode* node)
@@ -79,6 +57,7 @@ void DirectionLight::SetRNShader2Origin(RenderingNode* node)
 
 	vsShaderSlot->RecompileVS("VS_Shadow");
 	psShaderSlot->RecompilePS("PS_Shadow");
+	node->GetRasterizerState()->FrontCounterClockwise(false);
 
 }
 
@@ -96,7 +75,6 @@ void DirectionLight::Update()
 
 	direction = Vector3(angle[0],angle[1],angle[2]);
 	position = Vector3(lightPos[0], lightPos[1], lightPos[2]);
-	CalcLightVP();
 }
 
 void DirectionLight::LateUpdate()

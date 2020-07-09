@@ -42,7 +42,7 @@ ShadowPixelInput VS_Shadow(ShadowVertexInput input)
 	output.BiNormal = cross(output.Normal, output.Tangent);
 	output.ViewPos = ViewPosition();
 
-	output.sPosition = WorldPosition(input.Position);
+    output.sPosition = mul(input.Position, input.Transform);
 	output.sPosition = mul(output.sPosition, ShadowView);
 	output.sPosition = mul(output.sPosition, ShadowProjection);
 

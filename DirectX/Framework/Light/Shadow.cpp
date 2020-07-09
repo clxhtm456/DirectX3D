@@ -82,8 +82,8 @@ void Shadow::UpdateVolume()
 	float fa = XMVectorGetZ(cube) + radius;
 
 	vsDesc.Projection = XMMatrixOrthographicLH(right - left, top - bottom, nea, fa);
-	psDesc.testColor = Vector4(0, 1, 1, 1);
-
-	XMVECTOR test;
-	test = XMVector3TransformCoord(XMLoadFloat3(&position), vsDesc.Projection);
+	
+	vsDesc.View = XMMatrixTranspose(vsDesc.View);
+	vsDesc.Projection = XMMatrixTranspose(vsDesc.Projection);
+	//행렬전치안할경우 연산결과가 달라짐
 }

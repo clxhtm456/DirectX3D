@@ -57,7 +57,7 @@ void RenderingNode::Draw(Camera * viewer)
 	{
 		vertexBuffer->Render();
 		indexBuffer->Render();
-
+		rasterizerState->SetState();
 
 		if (vsShader == NULL && psShader == NULL)
 			shader->Render();
@@ -191,6 +191,11 @@ Shader* RenderingNode::GetPSShader()
 		return shader;
 	else
 		return psShader;
+}
+
+RasterizerState * RenderingNode::GetRasterizerState()
+{
+	return rasterizerState;
 }
 
 void RenderingNode::WorldSet()

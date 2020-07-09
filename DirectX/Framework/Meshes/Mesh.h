@@ -32,7 +32,6 @@ protected:
 
 	Material* material;
 
-	RasterizerState* rasterizerState;
 private:
 	void StartInstancingMode();
 	void IncreaseInstancing(Node* object);

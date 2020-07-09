@@ -132,10 +132,31 @@ Node* Mesh::CreateInstance()
 
 	Node* object = EmptyNode::Create();
 
-	int a = 0;
 	IncreaseInstancing(object);
-	object->OnDestroy = std::bind(&Mesh::DecreaseInstancing, this,std::placeholders::_1);
-	object->OnChangePosition = [&,object](Matrix matrix)->void
+	
+	return object;
+}
+
+void Mesh::StartInstancingMode()
+{
+	if (bInstancingMode == false)
+	{
+		bInstancingMode = true;
+		instancingCount = 0;
+	}
+	else
+		return;
+
+}
+
+void Mesh::IncreaseInstancing(Node* object)
+{
+	instanceMatrixList.insert(std::pair<Node*, Matrix>(object, object->GetWorld()));
+
+	instancingCount++;
+
+	object->OnDestroy = std::bind(&Mesh::DecreaseInstancing, this, std::placeholders::_1);
+	object->OnChangePosition = [&, object](Matrix matrix)->void
 	{
 		for (UINT i = 0; i < MAX_MESH_INSTANCE; i++)
 			worlds[i] = XMMatrixIdentity();
@@ -157,27 +178,6 @@ Node* Mesh::CreateInstance()
 		D3D::GetDC()->Unmap(instancingBuffer->Buffer(), 0);
 
 	};
-
-	return object;
-}
-
-void Mesh::StartInstancingMode()
-{
-	if (bInstancingMode == false)
-	{
-		bInstancingMode = true;
-		instancingCount = 0;
-	}
-	else
-		return;
-
-}
-
-void Mesh::IncreaseInstancing(Node* object)
-{
-	instanceMatrixList.insert(std::pair<Node*, Matrix>(object, object->GetWorld()));
-
-	instancingCount++;
 }
 
 void Mesh::DecreaseInstancing(Node* object)

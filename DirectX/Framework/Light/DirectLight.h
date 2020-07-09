@@ -27,9 +27,8 @@ private:
 	bool useShadow = false;
 private:
 	class Shadow* shadow;
-private:
-	void CalcLightVP();
 protected:
+	void SetRNShader2Depth(RenderingNode* node) override;
 	void SetRNShader2Origin(RenderingNode* node) override;
 	// Node을(를) 통해 상속됨
 	void PostUpdate() override;

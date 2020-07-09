@@ -34,6 +34,7 @@ public:
 
 	Shader* GetVSShader();
 	Shader* GetPSShader();
+	RasterizerState* GetRasterizerState();
 
 	void WorldSet();
 	void VPSet(Camera* viewer);
@@ -52,5 +53,7 @@ protected:
 
 	WorldBuffer* worldBuffer;
 	LightBuffer* lightBuffer;
+
+	RasterizerState* rasterizerState;
 
 };

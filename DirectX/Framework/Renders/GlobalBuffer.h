@@ -83,8 +83,6 @@ public:
 		Vector3 direction;
 		Vector3 position;
 
-		Matrix lightView;
-		Matrix lightProjection;
 		float padding[2];
 	}data;
 
@@ -96,8 +94,6 @@ public:
 
 		data.position = Vector3(0,0,0);
 
-		data.lightView = XMMatrixIdentity();
-		data.lightProjection = XMMatrixIdentity();
 	}
 };
 

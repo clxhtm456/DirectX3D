@@ -17,14 +17,14 @@ void TestScene::Initialize()
 	AddChild(cube);
 
 	auto cubeInst = cube->CreateInstance();
-	cubeInst->SetScale(10, 10, 20);
-	cubeInst->SetPosition(0, 20, 0);
+	cubeInst->SetScale(20, 10, 20);
+	cubeInst->SetPosition(0, 5, 0);
 	AddChild(cubeInst);
 
-	auto cubeInst2 = cube->CreateInstance();
+	/*auto cubeInst2 = cube->CreateInstance();
 	cubeInst2->SetPosition(10, 0, 0);
 	cubeInst2->SetScale(20, 10, 20);
-	AddChild(cubeInst2);
+	AddChild(cubeInst2);*/
 
 	
 	auto grid = MeshGrid::Create(10,10);
@@ -35,7 +35,7 @@ void TestScene::Initialize()
 	grid->GetMaterial()->SetSpecularMap("../../_Textures/Floor_Specular.png");
 	AddChild(grid);
 
-	auto sphere = MeshSphere::Create(0.5f,20,20);
+	/*auto sphere = MeshSphere::Create(0.5f,20,20);
 	sphere->GetMaterial()->SetDiffuseMap("../../_Textures/Wall.png");
 	sphere->GetMaterial()->SetSpecularMap("../../_Textures/Wall_Specular.png");
 	sphere->GetMaterial()->SetNormalMap("../../_Textures/Wall_Normal.png");
@@ -45,7 +45,7 @@ void TestScene::Initialize()
 	auto sphereInst = sphere->CreateInstance();
 	sphereInst->SetPosition(5, 20, 0);
 	sphereInst->SetScale(5, 5, 5);
-	AddChild(sphereInst);
+	AddChild(sphereInst);*/
 
 	/*auto cylinder = MeshCylinder::Create(0.5f,3.0f,20,20);
 	cylinder->SetScale(5, 5, 5);
@@ -53,7 +53,7 @@ void TestScene::Initialize()
 	AddChild(cylinder);*/
 
 	auto renderImage = Render2D::Create();
-	auto depthRenderTarget = GetDirectionLight()->GetDepthSRV();
+	auto depthRenderTarget = GetDirectionLight()->GetRenderTarget()->SRV();
 	renderImage->SetSRV(depthRenderTarget);
 	renderImage->SetPosition(150, D3D::Height() - 150, 0);
 	renderImage->SetScale(300, 300, 1);
@@ -116,8 +116,7 @@ void TestScene::CreateFreedomCamera()
 	//option.useGBuffer = true;
 
 	freedomCam = Freedom::Create(option);
-	//freedomCam->SetPosition(20, 37, -68);
-	freedomCam->SetPosition(20, 20, -20);
+	freedomCam->SetPosition(20, 37, -68);
 	freedomCam->SetRotationDegree(30, -20, 0);
 	/*freedomCam->SetPosition(27, 12, 20);
 	freedomCam->SetRotationDegree(20, -157, 0);*/
