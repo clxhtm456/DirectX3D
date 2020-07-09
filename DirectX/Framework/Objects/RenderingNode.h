@@ -31,6 +31,9 @@ public:
 	void SetShader(Shader* nShader);
 	void SetPSShader(Shader* nShader);
 	void SetVSShader(Shader* nShader);
+	void UseShadow(bool val) { _useShadow = val; }
+	bool GetUseShadow() { return _useShadow; }
+	void SetShadowMap(ID3D11ShaderResourceView* srv) { shadowMap = srv; }
 
 	Shader* GetVSShader();
 	Shader* GetPSShader();
@@ -55,5 +58,9 @@ protected:
 	LightBuffer* lightBuffer;
 
 	RasterizerState* rasterizerState;
+
+	ID3D11ShaderResourceView* shadowMap = NULL;
+private:
+	bool _useShadow = true;
 
 };

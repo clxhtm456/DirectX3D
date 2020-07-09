@@ -52,12 +52,17 @@ void DirectionLight::SetRNShader2Origin(RenderingNode* node)
 {
 	Super::SetRNShader2Origin(node);
 
+	node->GetRasterizerState()->FrontCounterClockwise(false);
 	if (useShadow == false)
+		return;
+
+	if (node->GetUseShadow() == false)
 		return;
 
 	vsShaderSlot->RecompileVS("VS_Shadow");
 	psShaderSlot->RecompilePS("PS_Shadow");
-	node->GetRasterizerState()->FrontCounterClockwise(false);
+	node->SetShadowMap(depthStencil->SRV());
+	
 
 }
 
@@ -84,6 +89,7 @@ void DirectionLight::LateUpdate()
 void DirectionLight::Render(Camera* viewer)
 {
 	__super::Render(viewer);
+	shadow->Draw();
 }
 
 

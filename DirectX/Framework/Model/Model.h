@@ -38,6 +38,4 @@ protected:
 	IntBuffer* intBuffer;
 
 
-	RasterizerState* rstate;
-
 };

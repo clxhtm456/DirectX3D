@@ -23,7 +23,6 @@ bool FModel::Init(string modelDir)
 	//modelData = new FModelData(modelDir);
 	shader = Shader::Add(L"Model");
 	intBuffer = new IntBuffer();
-	rstate = new RasterizerState();
 
 	rstate->FillMode(D3D11_FILL_WIREFRAME);
 

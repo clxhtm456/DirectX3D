@@ -2,7 +2,7 @@
 #include "Mesh.h"
 #include "Terrain.h"
 
-class MeshCube : public Mesh , public TerrainObject
+class MeshCube : public Mesh
 {
 public:
 	static MeshCube* Create();
@@ -14,6 +14,4 @@ public:
 private:
 	void CreateMesh() override;
 
-	// TerrainObject을(를) 통해 상속됨
-	virtual wstring ObjectType() override;
 };

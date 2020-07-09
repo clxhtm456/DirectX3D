@@ -20,9 +20,13 @@ public:
 	void CreateNewMap();
 
 private:
-	Terrain* terrain;
+	class Terrain* terrain;
 	vector<class Mesh*> meshes;
 
 	Scene* m_scene;
+
+private:
+	UINT mapWidth;
+	UINT mapHeight;
 
 };

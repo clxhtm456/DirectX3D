@@ -34,11 +34,13 @@ public:
 public:
 	void CreateMainLight();
 	DirectionLight* GetDirectionLight();
-private:
+protected:
 	DirectionLight* _directionLight;
+	class Camera* _mainCamera = nullptr;
+private:
 	list<Node*> _childList;
 	list<ReflectionNode*> _reflectionList;
 	list<Light*> _lightList;
 	list<Camera*> _cameraList;
-	class Camera* _mainCamera = nullptr;
+	
 };

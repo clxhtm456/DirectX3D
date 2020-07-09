@@ -32,6 +32,9 @@ using namespace std;
 #define MAX_MODEL_BONE 256
 #define MAX_POINTLIGHT 32
 
+
+#define ForIterator(__TYPE__,__ARRAY__,__NAME__,__ITER__)	for (std::list<__TYPE__*>::iterator __ITER__ = __ARRAY__.begin(), (__TYPE__*) __NAME__ = (*__ITER__); __ITER__ != __ARRAY__.end(); __ITER__++)
+
 //Direct3D
 #include <d3d11.h>
 #include <DirectXPackedVector.h>
@@ -87,11 +90,11 @@ typedef XMVECTOR Plane;
 #define CAMERA_MASK11	(1<<11)
 #define CAMERA_MASK12	(1<<12)
 
-typedef enum TYPEMASK
+typedef enum _TYPEMASK
 {
 	DEFAULT = CAMERA_MASK1,
 	ALL = CAMERA_MASK1 | CAMERA_MASK2 | CAMERA_MASK3 | CAMERA_MASK4 | CAMERA_MASK5 | CAMERA_MASK6 | CAMERA_MASK7 | CAMERA_MASK8 | CAMERA_MASK9 | CAMERA_MASK10 | CAMERA_MASK11 | CAMERA_MASK12
-};
+}TYPEMASK;
 
 //ImGui
 #include <ImGui_New/imgui.h>

@@ -226,7 +226,14 @@
     </Lib>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)Debug\Framework.lib" "$(SolutionDir)UnitTest\"
-copy /Y "$(SolutionDir)Debug\Framework.pdb" "$(SolutionDir)UnitTest\"</Command>
+copy /Y "$(SolutionDir)Debug\Framework.pdb" "$(SolutionDir)UnitTest\"
+
+copy /Y "$(SolutionDir)Debug\Framework.lib" "$(SolutionDir)TerrainEditor\"
+copy /Y "$(SolutionDir)Debug\Framework.pdb" "$(SolutionDir)TerrainEditor\"
+
+copy /Y "$(SolutionDir)Debug\Framework.lib" "$(SolutionDir)ModelExtractor\"
+copy /Y "$(SolutionDir)Debug\Framework.pdb" "$(SolutionDir)ModelExtractor\"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

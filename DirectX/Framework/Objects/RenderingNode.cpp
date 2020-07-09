@@ -5,12 +5,15 @@ RenderingNode::RenderingNode() : Node()
 {
 	worldBuffer = new WorldBuffer();
 	lightBuffer = new LightBuffer();
+	rasterizerState = new RasterizerState();
+	
 }
 
 RenderingNode::~RenderingNode()
 {
 	delete worldBuffer;
 	delete lightBuffer;
+	delete rasterizerState;
 }
 
 
@@ -39,6 +42,10 @@ void RenderingNode::LateUpdate()
 
 void RenderingNode::Render(Camera* viewer)
 {
+	if (shadowMap != NULL)
+	{
+		D3D::GetDC()->PSSetShaderResources(3, 1, &shadowMap);
+	}
 }
 
 

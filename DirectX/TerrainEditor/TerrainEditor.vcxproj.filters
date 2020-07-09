@@ -20,5 +20,8 @@
     <Filter Include="MapEditor">
       <UniqueIdentifier>{5681437e-004c-4c76-872d-9f5ed712e0a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TerrainEdit">
+      <UniqueIdentifier>{d4a474b2-ae68-442f-8a22-7611784aeddc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

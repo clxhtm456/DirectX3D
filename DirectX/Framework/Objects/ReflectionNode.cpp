@@ -64,9 +64,9 @@ void ReflectionNode::PostRender(Camera* viewer)
 }
 
 
-ID3D11ShaderResourceView* ReflectionNode::GetDepthSRV()
+DepthStencil* ReflectionNode::GetDepth()
 {
-	return depthStencil->SRV();
+	return depthStencil;
 }
 
 RenderTarget* ReflectionNode::GetRenderTarget()

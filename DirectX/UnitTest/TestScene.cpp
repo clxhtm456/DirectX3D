@@ -35,7 +35,7 @@ void TestScene::Initialize()
 	grid->GetMaterial()->SetSpecularMap("../../_Textures/Floor_Specular.png");
 	AddChild(grid);
 
-	/*auto sphere = MeshSphere::Create(0.5f,20,20);
+	auto sphere = MeshSphere::Create(0.5f,20,20);
 	sphere->GetMaterial()->SetDiffuseMap("../../_Textures/Wall.png");
 	sphere->GetMaterial()->SetSpecularMap("../../_Textures/Wall_Specular.png");
 	sphere->GetMaterial()->SetNormalMap("../../_Textures/Wall_Normal.png");
@@ -45,19 +45,19 @@ void TestScene::Initialize()
 	auto sphereInst = sphere->CreateInstance();
 	sphereInst->SetPosition(5, 20, 0);
 	sphereInst->SetScale(5, 5, 5);
-	AddChild(sphereInst);*/
+	AddChild(sphereInst);
 
-	/*auto cylinder = MeshCylinder::Create(0.5f,3.0f,20,20);
+	auto cylinder = MeshCylinder::Create(0.5f,3.0f,20,20);
 	cylinder->SetScale(5, 5, 5);
 	cylinder->SetPosition(-30, 6, -15);
-	AddChild(cylinder);*/
+	AddChild(cylinder);
 
-	auto renderImage = Render2D::Create();
+	/*auto renderImage = Render2D::Create();
 	auto depthRenderTarget = GetDirectionLight()->GetRenderTarget()->SRV();
 	renderImage->SetSRV(depthRenderTarget);
 	renderImage->SetPosition(150, D3D::Height() - 150, 0);
 	renderImage->SetScale(300, 300, 1);
-	AddChild(renderImage);
+	AddChild(renderImage);*/
 
 	/*auto renderImage2 = Render2D::Create();
 	auto cameraRender = GetMainCamera()->GetRenderTarget();
@@ -66,12 +66,13 @@ void TestScene::Initialize()
 	renderImage2->SetScale(300, 300, 1);
 	AddChild(renderImage2);*/
 
-	//auto terrain = Terrain::Create(512,512);
-	//terrain->BaseMap(L"Terrain/Dirt3.png");
-	//terrain->SetPosition(0, 0, 0);
-	//terrain->SetScale(1, 1, 1);
-	//terrain->SetShader(L"TerrainEdit");
-	//AddChild(terrain);
+	/*auto terrain = Terrain::Create(512,512);
+	terrain->BaseMap(L"Terrain/Dirt3.png");
+	terrain->SetPosition(0, 0, 0);
+	terrain->SetScale(1, 1, 1);
+	terrain->SetShader(L"TerrainEdit");
+	terrain->UseShadow(false);
+	AddChild(terrain);*/
 
 	//auto kachujin = ModelAnim::Create("pikachu");
 	//kachujin->SetPosition(20, 0, 0);
@@ -118,6 +119,7 @@ void TestScene::CreateFreedomCamera()
 	freedomCam = Freedom::Create(option);
 	freedomCam->SetPosition(20, 37, -68);
 	freedomCam->SetRotationDegree(30, -20, 0);
+	freedomCam->Speed(50, 5);
 	/*freedomCam->SetPosition(27, 12, 20);
 	freedomCam->SetRotationDegree(20, -157, 0);*/
 	//AddChild(freedomCam);

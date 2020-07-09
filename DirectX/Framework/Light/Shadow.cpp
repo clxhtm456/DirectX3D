@@ -13,7 +13,7 @@ Shadow::Shadow(DirectionLight* light, Vector3 position, float radius, UINT width
 	vsBuffer = new ConstantBuffer(&vsDesc, sizeof(VsDesc));
 	psBuffer = new ConstantBuffer(&psDesc, sizeof(PsDesc));
 
-	shadowMap = _light->GetRenderTarget()->SRV();
+	shadowMap = _light->GetDepth()->SRV();
 	//Create SamplerState
 	{
 		//CD3D11_SAMPLER_DESC//이미 생성되있는 샘플
@@ -46,12 +46,15 @@ void Shadow::Set()
 	vsBuffer->SetVSBuffer(2);
 	psBuffer->SetPSBuffer(2);
 
-	D3D::GetDC()->PSSetShaderResources(3, 1, &shadowMap);
-	D3D::GetDC()->PSSetSamplers(3, 1, &shadowSample);
-
 
 	ImGui::InputInt("ShadowQuality", (int*)&psDesc.Quality);
 	psDesc.Quality %= 4;
+}
+
+void Shadow::Draw()
+{
+	//D3D::GetDC()->PSSetShaderResources(3, 1, &shadowMap);
+	D3D::GetDC()->PSSetSamplers(3, 1, &shadowSample);
 }
 
 void Shadow::SetShadowMap(ID3D11ShaderResourceView* srv)

@@ -23,9 +23,8 @@ bool Model::Init(string modelDir)
 	modelData = new ModelData(modelDir);
 	shader = Shader::Add(L"Model");
 	intBuffer = new IntBuffer();
-	rstate = new RasterizerState();
 
-	rstate->FillMode(D3D11_FILL_WIREFRAME);
+	rasterizerState->FillMode(D3D11_FILL_WIREFRAME);
 
 	return true;
 }
@@ -38,8 +37,6 @@ Model::~Model()
 {
 	delete modelData;
 	delete intBuffer;
-
-	delete rstate;
 }
 
 void Model::CalcWorldMatrix()

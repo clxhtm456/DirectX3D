@@ -7,6 +7,7 @@ public:
 	~Shadow();
 
 	void Set();
+	void Draw();
 
 	void SetShadowMap(ID3D11ShaderResourceView* srv);
 private:
@@ -23,7 +24,7 @@ private:
 		Vector2 MapSize;
 		float Bias = -0.0006f;
 
-		UINT Quality = 0;
+		UINT Quality = 2;
 		Vector4 testColor;
 	}psDesc;
 private:

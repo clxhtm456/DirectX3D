@@ -6,14 +6,12 @@ using namespace DirectX::TriangleTests;
 Terrain::Terrain()
 	: RenderingNode()
 {
-	brushBuffer = new BrushBuffer();
-	lineBuffer = new LineBuffer();
 }
 
-Terrain * Terrain::Create(UINT horizontal, UINT vertical)
+Terrain * Terrain::Create(UINT horizontal, UINT vertical, UINT textureDetail)
 {
 	auto pRet = new Terrain();
-	if (pRet && pRet->Init(horizontal, vertical))
+	if (pRet && pRet->Init(horizontal, vertical, textureDetail))
 	{
 		pRet->AutoRelease();
 	}
@@ -25,19 +23,21 @@ Terrain * Terrain::Create(UINT horizontal, UINT vertical)
 	return pRet;
 }
 
-bool Terrain::Init(UINT horizontal, UINT vertical)
+bool Terrain::Init(UINT horizontal, UINT vertical, UINT textureDetail)
 {
 	shader = Shader::Add(L"Terrain");
 	//heightMap = Texture::Add(heightFile);
 
 	width = horizontal;
 	height = vertical;
+	detail = textureDetail;
 
 	CreateVertexData();
+	CalculateTextureCoordinate();
 	CreateIndexData();
 	CreateNormalData();
 
-	vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(TerrainVertex), 0, true);
+	vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(VertexTextureNormal), 0, true);
 	indexBuffer = new IndexBuffer(indices, indexCount);
 	return true;
 }
@@ -50,44 +50,18 @@ Terrain::~Terrain()
 	SafeDeleteArray(indices);
 	SafeDelete(indexBuffer);
 
-	SafeDelete(brushBuffer);
-	SafeDelete(lineBuffer);
 }
 
 void Terrain::Update()
 {	
 	Super::Update();	
 
-	if (brushBuffer->data.Type > 0)
-	{
-		brushBuffer->data.Location = GetPickedPosition();
-
-		if (Mouse::Get()->Press(0))
-			RaiseHeight(brushBuffer->data.Location, brushBuffer->data.Type, brushBuffer->data.Range);
-	}
 }
 
 void Terrain::Render(Camera* viewer)
 {
-	Super::Render(viewer);
-
 	if (baseMap != NULL)
 		baseMap->Set(0);
-
-	brushBuffer->SetVSBuffer(2);
-	lineBuffer->SetVSBuffer(3);
-
-	vertexBuffer->Render();
-	indexBuffer->Render();
-
-	shader->Render();
-	if (layerMap != NULL && alphaMap != NULL)
-	{
-		layerMap->Set(1);
-		alphaMap->Set(2);
-	}
-	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	D3D::GetDC()->DrawIndexed(indexCount, 0, 0);
 
 }
 
@@ -229,7 +203,7 @@ void Terrain::CreateVertexData()
 
 	//Create VData
 	vertexCount = width * height;
-	vertices = new TerrainVertex[vertexCount];
+	vertices = new VertexTextureNormal[vertexCount];
 
 	for (UINT z = 0; z < height; z++)
 	{
@@ -243,8 +217,6 @@ void Terrain::CreateVertexData()
 			vertices[index].Position.y = 0;
 			vertices[index].Position.z = (float)z;
 
-			vertices[index].Uv.x = (float)x / (float)width;
-			vertices[index].Uv.y = (float)(height - 1 - z) / (float)height;
 		}
 	}
 }
@@ -279,9 +251,9 @@ void Terrain::CreateNormalData()
 		UINT index1 = indices[i * 3 + 1];
 		UINT index2 = indices[i * 3 + 2];
 
-		TerrainVertex v0 = vertices[index0];
-		TerrainVertex v1 = vertices[index1];
-		TerrainVertex v2 = vertices[index2];
+		VertexTextureNormal v0 = vertices[index0];
+		VertexTextureNormal v1 = vertices[index1];
+		VertexTextureNormal v2 = vertices[index2];
 
 		XMVECTOR d1 = XMLoadFloat3(&v1.Position) - XMLoadFloat3(&v0.Position);
 		XMVECTOR d2 = XMLoadFloat3(&v2.Position) - XMLoadFloat3(&v0.Position);
@@ -299,6 +271,50 @@ void Terrain::CreateNormalData()
 		XMVECTOR temp = XMLoadFloat3(&vertices[i].Normal);
 		temp = XMVector3Normalize(temp);
 		XMStoreFloat3(&vertices[i].Normal, temp);
+	}
+}
+
+void Terrain::CalculateTextureCoordinate()
+{
+	//텍스쳐 좌표 증가량
+	float incrementValue = (float)detail / (float)width;
+
+	//텍스쳐 반복횟수
+	int incrementCount = width / detail;
+
+	float tuCoordinate = 0.0f;
+	float tvCoordinate = 0.0f;
+
+	int tuCount = 0;
+	int tvCount = 0;
+
+	for (UINT z = 0; z < height; z++)
+	{
+		for (UINT x = 0; x < width; x++)
+		{
+			UINT index = width * z + x;
+
+			vertices[index].Uv.x = tuCoordinate;
+			vertices[index].Uv.y = tvCoordinate;
+
+			tuCoordinate += incrementValue;
+			tuCount++;
+
+			if (tuCount == incrementCount)
+			{
+				tuCoordinate = 0.0f;
+				tuCount = 0;
+			}
+		}
+
+		tvCoordinate += incrementValue;
+		tvCount++;
+
+		if (tvCount == incrementCount)
+		{
+			tvCoordinate = 0.0f;
+			tvCount = 0;
+		}
 	}
 }
 
@@ -334,7 +350,7 @@ void Terrain::RaiseHeight(Vector3 & position, UINT type, UINT range)
 	D3D11_MAPPED_SUBRESOURCE subResource;
 	D3D::GetDC()->Map(vertexBuffer->Buffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
 	{
-		memcpy(subResource.pData, vertices, sizeof(TerrainVertex) * vertexCount);
+		memcpy(subResource.pData, vertices, sizeof(VertexTextureNormal) * vertexCount);
 	}
 	D3D::GetDC()->Unmap(vertexBuffer->Buffer(), 0);
 }

@@ -55,26 +55,30 @@ void Scene::AutoUpdate()
 {
 	Update();
 
-	for (Node* object : _cameraList)
+	for (auto citer = _cameraList.begin(); citer != _cameraList.end(); citer++)
 	{
+		Camera* camera = *citer;
+		if (camera->GetRunning())
+			camera->AutoUpdate();
+	}
+
+	for (auto niter = _childList.begin(); niter != _childList.end(); niter++)
+	{
+		Node* object = *niter;
 		if (object->GetRunning())
 			object->AutoUpdate();
 	}
 
-	for (auto object : _childList)
+	for (auto liter = _lightList.begin(); liter != _lightList.end(); liter++)
 	{
-		if (object->GetRunning())
-			object->AutoUpdate();
+		Light* light = *liter;
+		if (light->GetRunning())
+			light->AutoUpdate();
 	}
 
-	for (auto object : _lightList)
+	for (auto riter = _reflectionList.begin(); riter != _reflectionList.end(); riter++)
 	{
-		if (object->GetRunning())
-			object->AutoUpdate();
-	}
-
-	for (auto reflect : _reflectionList)
-	{
+		ReflectionNode* reflect = *riter;
 		if (reflect->GetRunning())
 			reflect->AutoUpdate();
 	}
@@ -84,13 +88,16 @@ void Scene::AutoPreRender()
 {
 	PreRender();
 
-	for (Camera* camera : _cameraList)
+	for (auto citer = _cameraList.begin(); citer != _cameraList.end(); citer++)
 	{
-		for (auto reflect : _reflectionList)
+		Camera* camera = *citer;
+		for (auto riter = _reflectionList.begin(); riter != _reflectionList.end(); riter++)
 		{
+			ReflectionNode* reflect = *riter;
 			reflect->SetUpRender();
-			for (auto object : _childList)
+			for (auto niter = _childList.begin(); niter != _childList.end(); niter++)
 			{
+				Node* object = *niter;
 				RenderingNode* renderObject = dynamic_cast<RenderingNode*>(object);
 
 				if (renderObject == NULL)
@@ -110,15 +117,16 @@ void Scene::AutoRender()
 {
 	Render();
 
-	for (Camera* camera : _cameraList)
+	for (auto citer = _cameraList.begin(); citer != _cameraList.end(); citer++)
 	{
+		Camera* camera = *citer;
 		camera->SetUpRender();
-		for (auto object : _childList)
+		for (auto niter = _childList.begin(); niter != _childList.end(); niter++)
 		{
+			Node* object = *niter;
 			if (camera->CheckMask(object->GetObjectMask()))
 				object->AutoRender(camera);
 		}
-
 		camera->AutoRender(camera);
 	}
 }
@@ -127,18 +135,21 @@ void Scene::AutoPostRender()
 {
 	PostRender();
 
-	for (Camera* camera : _cameraList)
+	for (auto citer = _cameraList.begin(); citer != _cameraList.end(); citer++)
 	{
+		Camera* camera = *citer;
 		camera->AutoPostRender(camera);
 
-		for (auto object : _childList)
+		for (auto niter = _childList.begin(); niter != _childList.end(); niter++)
 		{
+			Node* object = *niter;
 			if (camera->CheckMask(object->GetObjectMask()))
 				object->AutoPostRender(camera);
 		}
 
-		for (auto reflect : _reflectionList)
+		for (auto riter = _reflectionList.begin(); riter != _reflectionList.end(); riter++)
 		{
+			ReflectionNode* reflect = *riter;
 			if (reflect->GetRunning())
 				reflect->AutoPostRender(camera);
 		}

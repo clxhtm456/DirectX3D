@@ -99,8 +99,3 @@ void MeshCube::CreateMesh()
 	};
 }
 
-wstring MeshCube::ObjectType()
-{
-	return L"MeshCube";
-}
-

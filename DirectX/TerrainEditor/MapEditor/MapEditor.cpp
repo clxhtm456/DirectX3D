@@ -41,8 +41,8 @@ void MapEditor::Update()
 
 	if (terrain != NULL)
 	{
-		auto posX = terrain->GetHorizontalSize() * 0.5f;
-		auto posZ = terrain->GetVerticalSize() * 0.5f;
+		auto posX = mapWidth * 0.5f;
+		auto posZ = mapHeight * 0.5f;
 		XMVECTOR terrainPos = DirectX::XMVectorSet(posX, 0.0f, posZ,0.0f);
 		XMVECTOR camPos = XMLoadFloat3( &m_scene->GetMainCamera()->GetPosition());
 		XMVECTOR length = DirectX::XMVectorSubtract(terrainPos, camPos);
@@ -143,24 +143,16 @@ void MapEditor::CreateNewMapFile(wstring fileDir)
 		fileDir = fileDir + L".map";
 	Path::CreateFolders(Path::GetDirectoryName(fileDir));
 
-	terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL);
-
-	auto posX = DEFAULT_HORIZONTAL * 0.5f;
-	auto posZ = (DEFAULT_VERTICAL + (DEFAULT_VERTICAL * sin(50))) * -1.0f;
-
-	m_scene->AddChild(terrain);
-	m_scene->GetMainCamera()->SetPosition(posX, 500, posZ);
-
 	BinaryWriter* w = new BinaryWriter();
 	w->Open(fileDir);
 
 	//Save MapFile//-----
 
-	w->UInt(terrain->GetHorizontalSize());
-	w->UInt(terrain->GetVerticalSize());
-	for (UINT x = 0; x < terrain->GetHorizontalSize(); x++)
+	w->UInt(mapWidth);
+	w->UInt(mapHeight);
+	for (UINT x = 0; x < mapWidth; x++)
 	{
-		for (UINT z = 0; z < terrain->GetVerticalSize(); z++)
+		for (UINT z = 0; z < mapHeight; z++)
 		{
 			w->UInt(0);
 		}
@@ -171,19 +163,33 @@ void MapEditor::CreateNewMapFile(wstring fileDir)
 	w->Close();
 	delete w;
 }
-
 void MapEditor::SaveMapDialog()
 {
 }
 
 void MapEditor::SaveMapFile()
 {
+	assert(terrain != NULL);
+
+	const std::function<void(wstring)>& function = std::bind(&MapEditor::CreateNewMapFile, this, std::placeholders::_1);
+	Path::SaveFileDialog(L"Default.map", L"MapFile\0 * .map", L"../../_Assets/", function, D3D::GetHandle());
 }
 
 void MapEditor::CreateNewMap()
 {
-	std::function<void(wstring)> function = std::bind(&MapEditor::CreateNewMapFile, this, std::placeholders::_1);
-	Path::SaveFileDialog(L"Default.map", L"MapFile\0 * .map", L"../../_Assets/", function, D3D::GetHandle());
+	terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL,4);
+	//terrain->SetScale(1, 1, 1);
+	terrain->BaseMap(L"Terrain/Dirt3.png");
+
+	auto posX = DEFAULT_HORIZONTAL * 0.5f;
+	auto posZ = (DEFAULT_VERTICAL + (DEFAULT_VERTICAL * sin(50))) * -1.0f;
+
+	m_scene->AddChild(terrain);
+	m_scene->GetMainCamera()->SetPosition(posX, 500, posZ);
+	m_scene->GetMainCamera()->SetRotationDegree(40, 0, 0);
+
+	mapWidth = DEFAULT_HORIZONTAL;
+	mapHeight = DEFAULT_VERTICAL;
 
 	/*terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL);
 	terrain->SetShader(L"TerrainEdit");

@@ -2,7 +2,6 @@
 #include "RasterizerState.h"
 
 RasterizerState::RasterizerState()
-	: state(nullptr)
 {
 	ZeroMemory(&desc, sizeof(D3D11_RASTERIZER_DESC));
 	desc.AntialiasedLineEnable = false;
@@ -14,7 +13,8 @@ RasterizerState::RasterizerState()
 
 RasterizerState::~RasterizerState()
 {
-	state->Release();
+	if(state != NULL)
+		state->Release();
 }
 
 void RasterizerState::SetState()

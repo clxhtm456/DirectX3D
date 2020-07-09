@@ -4,7 +4,7 @@ class RasterizerState
 {
 private:
 	D3D11_RASTERIZER_DESC desc;
-	ID3D11RasterizerState* state;
+	ID3D11RasterizerState* state = NULL;
 
 public:
 	RasterizerState();

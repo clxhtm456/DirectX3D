@@ -21,7 +21,7 @@ protected:
 	virtual void PostRender(Camera* viewer) override;
 public:
 	Shader* GetDepthShader() { return depthShader; }
-	ID3D11ShaderResourceView* GetDepthSRV();
+	class DepthStencil* GetDepth();
 	class RenderTarget* GetRenderTarget();
 protected:
 	Shader* depthShader;//DepthStencilShader

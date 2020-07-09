@@ -1,4 +1,4 @@
-Texture2D ShadowMap : register(t3);
+Texture2D shadowMap : register(t3);
 SamplerComparisonState ShadowSampler : register(s3);
 
 SamplerState LinearSampler
@@ -71,13 +71,13 @@ float4 PS_Shadow(ShadowPixelInput input) : SV_Target
 	[branch]
 	if (Quality == 0)
 	{
-		depth = ShadowMap.Sample(LinearSampler, input.sPosition.xy).r;
+		depth = shadowMap.Sample(LinearSampler, input.sPosition.xy).r;
 		factor = (float)input.sPosition.z <= depth;
 	}
 	else if (Quality == 1)
 	{
 		depth = input.sPosition.z;
-		factor = ShadowMap.SampleCmpLevelZero(ShadowSampler, input.sPosition.xy, depth).r;
+		factor = shadowMap.SampleCmpLevelZero(ShadowSampler, input.sPosition.xy, depth).r;
 	}
 	else if (Quality == 2)
 	{
@@ -99,7 +99,7 @@ float4 PS_Shadow(ShadowPixelInput input) : SV_Target
 		for (int i = 0; i < 9; i++)
 		{
 			uv = input.sPosition.xy + offsets[i];
-			sum += ShadowMap.SampleCmpLevelZero(ShadowSampler, uv, depth).r;
+			sum += shadowMap.SampleCmpLevelZero(ShadowSampler, uv, depth).r;
 		}
 
 		factor = sum / 9.0f;
@@ -107,7 +107,7 @@ float4 PS_Shadow(ShadowPixelInput input) : SV_Target
 
 	factor = saturate(factor + depth);
 
-	//return float4(color.rgb * factor ,1);
+	return float4(color.rgb * factor ,1);
 	//return float4(1, 0, 0 ,1);
 	
 }

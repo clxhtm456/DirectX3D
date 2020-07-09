@@ -16,7 +16,7 @@ public:
 private:
 	void CreateFreedomCamera();
 private:
-	class Camera* freedomCam;
+	class Freedom* freedomCam;
 
 	Mesh* cube;
 	

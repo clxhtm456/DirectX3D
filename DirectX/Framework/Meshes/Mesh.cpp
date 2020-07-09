@@ -9,7 +9,6 @@ Mesh::Mesh() : RenderingNode()
 {
 	shader = Shader::Add(L"InstMesh");
 	material = new Material();
-	rasterizerState = new RasterizerState();
 
 	instancingCount = 0;
 
@@ -32,8 +31,6 @@ Mesh::~Mesh()
 	SafeDelete(indexBuffer);
 
 	delete material;
-
-	delete rasterizerState;
 
 	delete instancingBuffer;
 	vector<Node*> releaseList;
@@ -76,10 +73,11 @@ void Mesh::Update()
 void Mesh::Render(Camera* viewer)
 {
 	Super::Render(viewer);
-	
-	rasterizerState->SetState();
 
 	material->Render();
+
+	/*auto diffuseMap = material->GetDiffuseMap()->GetSRV();
+	D3D::GetDC()->PSSetShaderResources(3, 1, &diffuseMap);*/
 }
 
 void Mesh::Draw(Camera * viewer)
@@ -94,7 +92,7 @@ void Mesh::Draw(Camera * viewer)
 		
 		indexBuffer->Render();
 
-
+		rasterizerState->SetState();
 		if (vsShader == NULL && psShader == NULL)
 			shader->Render();
 		else
