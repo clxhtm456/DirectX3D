@@ -1,5 +1,17 @@
 #pragma once
 
+struct HeightMapType
+{
+	float x, y, z;
+	float tu, tv;
+	float nx, ny, nz;
+};
+
+struct VectorType
+{
+	float x, y, z;
+};
+
 class Terrain : public RenderingNode
 {
 public:
@@ -26,6 +38,9 @@ public:
 	UINT GetVerticalSize() { return height; }
 
 private:
+	bool LoadHeightMap(const char* filename);
+	bool CalculateNormals();
+	bool InitializeBuffers();
 	void CreateVertexData();
 	void CreateIndexData();
 	void CreateNormalData();
@@ -41,6 +56,7 @@ private:
 private:
 	VertexTextureNormal* vertices;
 	UINT* indices;
+	HeightMapType* _heightMap;
 
 private:
 	UINT width;

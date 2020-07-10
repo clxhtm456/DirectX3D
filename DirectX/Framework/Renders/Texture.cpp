@@ -21,7 +21,13 @@ Texture::Texture(ID3D11ShaderResourceView* SRV, wstring file)
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MipLODBias = 0.0f;
+	sampDesc.MaxAnisotropy = 1;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	sampDesc.BorderColor[0] = 0;
+	sampDesc.BorderColor[1] = 0;
+	sampDesc.BorderColor[2] = 0;
+	sampDesc.BorderColor[3] = 0;
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 

@@ -177,7 +177,7 @@ void MapEditor::SaveMapFile()
 
 void MapEditor::CreateNewMap()
 {
-	terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL,4);
+	terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL,1);
 	//terrain->SetScale(1, 1, 1);
 	terrain->BaseMap(L"Terrain/Dirt3.png");
 

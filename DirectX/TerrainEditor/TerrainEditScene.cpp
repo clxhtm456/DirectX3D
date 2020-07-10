@@ -25,13 +25,6 @@ void TerrainEditScene::Initialize()
 	cubeInst->SetPosition(0, 5, 0);
 	AddChild(cubeInst);
 
-	auto terrain = Terrain::Create(512, 512);
-	terrain->BaseMap(L"Terrain/Dirt3.png");
-	terrain->SetPosition(0, 0, 0);
-	terrain->SetScale(1, 1, 1);
-	terrain->UseShadow(false);
-	//AddChild(terrain);
-
 	//auto a = sin(50);
 
 }

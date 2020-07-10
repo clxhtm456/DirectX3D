@@ -3,6 +3,11 @@
 
 using namespace DirectX::TriangleTests;
 
+/*
+TerrainTexture 
+출처 : https://copynull.tistory.com/307?category=649931
+*/
+
 Terrain::Terrain()
 	: RenderingNode()
 {
@@ -32,13 +37,12 @@ bool Terrain::Init(UINT horizontal, UINT vertical, UINT textureDetail)
 	height = vertical;
 	detail = textureDetail;
 
-	CreateVertexData();
-	CalculateTextureCoordinate();
-	CreateIndexData();
-	CreateNormalData();
+	LoadHeightMap("");
 
-	vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(VertexTextureNormal), 0, true);
-	indexBuffer = new IndexBuffer(indices, indexCount);
+	CalculateNormals();
+	CalculateTextureCoordinate();
+	InitializeBuffers();
+
 	return true;
 }
 
@@ -47,7 +51,7 @@ Terrain::~Terrain()
 	SafeDeleteArray(vertices);
 	SafeDelete(vertexBuffer);
 
-	SafeDeleteArray(indices);
+	//SafeDeleteArray(indices);
 	SafeDelete(indexBuffer);
 
 }
@@ -196,14 +200,302 @@ void Terrain::SetHeight(float x, float z, float height)
 {
 }
 
+bool Terrain::LoadHeightMap(const char * filename)
+{
+	////파일 불러오기
+	//{
+	//	FILE* filePtr = nullptr;
+	//	if (fopen_s(&filePtr, filename, "rb") != 0)
+	//		return false;
+	//}
+
+	_heightMap = new HeightMapType[width * height];
+	
+	if (!_heightMap)
+		return false;
+
+	int k = 0;
+	
+	for (int j = 0; j < height; j++)
+	{
+		for (int i = 0; i < width; i++)
+		{
+			//UCHAR bitMapheight = bitmapimage[k];
+
+			int index = height * j + i;
+
+			_heightMap[index].x = (float)i;
+			_heightMap[index].y = (float)0;
+			_heightMap[index].z = (float)j;
+
+			k += 3;
+		}
+	}
+
+	//비트맵 이미지 데이터 해제
+	{
+
+	}
+
+	return true;
+
+}
+
+bool Terrain::CalculateNormals()
+{
+	int index1 = 0;
+	int index2 = 0;
+	int index3 = 0;
+	int index = 0;
+	int count = 0;
+	float vertex1[3] = { 0.0f,0.0f,0.0f };
+	float vertex2[3] = { 0.0f,0.0f,0.0f };
+	float vertex3[3] = { 0.0f,0.0f,0.0f };
+	float vector1[3] = { 0.0f,0.0f,0.0f };
+	float vector2[3] = { 0.0f,0.0f,0.0f };
+	float sum[3] = { 0.0f,0.0f,0.0f };
+	float length = 0.0f;
+
+	VectorType* normals = new VectorType[(height - 1) * (width - 1)];
+	if (!normals)
+		return false;
+
+	for (int j = 0; j < height - 1; j++)
+	{
+		for (int i = 0; i < width - 1; i++)
+		{
+			index1 = (j*height) + i;
+			index2 = (j*height) + (i +1);
+			index3 = ((j+1)*height) + i;
+			
+			vertex1[0] = _heightMap[index1].x;
+			vertex1[1] = _heightMap[index1].y;
+			vertex1[2] = _heightMap[index1].z;
+
+			vertex2[0] = _heightMap[index2].x;
+			vertex2[1] = _heightMap[index2].y;
+			vertex2[2] = _heightMap[index2].z;
+
+			vertex3[0] = _heightMap[index3].x;
+			vertex3[1] = _heightMap[index3].y;
+			vertex3[2] = _heightMap[index3].z;
+
+			vector1[0] = vertex1[0] - vertex3[0];
+			vector1[1] = vertex1[1] - vertex3[1];
+			vector1[2] = vertex1[2] - vertex3[2];
+			vector2[0] = vertex3[0] - vertex2[0];
+			vector2[1] = vertex3[1] - vertex2[1];
+			vector2[2] = vertex3[2] - vertex2[2];
+
+			index = (j*(height - 1)) + i;
+
+			normals[index].x = (vector1[1] * vector2[2]) - (vector1[2] * vector2[1]);
+			normals[index].y = (vector1[2] * vector2[0]) - (vector1[0] * vector2[2]);
+			normals[index].z = (vector1[0] * vector2[1]) - (vector1[1] * vector2[0]);
+		}
+	}
+
+	//각 정점의 각면의 평균
+	//정점이 닿아 그 정점에 대한 평균값을 얻어옴
+	for (int j = 0; j < height - 1; j++)
+	{
+		for (int i = 0; i < width - 1; i++)
+		{
+			sum[0] = 0.0f;
+			sum[1] = 0.0f;
+			sum[2] = 0.0f;
+
+			count = 0;
+
+			//왼쪽아래면
+			if (((i - 1) >= 0) && ((j - 1) >= 0))
+			{
+				index = ((j - 1)*(height - 1)) + (i - 1);
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+				count++;
+			}
+
+			//오른쪽아래면
+			if ((i < (width -1)) && ((j-1) >= 0))
+			{
+				index = ((j - 1)*(height - 1)) + (i);
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+				count++;
+			}
+
+			//왼쪽위면
+			if (((i - 1) >= 0) && (j<(height -1)))
+			{
+				index = (j*(height - 1)) + (i - 1);
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+				count++;
+			}
+
+			//오른쪽위면
+			if ((i < (width - 1)) && (j < (height - 1)))
+			{
+				index = (j*(height - 1)) + i;
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+				count++;
+			}
+
+			sum[0] = (sum[0]/(float)count);
+			sum[1] = (sum[1]/(float)count);
+			sum[2] = (sum[2]/(float)count);
+
+			length = (float)sqrt((sum[0] * sum[0]) + (sum[1] * sum[1]) + (sum[2] * sum[2]));
+
+			index = (j * height) + i;
+
+			_heightMap[index].nx = (sum[0] / length);
+			_heightMap[index].ny = (sum[0] / length);
+			_heightMap[index].nz = (sum[0] / length);
+		}
+	}
+	delete[] normals;
+	normals = 0;
+
+	return true;
+
+}
+
+bool Terrain::InitializeBuffers()
+{
+	float tu = 0.0f;
+	float tv = 0.0f;
+
+	vertexCount = (width - 1) *(height - 1) * 6;
+	indexCount = vertexCount;
+
+	vertices = new VertexTextureNormal[vertexCount];
+	if (!vertices)
+		return false;
+
+	UINT* indices = new UINT[indexCount];
+	if (!indices)
+		return false;
+
+	int index = 0;
+
+	for (int j = 0; j < height - 1; j++)
+	{
+		for (int i = 0; i < width - 1; i++)
+		{
+			int index1 = (height * j) + (i);
+			int index2= (height * j) + (i+1);
+			int index3 = (height * (j+1)) + (i);
+			int index4 = (height * (j+1)) + (i+1);
+
+			//0,1 왼쪽 위
+			{
+				tv = _heightMap[index3].tv;
+
+				if (tv == 1.0f)
+				{
+					tv = 0.0f;
+				}
+
+				vertices[index].Position = XMFLOAT3(_heightMap[index3].x, _heightMap[index3].y, _heightMap[index3].z);
+				vertices[index].Uv = XMFLOAT2(_heightMap[index3].tu, tv);
+				vertices[index].Normal = XMFLOAT3(_heightMap[index3].nx, _heightMap[index3].ny, _heightMap[index3].nz);
+				indices[index] = index;
+				index++;
+			}
+			
+			//1,1 오른쪽 위 
+			{
+				tu = _heightMap[index4].tu;
+				tv = _heightMap[index4].tv;
+
+				if (tu == 0.0f)
+					tu = 1.0f;
+				if (tv == 1.0f)
+					tv = 0.0f;
+
+				vertices[index].Position = XMFLOAT3(_heightMap[index4].x, _heightMap[index4].y, _heightMap[index4].z);
+				vertices[index].Uv = XMFLOAT2(tu, tv);
+				vertices[index].Normal = XMFLOAT3(_heightMap[index4].nx, _heightMap[index4].ny, _heightMap[index4].nz);
+				indices[index] = index;
+				index++;
+			}
+			
+			//0,0 왼쪽 아래
+			{
+				vertices[index].Position = XMFLOAT3(_heightMap[index1].x, _heightMap[index1].y, _heightMap[index1].z);
+				vertices[index].Uv = XMFLOAT2(_heightMap[index1].tu, _heightMap[index1].tv);
+				vertices[index].Normal = XMFLOAT3(_heightMap[index1].nx, _heightMap[index1].ny, _heightMap[index1].nz);
+				indices[index] = index;
+				index++;
+			}
+
+			//0,0 왼쪽 아래
+			{
+				vertices[index].Position = XMFLOAT3(_heightMap[index1].x, _heightMap[index1].y, _heightMap[index1].z);
+				vertices[index].Uv = XMFLOAT2(_heightMap[index1].tu, _heightMap[index1].tv);
+				vertices[index].Normal = XMFLOAT3(_heightMap[index1].nx, _heightMap[index1].ny, _heightMap[index1].nz);
+				indices[index] = index;
+				index++;
+			}
+
+			//1,1 오른쪽 위
+			{
+				tu = _heightMap[index4].tu;
+				tv = _heightMap[index4].tv;
+
+				if (tu == 0.0f)
+					tu = 1.0f;
+				if (tv == 1.0f)
+					tv = 0.0f;
+
+				vertices[index].Position = XMFLOAT3(_heightMap[index4].x, _heightMap[index4].y, _heightMap[index4].z);
+				vertices[index].Uv = XMFLOAT2(tu, tv);
+				vertices[index].Normal = XMFLOAT3(_heightMap[index4].nx, _heightMap[index4].ny, _heightMap[index4].nz);
+				indices[index] = index;
+				index++;
+			}
+			
+			//1,0 오른쪽 아래
+			{
+				tu = _heightMap[index2].tu;
+
+				if (tu == 0.0f)
+					tu = 1.0f;
+
+				vertices[index].Position = XMFLOAT3(_heightMap[index2].x, _heightMap[index2].y, _heightMap[index2].z);
+				vertices[index].Uv = XMFLOAT2(tu, _heightMap[index2].tv);
+				vertices[index].Normal = XMFLOAT3(_heightMap[index2].nx, _heightMap[index2].ny, _heightMap[index2].nz);
+				indices[index] = index;
+				index++;
+			}
+			
+		}
+	}
+
+
+	vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(VertexTextureNormal), 0, true);
+	indexBuffer = new IndexBuffer(indices, indexCount);
+
+	return true;
+}
+
 void Terrain::CreateVertexData()
 {
 	//heightMap의 색상 정보 받아오기
 	//vector<Vector4> heights = heightMap->ReadPixels();
 
 	//Create VData
-	vertexCount = width * height;
-	vertices = new VertexTextureNormal[vertexCount];
 
 	for (UINT z = 0; z < height; z++)
 	{
@@ -216,6 +508,11 @@ void Terrain::CreateVertexData()
 			//vertices[index].Position.y = (heights[pixel].x * 256.0f) / 10.0f;
 			vertices[index].Position.y = 0;
 			vertices[index].Position.z = (float)z;
+
+			if (vertices[index].Uv.x == 0.0f)
+				vertices[index].Uv.x = 1.0f;
+			if (vertices[index].Uv.y == 0.0f)
+				vertices[index].Uv.y = 1.0f;
 
 		}
 	}
@@ -283,7 +580,7 @@ void Terrain::CalculateTextureCoordinate()
 	int incrementCount = width / detail;
 
 	float tuCoordinate = 0.0f;
-	float tvCoordinate = 0.0f;
+	float tvCoordinate = 1.0f;
 
 	int tuCount = 0;
 	int tvCount = 0;
@@ -294,8 +591,8 @@ void Terrain::CalculateTextureCoordinate()
 		{
 			UINT index = width * z + x;
 
-			vertices[index].Uv.x = tuCoordinate;
-			vertices[index].Uv.y = tvCoordinate;
+			_heightMap[index].tu = tuCoordinate;
+			_heightMap[index].tv = tvCoordinate;
 
 			tuCoordinate += incrementValue;
 			tuCount++;
@@ -307,12 +604,12 @@ void Terrain::CalculateTextureCoordinate()
 			}
 		}
 
-		tvCoordinate += incrementValue;
+		tvCoordinate -= incrementValue;
 		tvCount++;
 
 		if (tvCount == incrementCount)
 		{
-			tvCoordinate = 0.0f;
+			tvCoordinate = 1.0f;
 			tvCount = 0;
 		}
 	}
