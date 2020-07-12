@@ -51,8 +51,10 @@ Terrain::~Terrain()
 	SafeDeleteArray(vertices);
 	SafeDelete(vertexBuffer);
 
-	//SafeDeleteArray(indices);
+	SafeDeleteArray(indices);
 	SafeDelete(indexBuffer);
+
+	delete _heightMap;
 
 }
 
@@ -360,8 +362,8 @@ bool Terrain::CalculateNormals()
 			index = (j * height) + i;
 
 			_heightMap[index].nx = (sum[0] / length);
-			_heightMap[index].ny = (sum[0] / length);
-			_heightMap[index].nz = (sum[0] / length);
+			_heightMap[index].ny = (sum[1] / length);
+			_heightMap[index].nz = (sum[2] / length);
 		}
 	}
 	delete[] normals;
@@ -383,7 +385,7 @@ bool Terrain::InitializeBuffers()
 	if (!vertices)
 		return false;
 
-	UINT* indices = new UINT[indexCount];
+	indices = new UINT[indexCount];
 	if (!indices)
 		return false;
 

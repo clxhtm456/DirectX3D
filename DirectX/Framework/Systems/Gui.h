@@ -6,10 +6,10 @@ struct GuiText
 	XMCOLOR Color;
 	string Content;
 
-	GuiText()
+	/*GuiText()
 	{
 
-	}
+	}*/
 };
 
 class Gui

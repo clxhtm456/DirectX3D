@@ -68,6 +68,6 @@ float4 PS(VertexOutput input) : SV_TARGET
 	//float NdotL = dot(normalize(input.Normal), -GlobalLight.Direction);
 
 	float NdotL = dot(normalize(input.Normal), -CB_Light.Direction);
-
+	//NdotL = 1;
 	return float4(diffuse * NdotL, 1);
 }
