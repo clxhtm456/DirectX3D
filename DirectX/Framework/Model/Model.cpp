@@ -22,7 +22,7 @@ Model* Model::Create(string modelDir)
 bool Model::Init(string modelDir)
 {
 	modelData = new ModelData(modelDir);
-	shader = Shader::Add(L"Model");
+	shader = Shader::Add(L"InstModel");
 	intBuffer = new IntBuffer();
 
 	//rasterizerState->FillMode(D3D11_FILL_WIREFRAME);

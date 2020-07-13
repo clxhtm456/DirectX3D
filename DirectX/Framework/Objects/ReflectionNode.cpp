@@ -25,15 +25,15 @@ void ReflectionNode::SetRNShader2Depth(RenderingNode* node)
 {
 
 	vsShaderSlot = node->GetVSShader();
-	psShaderSlot = node->GetVSShader();
-	node->SetShader(depthShader);
+	//psShaderSlot = node->GetVSShader();
+	//node->SetShader(depthShader);
+	node->SetShader(Shader::Add(L"Depth_"+ vsShaderSlot->GetShaderfile()));
 }
 
 void ReflectionNode::SetRNShader2Origin(RenderingNode* node)
 {
-
-	node->SetVSShader(vsShaderSlot);
-	node->SetPSShader(psShaderSlot);
+	node->SetShader(vsShaderSlot);
+	//node->SetPSShader(psShaderSlot);
 }
 
 void ReflectionNode::PostUpdate()

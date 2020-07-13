@@ -51,7 +51,7 @@ DepthInput VS(VertexInput input)
 
 	input.Position.w = 1.0f;
 
-    matrix boneWorld = SkinWorld(input.blendIndices, input.blendWeights);
+    //matrix boneWorld = SkinWorld(input.blendIndices, input.blendWeights);
 
     //input.Transform = mul(input.Transform, boneWorld);
 
@@ -64,9 +64,7 @@ DepthInput VS(VertexInput input)
 	return output;
 }
 
-float4 PS(DepthInput input) : SV_TARGET
+void PS(DepthInput input)
 {
 	float depth = input.Position.z / input.Position.w;
-
-	return float4(depth, depth, depth, 1.0f);
 }

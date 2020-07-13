@@ -18,7 +18,7 @@ void TestScene::Initialize()
 
 	auto cubeInst = cube->CreateInstance();
 	cubeInst->SetScale(20, 10, 20);
-	cubeInst->SetPosition(0, 5, 0);
+	cubeInst->SetPosition(-50, 5, 0);
 	AddChild(cubeInst);
 
 	/*auto cubeInst2 = cube->CreateInstance();
@@ -28,7 +28,7 @@ void TestScene::Initialize()
 
 	
 	auto grid = MeshGrid::Create(10,10);
-	grid->SetScale(12, 1, 12);
+	grid->SetScale(500, 1, 500);
 	grid->SetPosition(0, 0, 0);
 	grid->GetMaterial()->SetDiffuseMap("../../_Textures/Floor.png");
 	grid->GetMaterial()->SetNormalMap("../../_Textures/Floor_Normal.png");
@@ -52,12 +52,12 @@ void TestScene::Initialize()
 	cylinder->SetPosition(-30, 6, -15);
 	//AddChild(cylinder);
 
-	auto renderImage = Render2D::Create();
+	/*auto renderImage = Render2D::Create();
 	auto depthRenderTarget = GetDirectionLight()->GetRenderTarget()->SRV();
 	renderImage->SetSRV(depthRenderTarget);
 	renderImage->SetPosition(150, D3D::Height() - 150, 0);
 	renderImage->SetScale(300, 300, 1);
-	AddChild(renderImage);
+	AddChild(renderImage);*/
 
 	/*auto renderImage2 = Render2D::Create();
 	auto cameraRender = GetMainCamera()->GetRenderTarget();
@@ -90,7 +90,7 @@ void TestScene::Initialize()
 	auto instModel2 = kachujin->CreateInstance();
 	instModel2->SetPosition(20, 0, 0);
 	instModel2->SetScale(0.2f, 0.2f, 0.2f);
-	AddChild(instModel2);
+	//AddChild(instModel2);
 }
 
 void TestScene::Destroy()

@@ -24,7 +24,7 @@ bool ModelAnim::Init(string modelDir)
 	if (!Super::Init(modelDir))
 		return false;
 
-	SetShader(L"ModelAnimation");
+	SetShader(L"InstModel");
 	GetModelData()->GetBuffer()->SetBlend(true);
 	tweener = new ModelTweener();
 
