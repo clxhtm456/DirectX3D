@@ -43,6 +43,9 @@ bool Terrain::Init(UINT horizontal, UINT vertical, UINT textureDetail)
 	CalculateTextureCoordinate();
 	InitializeBuffers();
 
+	brushBuffer = new ConstantBuffer(&brushDesc, sizeof(BrushDesc));
+	lineBuffer = new ConstantBuffer(&lineDesc, sizeof(LineDesc));
+
 	return true;
 }
 
@@ -481,7 +484,6 @@ bool Terrain::InitializeBuffers()
 				indices[index] = index;
 				index++;
 			}
-			
 		}
 	}
 
@@ -498,7 +500,6 @@ void Terrain::CreateVertexData()
 	//vector<Vector4> heights = heightMap->ReadPixels();
 
 	//Create VData
-
 	for (UINT z = 0; z < height; z++)
 	{
 		for (UINT x = 0; x < width; x++)

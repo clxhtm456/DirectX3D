@@ -52,11 +52,33 @@ private:
 	Texture* baseMap = NULL;
 	Texture* layerMap = NULL;
 	Texture* alphaMap = NULL;
+private:
+	struct BrushDesc
+	{
+		Vector4 Color = Vector4(0, 1, 0, 1);
+		Vector3 Location;
+		UINT Type = 0;
+		UINT Range = 1;
+		float Padding[3];
+	} brushDesc;
+
+	struct LineDesc
+	{
+		Vector4 Color = Vector4(1, 1, 1, 1);
+		UINT Visible = 0;
+		float Thickness = 0.01f;
+		float Size = 5.0f;
+		float Padding;
+	} lineDesc;
 
 private:
 	VertexTextureNormal* vertices;
 	UINT* indices;
 	HeightMapType* _heightMap;
+
+	ConstantBuffer* brushBuffer;
+	ConstantBuffer* lineBuffer;
+
 
 private:
 	UINT width;

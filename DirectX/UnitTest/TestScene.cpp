@@ -40,24 +40,24 @@ void TestScene::Initialize()
 	sphere->GetMaterial()->SetSpecularMap("../../_Textures/Wall_Specular.png");
 	sphere->GetMaterial()->SetNormalMap("../../_Textures/Wall_Normal.png");
 	sphere->GetMaterial()->SetEmissive(Color(1.0f, 0.0f, 0.0f, 1.0f));
-	AddChild(sphere);
+	//AddChild(sphere);
 
 	auto sphereInst = sphere->CreateInstance();
 	sphereInst->SetPosition(5, 20, 0);
 	sphereInst->SetScale(5, 5, 5);
-	AddChild(sphereInst);
+	//AddChild(sphereInst);
 
 	auto cylinder = MeshCylinder::Create(0.5f,3.0f,20,20);
 	cylinder->SetScale(5, 5, 5);
 	cylinder->SetPosition(-30, 6, -15);
-	AddChild(cylinder);
+	//AddChild(cylinder);
 
-	/*auto renderImage = Render2D::Create();
+	auto renderImage = Render2D::Create();
 	auto depthRenderTarget = GetDirectionLight()->GetRenderTarget()->SRV();
 	renderImage->SetSRV(depthRenderTarget);
 	renderImage->SetPosition(150, D3D::Height() - 150, 0);
 	renderImage->SetScale(300, 300, 1);
-	AddChild(renderImage);*/
+	AddChild(renderImage);
 
 	/*auto renderImage2 = Render2D::Create();
 	auto cameraRender = GetMainCamera()->GetRenderTarget();
@@ -74,14 +74,23 @@ void TestScene::Initialize()
 	terrain->UseShadow(false);
 	AddChild(terrain);*/
 
-	//auto kachujin = ModelAnim::Create("pikachu");
+	auto kachujin = ModelAnim::Create("pikachu");
 	//kachujin->SetPosition(20, 0, 0);
-	////kachujin->AddClip("Arthas/Idle/Attack2H1");
-	////kachujin->AddClip("idle");
-	////kachujin->PlayClip(0, true);
-	//kachujin->SetScale(0.5f, 0.5f, 0.5f);
+	//kachujin->AddClip("Arthas/Idle/Attack2H1");
+	kachujin->AddClip("idle");
+	//kachujin->PlayClip(0, true);
+	//kachujin->SetScale(0.2f, 0.2f, 0.2f);
+	AddChild(kachujin);
 
-	//AddChild(kachujin);
+	auto instModel1 = kachujin->CreateInstance();
+	instModel1->SetScale(0.2f, 0.2f, 0.2f);
+	instModel1->SetPosition(40, 0, 0);
+	AddChild(instModel1);
+
+	auto instModel2 = kachujin->CreateInstance();
+	instModel2->SetPosition(20, 0, 0);
+	instModel2->SetScale(0.2f, 0.2f, 0.2f);
+	AddChild(instModel2);
 }
 
 void TestScene::Destroy()

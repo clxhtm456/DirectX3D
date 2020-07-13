@@ -43,18 +43,18 @@ void Shadow::Set()
 {
 	UpdateVolume();
 
-	vsBuffer->SetVSBuffer(2);
-	psBuffer->SetPSBuffer(2);
+	vsBuffer->SetVSBuffer(10);
+	psBuffer->SetPSBuffer(10);
 
 
-	ImGui::InputInt("ShadowQuality", (int*)&psDesc.Quality);
-	psDesc.Quality %= 4;
+	/*ImGui::InputInt("ShadowQuality", (int*)&psDesc.Quality);
+	psDesc.Quality %= 4;*/
 }
 
 void Shadow::Draw()
 {
 	//D3D::GetDC()->PSSetShaderResources(3, 1, &shadowMap);
-	D3D::GetDC()->PSSetSamplers(3, 1, &shadowSample);
+	D3D::GetDC()->PSSetSamplers(10, 1, &shadowSample);
 }
 
 void Shadow::SetShadowMap(ID3D11ShaderResourceView* srv)

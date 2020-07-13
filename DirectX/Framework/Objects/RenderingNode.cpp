@@ -44,7 +44,7 @@ void RenderingNode::Render(Camera* viewer)
 {
 	if (shadowMap != NULL)
 	{
-		D3D::GetDC()->PSSetShaderResources(3, 1, &shadowMap);
+		D3D::GetDC()->PSSetShaderResources(10, 1, &shadowMap);
 	}
 }
 

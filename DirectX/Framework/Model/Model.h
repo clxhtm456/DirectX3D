@@ -11,9 +11,24 @@ protected:
 	Model();
 	virtual ~Model();
 public:
+	Node* CreateInstance();
+private:
+	void StartInstancingMode();
+	void IncreaseInstancing(Node* object);
+	void DecreaseInstancing(Node* object);
+	void UpdateInstancingMatrix();
+	UINT instancingCount;
+
+	VertexBuffer* instancingBuffer;
+	Matrix worlds[MAX_MESH_INSTANCE];
+
+	std::map<Node*, Matrix> instanceMatrixList;
+
+	bool bInstancingMode;
+public:
 	void CalcWorldMatrix() override;
 	void Update() override;
-	void Render(Camera* viewer) override;
+	void Draw(Camera* viewer) override;
 
 	class ModelData* GetModelData() { return modelData; }
 public:

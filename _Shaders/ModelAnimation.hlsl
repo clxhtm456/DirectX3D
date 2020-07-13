@@ -1,4 +1,5 @@
 #include "RenderingNode.hlsli"
+#include "Shadow.hlsl"
 
 #define MAX_BONE 256
 
@@ -35,7 +36,44 @@ struct VertexInput
 	float3 tangent : TANGENT;
 	float4 blendIndices : BLENDINDICES;
 	float4 blendWeights : BLENDWEIGHTS;
+
+    matrix Transform : INSTANCE;
 };
+
+struct ShadowVertexInput
+{
+    float4 Position : POSITION;
+    float2 Uv : UV;
+    float3 Normal : Normal;
+    float3 Tangent : TANGENT;
+    float4 blendIndices : BLENDINDICES;
+    float4 blendWeights : BLENDWEIGHTS;
+
+    matrix Transform : INSTANCE;
+};
+
+ShadowPixelInput VS_Shadow(ShadowVertexInput input)
+{
+    ShadowPixelInput output;
+    matrix boneWorld = SkinWorld(input.blendIndices, input.blendWeights);
+    boneWorld = mul(boneWorld, input.Transform);
+    
+    output.Position = mul(input.Position, boneWorld);
+    output.wPosition = output.Position;
+    output.Position = VPPosition(output.Position);
+
+    output.Uv = input.Uv;
+    output.Normal = mul(input.Normal, (float3x3) boneWorld);
+    output.Tangent = mul(input.Tangent, (float3x3) boneWorld);
+    output.BiNormal = cross(output.Normal, output.Tangent);
+    output.ViewPos = ViewPosition();
+
+    output.sPosition = WorldPosition(input.Position);
+    output.sPosition = mul(output.sPosition, ShadowView);
+    output.sPosition = mul(output.sPosition, ShadowProjection);
+
+    return output;
+}
 
 PixelInput VS(VertexInput input)
 {

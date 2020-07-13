@@ -9,6 +9,16 @@ struct VertexInput
 	float3 Tangent : TANGENT;
 };
 
+struct ShadowVertexInput
+{
+    float4 Position : POSITION;
+    float2 Uv : UV;
+    float3 Normal : Normal;
+    float3 Tangent : TANGENT;
+
+    matrix Transform : INSTANCE;
+};
+
 
 PixelInput VS(VertexInput input)
 {

@@ -28,7 +28,10 @@ void ModelMesh::Binding()
 void ModelMesh::Render()
 {
 	for (ModelMeshPart* part : meshParts)
+	{
+		part->SetInstancingCount(instancingCount);
 		part->Render();
+	}
 }
 
 //////////////////////////////////////////////////////
@@ -59,7 +62,7 @@ void ModelMeshPart::Render()
 
 
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	D3D::GetDC()->DrawIndexed(indices.size(), 0, 0);
+	D3D::GetDC()->DrawIndexedInstanced(indices.size(), instancingCount, 0, 0,0);
 }
 
 void ModelMeshPart::Binding()

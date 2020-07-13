@@ -35,8 +35,11 @@ private:
 	~ModelMesh();
 
 	void Binding();
-
+	UINT instancingCount;
 public:
+	void SetInstancingCount(UINT val) {
+		instancingCount = val;
+	}
 	void Render();
 
 	int GetParentBoneIndex() { return parentBoneIndex; }
@@ -58,7 +61,12 @@ private:
 
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
+
+	UINT instancingCount;
 public:
+	void SetInstancingCount(UINT val) {
+		instancingCount = val;
+	}
 	vector<ModelVertexType> vertices;
 
 	vector<UINT> indices;

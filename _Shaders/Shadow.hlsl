@@ -1,5 +1,5 @@
-Texture2D shadowMap : register(t3);
-SamplerComparisonState ShadowSampler : register(s3);
+Texture2D shadowMap : register(t10);
+SamplerComparisonState ShadowSampler : register(s10);
 
 SamplerState LinearSampler
 {
@@ -10,13 +10,13 @@ SamplerState LinearSampler
 };
 
 
-cbuffer CB_ShadowVS : register(b2)
+cbuffer CB_ShadowVS : register(b10)
 {
 	matrix ShadowView;
 	matrix ShadowProjection;
 };
 
-cbuffer CB_ShadowPS : register(b2)
+cbuffer CB_ShadowPS : register(b10)
 {
 	float2 MapSize;
 	float Bias;
@@ -25,15 +25,7 @@ cbuffer CB_ShadowPS : register(b2)
 	float4 testColor;
 };
 
-struct ShadowVertexInput
-{
-	float4 Position : POSITION;
-	float2 Uv : UV;
-	float3 Normal : Normal;
-	float3 Tangent : TANGENT;
 
-	matrix Transform : INSTANCE;
-};
 
 struct ShadowPixelInput
 {

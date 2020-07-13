@@ -12,18 +12,18 @@ void TerrainEditScene::Initialize()
 
 	mapEditor = new MapEditor(this);
 
-	cube = MeshCube::Create();
-	//cube->SetScale(20, 10, 20);
-	//cube->SetPosition(0, 5, 0);
-	cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
-	cube->GetMaterial()->SetSpecular(1, 1, 1, 1);
-	//cube->DelMask(TYPEMASK::DEFAULT);
-	AddChild(cube);
+	//cube = MeshCube::Create();
+	////cube->SetScale(20, 10, 20);
+	////cube->SetPosition(0, 5, 0);
+	//cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
+	//cube->GetMaterial()->SetSpecular(1, 1, 1, 1);
+	////cube->DelMask(TYPEMASK::DEFAULT);
+	//AddChild(cube);
 
-	auto cubeInst = cube->CreateInstance();
-	cubeInst->SetScale(20, 10, 20);
-	cubeInst->SetPosition(0, 5, 0);
-	AddChild(cubeInst);
+	//auto cubeInst = cube->CreateInstance();
+	//cubeInst->SetScale(20, 10, 20);
+	//cubeInst->SetPosition(0, 5, 0);
+	//AddChild(cubeInst);
 
 	//auto a = sin(50);
 
