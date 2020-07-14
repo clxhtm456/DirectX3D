@@ -2,14 +2,15 @@
 #include "GBuffer.h"
 #include "Renders/Render2D.h"
 
-#define GBUFFERMAP	2
+#define GBUFFERMAP	9
 
-GBuffer::GBuffer(Scene* scene,UINT width, UINT height)
+GBuffer::GBuffer(UINT width, UINT height)
 {
-	_scene = scene;
 	this->width = width < 1 ? (UINT)D3D::Width() : width;
 	this->height = height < 1 ? (UINT)D3D::Height() : height;
 
+
+	shader = Shader::Add(L"DefferedRender");
 
 	diffuseRTV = new RenderTarget(this->width, this->height, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	specularRTV = new RenderTarget(this->width, this->height, DXGI_FORMAT_R32G32B32A32_FLOAT);
@@ -26,7 +27,7 @@ GBuffer::GBuffer(Scene* scene,UINT width, UINT height)
 
 	spotLightBuffer = new ConstantBuffer(&spotLightDesc, sizeof(SpotLightDesc));
 	sSpotLightBuffer = shader->AsConstantBuffer("CB_Deffered_SpotLight");*/
-
+	RSS = new RasterizerState();
 
 	CreateDepthStencilView();
 	CreateDepthStencilState();

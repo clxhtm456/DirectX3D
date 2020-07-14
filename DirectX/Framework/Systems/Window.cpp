@@ -28,13 +28,13 @@ WPARAM Window::Run(IExecute* main)
 	Context::Create();	
 	DebugLine::Create();
 
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; //
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     //도킹시스템(imgui)붙이기
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; //이설정이 멀티뷰 허용 권한(밖으로빼는 함수)
-	io.ConfigWindowsResizeFromEdges = true;
-	ImGui_ImplWin32_Init(D3D::GetHandle());
-	ImGui_ImplDX11_Init(D3D::GetDevice(), D3D::GetDC());
+	//ImGuiIO& io = ImGui::GetIO();
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; //
+	//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     //도킹시스템(imgui)붙이기
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; //이설정이 멀티뷰 허용 권한(밖으로빼는 함수)
+	//io.ConfigWindowsResizeFromEdges = true;
+	//ImGui_ImplWin32_Init(D3D::GetHandle());
+	//ImGui_ImplDX11_Init(D3D::GetDevice(), D3D::GetDC());
 
 	mainExecute->Initialize();
 

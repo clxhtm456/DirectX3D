@@ -88,7 +88,7 @@ protected:
 	ViewProjectionBuffer* viewProjection;
 private:
 	class DepthStencil* depthStencil;
-
+	class GBuffer* gBuffer;
 
 	class RenderTarget* renderTarget;
 	class Render2D* renderImage;

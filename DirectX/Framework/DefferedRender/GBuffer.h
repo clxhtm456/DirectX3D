@@ -3,7 +3,7 @@
 class GBuffer
 {
 public:
-	GBuffer(Scene* scene, UINT width = 0, UINT height = 0);
+	GBuffer(UINT width = 0, UINT height = 0);
 	~GBuffer();
 
 	void PackGBuffer();
@@ -59,8 +59,6 @@ private:
 private:
 	Shader * shader;
 	UINT width, height;
-
-	Scene* _scene;
 
 	RenderTarget* diffuseRTV;
 	RenderTarget* specularRTV;

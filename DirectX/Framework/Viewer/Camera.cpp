@@ -3,6 +3,7 @@
 #include "Perspective.h"
 #include "Viewport.h"
 #include "Renders/Render2D.h"
+#include "DefferedRender/GBuffer.h"
 
 Camera * Camera::Create(CameraOption option)
 {
@@ -23,8 +24,11 @@ bool Camera::Init(CameraOption option)
 {
 	default = option;
 	CreateCameraDefault();
-	CreateRender2DOption();
 
+	if (default.useGBuffer == true)
+	{
+		CreateRender2DOption();
+	}
 	Rotate();
 	Move();
 
@@ -132,9 +136,6 @@ void Camera::CreateCameraDefault()
 
 void Camera::CreateRender2DOption()
 {
-	if (default.useGBuffer == false)
-		return;
-
 	renderTarget = new RenderTarget();
 	depthStencil = new DepthStencil();
 	renderViewport = new Viewport(D3D::Width(), D3D::Height(), default.x, default.y, default.minDepth, default.maxDepth);
@@ -144,8 +145,9 @@ void Camera::CreateRender2DOption()
 
 	renderImage->SetPosition(D3D::Width()*0.5f, D3D::Height()*0.5f, 0);
 	renderImage->SetScale(D3D::Width()*0.9f, D3D::Height()*0.9f, 1);
-
 	renderImage->SetSRV(renderTarget->SRV());
+
+	gBuffer = new GBuffer(D3D::Width(), D3D::Height());
 }
 
 void Camera::Move()
@@ -240,8 +242,9 @@ void Camera::SetUpRender()
 	}
 	else
 	{
-		renderTarget->Set(depthStencil);
-		viewport->RSSetViewport();
+		/*renderTarget->Set(depthStencil);
+		viewport->RSSetViewport();*/
+		gBuffer->PackGBuffer();
 	}
 }
 
@@ -255,7 +258,8 @@ void Camera::Render(Camera* viewer)
 
 	viewport->RSSetViewport();
 
-	renderImage->PostRender(this);
+	//renderImage->PostRender(this);
+	gBuffer->Render();
 }
 
 

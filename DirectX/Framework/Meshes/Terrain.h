@@ -41,12 +41,16 @@ private:
 	bool LoadHeightMap(const char* filename);
 	bool CalculateNormals();
 	bool InitializeBuffers();
-	void CreateVertexData();
-	void CreateIndexData();
-	void CreateNormalData();
 	void CalculateTextureCoordinate();
-	void RaiseHeight(Vector3& position, UINT type, UINT range);
+	void ReDrawNormal();
 
+	void RaiseHeight(vector<VertexTextureNormal*> vertexVector, float speed);
+	void FallHeight(vector<VertexTextureNormal*> vertexVector, float speed);
+	void NoiseHeight(vector<VertexTextureNormal*> vertexVector, float min, float max);
+	void SmoothHeight(vector<VertexTextureNormal*> vertexVector, float value, float speed);
+	void FlatHeight(vector<VertexTextureNormal*> vertexVector, float speed);
+	void SlopeHeight(vector<VertexTextureNormal*> vertexVector);
+	vector<VertexTextureNormal*> slopeVector;
 private:
 	Texture* heightMap = NULL;
 	Texture* baseMap = NULL;
@@ -70,6 +74,16 @@ private:
 		float Size = 5.0f;
 		float Padding;
 	} lineDesc;
+
+	char* BrushName[3] = { "None","Squre","Circle" };
+	bool BrushType[3] = { true,false,false };
+
+	char* BrushStyleName[6] = { "Raise","Fall","Noise","Smooth","Flat","Slope" };
+	bool BrushStyle[6] = { true,false, };
+	int IBrushStyle = 0;
+
+	vector<VertexTextureNormal*> SqureArea(Vector3 position, UINT type, UINT range);
+	vector<VertexTextureNormal*> CircleArea(Vector3 position, UINT type, UINT range);
 
 private:
 	VertexTextureNormal* vertices;

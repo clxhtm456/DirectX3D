@@ -58,12 +58,121 @@ Terrain::~Terrain()
 	SafeDelete(indexBuffer);
 
 	delete _heightMap;
-
+	delete brushBuffer;
+	delete lineBuffer;
 }
 
 void Terrain::Update()
 {	
 	Super::Update();	
+
+	ImGui::Text("Type");
+
+	int brushSize = sizeof(BrushType) / sizeof(bool);
+	for (int i = 0; i < brushSize; i++)
+	{
+		if (ImGui::Checkbox(BrushName[i], &BrushType[i]))
+		{
+			if (BrushType[i] == false)
+				BrushType[i] = true;
+			else
+			{
+				for (int t = 0; t < brushSize; t++)
+				{
+					if (t != i)
+						BrushType[t] = false;
+				}
+				brushDesc.Type = i;
+			}
+		}
+		//ImGui::SameLine();
+	}
+
+	ImGui::Text("Style");
+
+	brushSize = sizeof(BrushStyle) / sizeof(bool);
+	for (int i = 0; i < brushSize; i++)
+	{
+		if (ImGui::Checkbox(BrushStyleName[i], &BrushStyle[i]))
+		{
+			if (BrushStyle[i] == false)
+				BrushStyle[i] = true;
+			else
+			{
+				for (int t = 0; t < brushSize; t++)
+				{
+					if (t != i)
+						BrushStyle[t] = false;
+				}
+				IBrushStyle = i;
+			}
+		}
+		//ImGui::SameLine();
+	}
+
+	ImGui::InputInt("Range", (int*)&brushDesc.Range);
+	ImGui::Separator();
+	brushDesc.Range %= 20;
+
+	if (brushDesc.Type > 0)
+	{
+		float mouseDiff = sqrt(Mouse::Get()->GetMoveValue().x* Mouse::Get()->GetMoveValue().x + Mouse::Get()->GetMoveValue().y* Mouse::Get()->GetMoveValue().y);
+		if (mouseDiff > 0.1f)
+			brushDesc.Location = GetPickedPosition();//GetPickedPosition 에 의해 프레임감소
+
+		vector<VertexTextureNormal*> vertexVector;
+		switch (brushDesc.Type)
+		{
+		case 1:
+			vertexVector = SqureArea(brushDesc.Location, brushDesc.Type, brushDesc.Range);
+			break;
+		case 2:
+			vertexVector = CircleArea(brushDesc.Location, brushDesc.Type, brushDesc.Range);
+			break;
+		}
+
+		if (Mouse::Get()->Press(0))
+		{
+			switch (IBrushStyle)
+			{
+			case 0:
+				RaiseHeight(vertexVector, 5.0f);
+				break;
+			case 1:
+				FallHeight(vertexVector, 5.0f);
+				break;
+			case 2:
+				NoiseHeight(vertexVector, -2.0f, 2.0f);
+				break;
+			case 3:
+				SmoothHeight(vertexVector, 3.0f, 5.0f);
+				break;
+			case 4:
+				FlatHeight(vertexVector, 5.0f);
+				break;
+			case 5:
+				break;
+			default:
+				break;
+			}
+		}
+
+		if (Mouse::Get()->Down(0))
+		{
+			if (IBrushStyle == 5)
+				SlopeHeight(vertexVector);
+		}
+	}
+
+	ImGui::Separator();
+
+	ImGui::InputInt("visible", (int*)&lineDesc.Visible);
+	lineDesc.Visible %= 2;
+
+	ImGui::InputFloat("thickness", &lineDesc.Thickness, 0.001f);
+	Math::Clamp(lineDesc.Thickness, 0.01f, 0.9f);
+
+	ImGui::InputFloat("Size", &lineDesc.Size);
 
 }
 
@@ -150,6 +259,16 @@ float Terrain::GetHeightPick(Vector3 & position)
 Vector3 Terrain::GetPickedPosition()
 {
 	Matrix V = Context::Get()->GetMainCamera()->ViewMatrix();
+	Matrix invView = XMMatrixInverse(&XMMatrixDeterminant(V), V);
+
+	Matrix W = GetWorld();
+	Matrix invWorld = XMMatrixInverse(&XMMatrixDeterminant(W), W);
+
+	Matrix toLocal = XMMatrixMultiply(invView, invWorld);
+
+	/*rayOrigin = XMVector3TransformCoord(rayOrigin, toLocal);
+	rayDir = XMVector3TransformNormal(rayDir, toLocal);*/
+
 	Matrix P = Context::Get()->GetMainCamera()->ProjectionMatrix();
 	Viewport* vp = Context::Get()->GetMainCamera()->GetViewport();
 
@@ -165,6 +284,10 @@ Vector3 Terrain::GetPickedPosition()
 
 	XMVECTOR start = XMLoadFloat3(&n);
 	XMVECTOR direction = XMLoadFloat3(&f) - XMLoadFloat3(&n);
+	
+	direction = XMVector3Normalize(direction);
+
+	bool value = DirectX::Internal::XMVector3IsUnit(direction);
 
 	XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1,0);
 	Vector3 fResult;
@@ -183,7 +306,7 @@ Vector3 Terrain::GetPickedPosition()
 				p[i] = XMLoadFloat3(&vertices[index[i]].Position);
 
 			float u, v, distance;
-
+			
 			if (Intersects(start, direction, p[0], p[1], p[2], distance) == TRUE)
 			{
 				result = (p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v);
@@ -494,85 +617,6 @@ bool Terrain::InitializeBuffers()
 	return true;
 }
 
-void Terrain::CreateVertexData()
-{
-	//heightMap의 색상 정보 받아오기
-	//vector<Vector4> heights = heightMap->ReadPixels();
-
-	//Create VData
-	for (UINT z = 0; z < height; z++)
-	{
-		for (UINT x = 0; x < width; x++)
-		{
-			UINT index = width * z + x;
-			UINT pixel = width * (height - z - 1) + x;
-
-			vertices[index].Position.x = (float)x;
-			//vertices[index].Position.y = (heights[pixel].x * 256.0f) / 10.0f;
-			vertices[index].Position.y = 0;
-			vertices[index].Position.z = (float)z;
-
-			if (vertices[index].Uv.x == 0.0f)
-				vertices[index].Uv.x = 1.0f;
-			if (vertices[index].Uv.y == 0.0f)
-				vertices[index].Uv.y = 1.0f;
-
-		}
-	}
-}
-
-void Terrain::CreateIndexData()
-{
-	indexCount = (width - 1) * (height - 1) * 6;
-	indices = new UINT[indexCount];
-
-	UINT index = 0;
-	for (UINT y = 0; y < height - 1; y++)
-	{
-		for (UINT x = 0; x < width - 1; x++)
-		{
-			indices[index + 0] = width * y + x;
-			indices[index + 1] = width * (y + 1) + x;
-			indices[index + 2] = width * y + (x + 1);
-			indices[index + 3] = width * y + (x + 1);
-			indices[index + 4] = width * (y + 1) + x;
-			indices[index + 5] = width * (y + 1) + (x + 1);
-
-			index += 6;
-		}
-	}
-}
-
-void Terrain::CreateNormalData()
-{
-	for (UINT i = 0; i < indexCount / 3; i++)
-	{
-		UINT index0 = indices[i * 3 + 0];
-		UINT index1 = indices[i * 3 + 1];
-		UINT index2 = indices[i * 3 + 2];
-
-		VertexTextureNormal v0 = vertices[index0];
-		VertexTextureNormal v1 = vertices[index1];
-		VertexTextureNormal v2 = vertices[index2];
-
-		XMVECTOR d1 = XMLoadFloat3(&v1.Position) - XMLoadFloat3(&v0.Position);
-		XMVECTOR d2 = XMLoadFloat3(&v2.Position) - XMLoadFloat3(&v0.Position);
-
-		XMVECTOR normal;
-		normal = XMVector3Cross(d1, d2);
-		
-		XMStoreFloat3(&vertices[index0].Normal, normal);
-		XMStoreFloat3(&vertices[index1].Normal, normal);
-		XMStoreFloat3(&vertices[index2].Normal, normal);	
-	}
-
-	for (UINT i = 0; i < vertexCount; i++)
-	{
-		XMVECTOR temp = XMLoadFloat3(&vertices[i].Normal);
-		temp = XMVector3Normalize(temp);
-		XMStoreFloat3(&vertices[i].Normal, temp);
-	}
-}
 
 void Terrain::CalculateTextureCoordinate()
 {
@@ -618,41 +662,205 @@ void Terrain::CalculateTextureCoordinate()
 	}
 }
 
-void Terrain::RaiseHeight(Vector3 & position, UINT type, UINT range)
+void Terrain::ReDrawNormal()
 {
-	D3D11_BOX rect;
-	rect.left = (LONG)position.x - range;
-	rect.top = (LONG)position.z + range;
-	rect.right = (LONG)position.x + range;
-	rect.bottom = (LONG)position.z - range;
-
-	if (rect.left < 0) rect.left = 0;
-	if (rect.right >= width) rect.right = width;
-	if (rect.bottom < 0) rect.bottom = 0;
-	if (rect.top >= height) rect.top = height;
-
-	for (LONG z = rect.bottom; z <= rect.top; z++)
+	for (UINT i = 0; i < indexCount / 3; i++)
 	{
-		for (LONG x = rect.left; x <= rect.right; x++)
-		{
-			UINT index = width * (UINT)z + (UINT)x;
-			vertices[index].Position.y += 5.0f * Time::Delta();
-		}
+		UINT index0 = indices[i * 3 + 0];
+		UINT index1 = indices[i * 3 + 1];
+		UINT index2 = indices[i * 3 + 2];
+
+		VertexTextureNormal v0 = vertices[index0];
+		VertexTextureNormal v1 = vertices[index1];
+		VertexTextureNormal v2 = vertices[index2];
+
+		XMVECTOR d1 = XMLoadFloat3(&v1.Position) - XMLoadFloat3(&v0.Position);
+		XMVECTOR d2 = XMLoadFloat3(&v2.Position) - XMLoadFloat3(&v0.Position);
+
+		XMVECTOR normal = XMVector3Cross(d1, d2);
+		Vector3 vNormal;
+		XMStoreFloat3(&vNormal, normal);
+
+		vertices[index0].Normal = vNormal;
+		vertices[index1].Normal = vNormal;
+		vertices[index2].Normal = vNormal;
 	}
 
-	CreateNormalData();
+	for (UINT i = 0; i < vertexCount; i++)
+	{
+		XMVECTOR temp = XMLoadFloat3(&vertices[i].Normal);
+		temp = XMVector3Normalize(temp);
+		XMStoreFloat3(&vertices[i].Normal, temp);
+	}
 
-	/*D3D::GetDC()->UpdateSubresource
-	(
-		vertexBuffer->Buffer(), 0, NULL, vertices, sizeof(TerrainVertex) * vertexCount, 0
-	);*/
-	
 	D3D11_MAPPED_SUBRESOURCE subResource;
 	D3D::GetDC()->Map(vertexBuffer->Buffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
 	{
 		memcpy(subResource.pData, vertices, sizeof(VertexTextureNormal) * vertexCount);
 	}
 	D3D::GetDC()->Unmap(vertexBuffer->Buffer(), 0);
+}
+
+void Terrain::RaiseHeight(vector<VertexTextureNormal*> vertexVector, float speed)
+{
+	for (auto vertex : vertexVector)
+	{
+		vertex->Position.y += speed * Time::Delta();
+	}
+
+	ReDrawNormal();
+}
+
+void Terrain::FallHeight(vector<VertexTextureNormal*> vertexVector, float speed)
+{
+	for (auto vertex : vertexVector)
+	{
+		vertex->Position.y -= speed * Time::Delta();
+	}
+
+	ReDrawNormal();
+}
+
+void Terrain::NoiseHeight(vector<VertexTextureNormal*> vertexVector, float min, float max)
+{
+	for (auto vertex : vertexVector)
+	{
+		vertex->Position.y = Math::Random(min, max);
+	}
+
+	ReDrawNormal();
+}
+
+void Terrain::SmoothHeight(vector<VertexTextureNormal*> vertexVector, float value, float speed)
+{
+	for (auto vertex : vertexVector)
+	{
+		if (vertex->Position.y - value > 0.1f)
+			vertex->Position.y -= speed * Time::Delta();
+		else if (vertex->Position.y - value < 0.1f)
+			vertex->Position.y += speed * Time::Delta();
+	}
+
+	ReDrawNormal();
+}
+
+void Terrain::FlatHeight(vector<VertexTextureNormal*> vertexVector, float speed)
+{
+	float value = 0;
+
+	for (auto vertex : vertexVector)
+	{
+		value += vertex->Position.y;
+	}
+	value /= vertexVector.size();
+
+	for (auto vertex : vertexVector)
+	{
+		if (vertex->Position.y - value > 0.1f)
+			vertex->Position.y -= speed * Time::Delta();
+		else if (vertex->Position.y - value < 0.1f)
+			vertex->Position.y += speed * Time::Delta();
+	}
+
+	ReDrawNormal();
+}
+
+void Terrain::SlopeHeight(vector<VertexTextureNormal*> vertexVector)
+{
+	if (slopeVector.size() == 0)
+	{
+		for (auto vertex : vertexVector)
+		{
+			slopeVector.push_back(vertex);
+		}
+	}
+	else
+	{
+		//계산식
+		for (int i = 0; i < vertexVector.size(); i++)
+		{
+			float totaldx = slopeVector[i]->Position.x - vertexVector[i]->Position.x;
+			float totaldz = slopeVector[i]->Position.z - vertexVector[i]->Position.z;
+			float totaldy = slopeVector[i]->Position.y - vertexVector[i]->Position.y;
+			float totaldist = sqrt(totaldx * totaldx + totaldz * totaldz);
+
+			float lean = totaldz / totaldx;
+			float startPosX = totaldx > 0 ? vertexVector[i]->Position.x : slopeVector[i]->Position.x;
+			float zValue = totaldx > 0 ? vertexVector[i]->Position.z : slopeVector[i]->Position.z;
+			float endPosX = totaldx > 0 ? slopeVector[i]->Position.x : vertexVector[i]->Position.x;
+			float leanPos = totaldx > 0 ? startPosX : endPosX;
+
+			for (int x = startPosX; x <= endPosX; x++)
+			{
+				int z = lean * (x - startPosX) + zValue;
+				UINT index = width * (UINT)z + (UINT)x;
+				float dx = leanPos - vertices[index].Position.x;
+				float dz = (lean * (leanPos - startPosX) + zValue) - vertices[index].Position.z;
+				float dist = sqrt(dx * dx + dz * dz);
+				vertices[index].Position.y = totaldy * dist / totaldist;
+			}
+		}
+		slopeVector.clear();
+
+		ReDrawNormal();
+	}
+}
+
+vector<VertexTextureNormal*> Terrain::SqureArea(Vector3 position, UINT type, UINT range)
+{
+	vector<VertexTextureNormal*> vertexVector;
+	D3D11_BOX rect;
+	rect.left = (LONG)position.x - range;
+	rect.right = (LONG)position.x + range;
+	rect.bottom = (LONG)position.z - range;
+	rect.top = (LONG)position.z + range;
+
+	if (rect.left < 0) rect.left = 0;
+	if (rect.right > width) rect.right = width;
+
+	if (rect.bottom < 0) rect.bottom = 0;
+	if (rect.top > height) rect.top = height;
+
+	for (LONG z = rect.bottom; z < rect.top; z++)
+	{
+		for (LONG x = rect.left; x < rect.right; x++)
+		{
+			UINT index = width * (UINT)z + (UINT)x;
+			vertexVector.push_back(&vertices[index]);
+		}
+	}
+	return vertexVector;
+}
+
+vector<VertexTextureNormal*> Terrain::CircleArea(Vector3 position, UINT type, UINT range)
+{
+	vector<VertexTextureNormal*> vertexVector;
+	D3D11_BOX rect;
+	rect.left = (LONG)position.x - range;
+	rect.right = (LONG)position.x + range;
+	rect.bottom = (LONG)position.z - range;
+	rect.top = (LONG)position.z + range;
+
+	if (rect.left < 0) rect.left = 0;
+	if (rect.right > width) rect.right = width;
+
+	if (rect.bottom < 0) rect.bottom = 0;
+	if (rect.top > height) rect.top = height;
+
+	for (LONG z = rect.bottom; z < rect.top; z++)
+	{
+		for (LONG x = rect.left; x < rect.right; x++)
+		{
+			UINT index = width * (UINT)z + (UINT)x;
+			float dx = position.x - vertices[index].Position.x;
+			float dz = position.z - vertices[index].Position.z;
+			float dist = sqrt(dx * dx + dz * dz);
+			if (dist > range)
+				continue;
+			vertexVector.push_back(&vertices[index]);
+		}
+	}
+	return vertexVector;
 }
 
 ///과제

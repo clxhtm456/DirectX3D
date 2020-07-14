@@ -28,7 +28,7 @@ void TestScene::Initialize()
 
 	
 	auto grid = MeshGrid::Create(10,10);
-	grid->SetScale(500, 1, 500);
+	grid->SetScale(12, 1, 12);
 	grid->SetPosition(0, 0, 0);
 	grid->GetMaterial()->SetDiffuseMap("../../_Textures/Floor.png");
 	grid->GetMaterial()->SetNormalMap("../../_Textures/Floor_Normal.png");

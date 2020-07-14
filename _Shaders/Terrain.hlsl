@@ -10,6 +10,7 @@ struct VertexInput
 struct VertexOutput
 {
 	float4 Position : SV_POSITION;
+    float4 WPosition : POSITION1;
 	float2 Uv : UV;
 	float3 Normal : NORMAL;
 };
@@ -49,10 +50,66 @@ SamplerState LayerSamp : register(s1);
 Texture2D AlphaMap : register(t2);
 SamplerState AlphaSamp : register(s2);
 
+float4 GetBrushColor(float3 wPosition)
+{
+	//사각형
+	[flatten]
+    if (Brush.Type == 1)
+    {
+		[flatten]
+        if ((wPosition.x >= (Brush.Location.x - Brush.Range)) &&
+			(wPosition.x <= (Brush.Location.x + Brush.Range)) &&
+			(wPosition.z >= (Brush.Location.z - Brush.Range)) &&
+			(wPosition.z <= (Brush.Location.z + Brush.Range)))
+        {
+            return Brush.Color;
+        }
+    }
+	//원
+	[flatten]
+    if (Brush.Type == 2)
+    {
+        float dx = (wPosition.x - Brush.Location.x);
+        float dz = (wPosition.z - Brush.Location.z);
+        float dist = sqrt(dx * dx + dz * dz);
+		[flatten]
+        if (dist <= (float) Brush.Range)
+        {
+            return Brush.Color;
+        }
+    }
+
+    return float4(0, 0, 0, 0);
+}
+
+float4 GetLineColor(float3 wPosition)
+{
+	[flatten]
+    if (Line.Visible < 1)
+    {
+        return float4(0, 0, 0, 0);
+    }
+
+    float2 grid = wPosition.xz / Line.Size;
+    grid = frac(grid);
+
+    float thick = Line.Thickness / Line.Size;
+
+	[flatten]
+    if (grid.x < thick || grid.y < thick)
+    {
+        return Line.Color;
+    }
+
+    return float4(0, 0, 0, 0);
+}
+
+
 VertexOutput VS(VertexInput input)
 {
 	VertexOutput output;
 	output.Position = WorldPosition(input.Position);
+    output.WPosition = output.Position;
 	output.Position = VPPosition(output.Position);
 	//output.Position = input.Position;
 
@@ -65,9 +122,10 @@ VertexOutput VS(VertexInput input)
 float4 PS(VertexOutput input) : SV_TARGET
 {
 	float3 diffuse = BaseMap.Sample(BaseSamp, input.Uv).rgb;
-	//float NdotL = dot(normalize(input.Normal), -GlobalLight.Direction);
-
 	float NdotL = dot(normalize(input.Normal), -CB_Light.Direction);
-	//NdotL = 1;
-	return float4(diffuse * NdotL, 1);
+
+    float4 brush = GetBrushColor(input.WPosition.xyz);
+    float4 lineColor = GetLineColor(input.WPosition.xyz);
+
+    return float4(diffuse * NdotL, 1) + brush + lineColor;
 }

@@ -1,6 +1,6 @@
 #include "RenderingNode.hlsli"
 
-Texture2DArray defferedMap : register(t2);
+Texture2D GBufferMaps[6] : register(t9);
 
 struct VertexInput
 {

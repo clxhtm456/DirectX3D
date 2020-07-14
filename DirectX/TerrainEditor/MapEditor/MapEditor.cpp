@@ -177,9 +177,9 @@ void MapEditor::SaveMapFile()
 
 void MapEditor::CreateNewMap()
 {
-	terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL,4);
+	terrain = Terrain::Create(DEFAULT_HORIZONTAL, DEFAULT_VERTICAL,16);
 	//terrain->SetScale(1, 1, 1);
-	terrain->BaseMap(L"Terrain/Dirt3.png");
+	terrain->BaseMap(L"Terrain/Ground01_D.tga");
 
 	auto posX = DEFAULT_HORIZONTAL * 0.5f;
 	auto posZ = (DEFAULT_VERTICAL + (DEFAULT_VERTICAL * sin(50))) * -1.0f;

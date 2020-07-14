@@ -83,8 +83,8 @@ void Shadow::UpdateVolume()
 	float right = XMVectorGetX(cube) + radius;
 	float top = XMVectorGetY(cube) + radius;
 	float fa = XMVectorGetZ(cube) + radius;
-
-	vsDesc.Projection = XMMatrixOrthographicLH(right - left, top - bottom, nea, fa);
+	
+	vsDesc.Projection = XMMatrixPerspectiveLH(right - left, top - bottom, nea, fa);
 	
 	vsDesc.View = XMMatrixTranspose(vsDesc.View);
 	vsDesc.Projection = XMMatrixTranspose(vsDesc.Projection);
