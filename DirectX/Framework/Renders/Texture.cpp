@@ -168,6 +168,7 @@ vector<Vector4> Texture::ReadPixels()
 
 	D3D::GetDC()->CopySubresourceRegion(destTexture, 0, 0, 0, 0, srcTexture, 0, nullptr);
 
+
 	UINT* colors = new UINT[width * height];
 	D3D11_MAPPED_SUBRESOURCE map;
 

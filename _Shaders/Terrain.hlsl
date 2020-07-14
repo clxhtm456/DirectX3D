@@ -4,6 +4,7 @@ struct VertexInput
 {
 	float4 Position : POSITION;
 	float2 Uv : UV;
+	//float2 TUv : UV1;
 	float3 Normal : NORMAL;
 };
 
@@ -12,6 +13,7 @@ struct VertexOutput
 	float4 Position : SV_POSITION;
     float4 WPosition : POSITION1;
 	float2 Uv : UV;
+	//float2 TUv : UV1;
 	float3 Normal : NORMAL;
 };
 
@@ -23,7 +25,7 @@ struct BrushDesc
 	uint Range;
 };
 
-cbuffer Brush : register(b2)
+cbuffer Brush : register(b3)
 {
 	BrushDesc Brush;
 }
@@ -36,7 +38,7 @@ struct LineDesc
 	float Size;
 };
 
-cbuffer Line : register(b3)
+cbuffer Line : register(b4)
 {
 	LineDesc Line;
 }
@@ -114,6 +116,7 @@ VertexOutput VS(VertexInput input)
 	//output.Position = input.Position;
 
 	output.Uv = input.Uv;
+	//output.TUv = input.TUv;
 	output.Normal = mul(input.Normal, (float3x3)CB_World.World);
 
 	return output;

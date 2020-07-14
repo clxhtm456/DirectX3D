@@ -12,6 +12,14 @@ struct VectorType
 	float x, y, z;
 };
 
+struct TerrainVertex
+{
+	Vector3 Position = Vector3(0,0,0);
+	Vector2 Uv = Vector2(0, 0);
+	//Vector2 TotalUv = Vector2(0, 0);
+	Vector3 Normal = Vector3(0, 0, 0);
+};
+
 class Terrain : public RenderingNode
 {
 public:
@@ -44,13 +52,13 @@ private:
 	void CalculateTextureCoordinate();
 	void ReDrawNormal();
 
-	void RaiseHeight(vector<VertexTextureNormal*> vertexVector, float speed);
-	void FallHeight(vector<VertexTextureNormal*> vertexVector, float speed);
-	void NoiseHeight(vector<VertexTextureNormal*> vertexVector, float min, float max);
-	void SmoothHeight(vector<VertexTextureNormal*> vertexVector, float value, float speed);
-	void FlatHeight(vector<VertexTextureNormal*> vertexVector, float speed);
-	void SlopeHeight(vector<VertexTextureNormal*> vertexVector);
-	vector<VertexTextureNormal*> slopeVector;
+	void RaiseHeight(vector<TerrainVertex*> vertexVector, float speed);
+	void FallHeight(vector<TerrainVertex*> vertexVector, float speed);
+	void NoiseHeight(vector<TerrainVertex*> vertexVector, float min, float max);
+	void SmoothHeight(vector<TerrainVertex*> vertexVector, float value, float speed);
+	void FlatHeight(vector<TerrainVertex*> vertexVector, float speed);
+	void SlopeHeight(vector<TerrainVertex*> vertexVector);
+	vector<TerrainVertex*> slopeVector;
 private:
 	Texture* heightMap = NULL;
 	Texture* baseMap = NULL;
@@ -82,11 +90,11 @@ private:
 	bool BrushStyle[6] = { true,false, };
 	int IBrushStyle = 0;
 
-	vector<VertexTextureNormal*> SqureArea(Vector3 position, UINT type, UINT range);
-	vector<VertexTextureNormal*> CircleArea(Vector3 position, UINT type, UINT range);
+	vector<TerrainVertex*> SqureArea(Vector3 position, UINT type, UINT range);
+	vector<TerrainVertex*> CircleArea(Vector3 position, UINT type, UINT range);
 
 private:
-	VertexTextureNormal* vertices;
+	TerrainVertex* vertices;
 	UINT* indices;
 	HeightMapType* _heightMap;
 

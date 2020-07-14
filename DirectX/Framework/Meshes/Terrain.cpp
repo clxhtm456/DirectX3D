@@ -1,6 +1,10 @@
 #include "Framework.h"
 #include "Terrain.h"
 
+#include <d3dx10math.h>
+
+#pragma comment(lib, "d3dx10.lib")
+
 using namespace DirectX::TriangleTests;
 
 /*
@@ -120,7 +124,7 @@ void Terrain::Update()
 		if (mouseDiff > 0.1f)
 			brushDesc.Location = GetPickedPosition();//GetPickedPosition 에 의해 프레임감소
 
-		vector<VertexTextureNormal*> vertexVector;
+		vector<TerrainVertex*> vertexVector;
 		switch (brushDesc.Type)
 		{
 		case 1:
@@ -180,6 +184,9 @@ void Terrain::Render(Camera* viewer)
 {
 	if (baseMap != NULL)
 		baseMap->Set(0);
+
+	brushBuffer->SetPSBuffer(3);
+	lineBuffer->SetPSBuffer(4);
 
 }
 
@@ -258,21 +265,36 @@ float Terrain::GetHeightPick(Vector3 & position)
 
 Vector3 Terrain::GetPickedPosition()
 {
+	//XMMATRIX V = Context::Get()->GetMainCamera()->ViewMatrix();
 	Matrix V = Context::Get()->GetMainCamera()->ViewMatrix();
-	Matrix invView = XMMatrixInverse(&XMMatrixDeterminant(V), V);
-
-	Matrix W = GetWorld();
-	Matrix invWorld = XMMatrixInverse(&XMMatrixDeterminant(W), W);
-
-	Matrix toLocal = XMMatrixMultiply(invView, invWorld);
-
-	/*rayOrigin = XMVector3TransformCoord(rayOrigin, toLocal);
-	rayDir = XMVector3TransformNormal(rayDir, toLocal);*/
-
+	D3DXMATRIX Vx;
+	for (int i = 0; i < 4; i++)
+	{
+		Vector4 tempV;
+		XMStoreFloat4(&tempV, V.r[i]);
+		Vx.m[i][0] = tempV.x;
+		Vx.m[i][1] = tempV.y;
+		Vx.m[i][2] = tempV.z;
+		Vx.m[i][3] = tempV.w;
+	}
 	Matrix P = Context::Get()->GetMainCamera()->ProjectionMatrix();
+	D3DXMATRIX Px;
+	for (int i = 0; i < 4; i++)
+	{
+		Vector4 tempP;
+		XMStoreFloat4(&tempP, P.r[i]);
+		Px.m[i][0] = tempP.x;
+		Px.m[i][1] = tempP.y;
+		Px.m[i][2] = tempP.z;
+		Px.m[i][3] = tempP.w;
+	}
 	Viewport* vp = Context::Get()->GetMainCamera()->GetViewport();
 
 	Vector3 mouse = Mouse::Get()->GetPosition();
+	D3DXVECTOR3 mousex;
+	mousex.x = mouse.x;
+	mousex.y = mouse.y;
+	mousex.z = mouse.z;
 
 	Vector3 n, f;
 
@@ -282,46 +304,66 @@ Vector3 Terrain::GetPickedPosition()
 	mouse.z = 1.0f;
 	vp->UnProject(&f, mouse, GetWorld(), V, P);
 
-	XMVECTOR start = XMLoadFloat3(&n);
-	XMVECTOR direction = XMLoadFloat3(&f) - XMLoadFloat3(&n);
-	
-	direction = XMVector3Normalize(direction);
+	D3DXVECTOR3 nx;
+	nx.x = n.x;
+	nx.y = n.y;
+	nx.z = n.z;
 
-	bool value = DirectX::Internal::XMVector3IsUnit(direction);
+	D3DXVECTOR3 fx;
+	fx.x = f.x;
+	fx.y = f.y;
+	fx.z = f.z;
+
+	D3DXVECTOR3 start;
+	start.x= n.x;
+	start.y = n.y;
+	start.z = n.z;
+	D3DXVECTOR3 direction = fx - nx;
 
 	XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1,0);
-	Vector3 fResult;
-	for (UINT z = 0; z < height - 1; z++)
+
+	for (UINT z = 0; z < height; z++)
 	{
-		for (UINT x = 0; x < width - 1; x++)
-		{			
+		for (UINT x = 0; x < width; x++)
+		{
 			UINT index[4];
 			index[0] = width * z + x;
 			index[1] = width * (z + 1) + x;
 			index[2] = width * z + (x + 1);
 			index[3] = width * (z + 1) + (x + 1);
 
-			XMVECTOR p[4];
+			D3DXVECTOR3 p[4];
 			for (int i = 0; i < 4; i++)
-				p[i] = XMLoadFloat3(&vertices[index[i]].Position);
-
-			float u, v, distance;
-			
-			if (Intersects(start, direction, p[0], p[1], p[2], distance) == TRUE)
 			{
-				result = (p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v);
-				break;
+				p[i].x = vertices[index[i]].Position.x;
+				p[i].y = vertices[index[i]].Position.y;
+				p[i].z = vertices[index[i]].Position.z;
 			}
 
-			if (Intersects(start, direction, p[3], p[1], p[2], distance) == TRUE)
+			float u, v, distance;
+			if (D3DXIntersectTri(&p[0], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
 			{
-				result = (p[3] + (p[1] - p[3]) * u + (p[2] - p[3]) * v);
-				break;
+				D3DXVECTOR3 temp = p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v;
+				Vector3 result;
+				result.x = temp.x;
+				result.y = temp.y;
+				result.z = temp.z;
+				return result;
+			}
+
+			if (D3DXIntersectTri(&p[3], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
+			{
+				D3DXVECTOR3 temp = p[3] + (p[1] - p[3]) * u + (p[2] - p[3]) * v;
+				Vector3 result;
+				result.x = temp.x;
+				result.y = temp.y;
+				result.z = temp.z;
+				return result;
 			}
 		}
 	}
-	XMStoreFloat3(&fResult, result);
-	return fResult;
+
+	return Vector3(-1, FLT_MIN, -1);
 }
 
 void Terrain::SetHeight(float x, float z, float height)
@@ -507,7 +549,7 @@ bool Terrain::InitializeBuffers()
 	vertexCount = (width - 1) *(height - 1) * 6;
 	indexCount = vertexCount;
 
-	vertices = new VertexTextureNormal[vertexCount];
+	vertices = new TerrainVertex[vertexCount];
 	if (!vertices)
 		return false;
 
@@ -538,6 +580,7 @@ bool Terrain::InitializeBuffers()
 				vertices[index].Position = XMFLOAT3(_heightMap[index3].x, _heightMap[index3].y, _heightMap[index3].z);
 				vertices[index].Uv = XMFLOAT2(_heightMap[index3].tu, tv);
 				vertices[index].Normal = XMFLOAT3(_heightMap[index3].nx, _heightMap[index3].ny, _heightMap[index3].nz);
+
 				indices[index] = index;
 				index++;
 			}
@@ -670,9 +713,9 @@ void Terrain::ReDrawNormal()
 		UINT index1 = indices[i * 3 + 1];
 		UINT index2 = indices[i * 3 + 2];
 
-		VertexTextureNormal v0 = vertices[index0];
-		VertexTextureNormal v1 = vertices[index1];
-		VertexTextureNormal v2 = vertices[index2];
+		TerrainVertex v0 = vertices[index0];
+		TerrainVertex v1 = vertices[index1];
+		TerrainVertex v2 = vertices[index2];
 
 		XMVECTOR d1 = XMLoadFloat3(&v1.Position) - XMLoadFloat3(&v0.Position);
 		XMVECTOR d2 = XMLoadFloat3(&v2.Position) - XMLoadFloat3(&v0.Position);
@@ -701,7 +744,7 @@ void Terrain::ReDrawNormal()
 	D3D::GetDC()->Unmap(vertexBuffer->Buffer(), 0);
 }
 
-void Terrain::RaiseHeight(vector<VertexTextureNormal*> vertexVector, float speed)
+void Terrain::RaiseHeight(vector<TerrainVertex*> vertexVector, float speed)
 {
 	for (auto vertex : vertexVector)
 	{
@@ -711,7 +754,7 @@ void Terrain::RaiseHeight(vector<VertexTextureNormal*> vertexVector, float speed
 	ReDrawNormal();
 }
 
-void Terrain::FallHeight(vector<VertexTextureNormal*> vertexVector, float speed)
+void Terrain::FallHeight(vector<TerrainVertex*> vertexVector, float speed)
 {
 	for (auto vertex : vertexVector)
 	{
@@ -721,7 +764,7 @@ void Terrain::FallHeight(vector<VertexTextureNormal*> vertexVector, float speed)
 	ReDrawNormal();
 }
 
-void Terrain::NoiseHeight(vector<VertexTextureNormal*> vertexVector, float min, float max)
+void Terrain::NoiseHeight(vector<TerrainVertex*> vertexVector, float min, float max)
 {
 	for (auto vertex : vertexVector)
 	{
@@ -731,7 +774,7 @@ void Terrain::NoiseHeight(vector<VertexTextureNormal*> vertexVector, float min, 
 	ReDrawNormal();
 }
 
-void Terrain::SmoothHeight(vector<VertexTextureNormal*> vertexVector, float value, float speed)
+void Terrain::SmoothHeight(vector<TerrainVertex*> vertexVector, float value, float speed)
 {
 	for (auto vertex : vertexVector)
 	{
@@ -744,7 +787,7 @@ void Terrain::SmoothHeight(vector<VertexTextureNormal*> vertexVector, float valu
 	ReDrawNormal();
 }
 
-void Terrain::FlatHeight(vector<VertexTextureNormal*> vertexVector, float speed)
+void Terrain::FlatHeight(vector<TerrainVertex*> vertexVector, float speed)
 {
 	float value = 0;
 
@@ -765,7 +808,7 @@ void Terrain::FlatHeight(vector<VertexTextureNormal*> vertexVector, float speed)
 	ReDrawNormal();
 }
 
-void Terrain::SlopeHeight(vector<VertexTextureNormal*> vertexVector)
+void Terrain::SlopeHeight(vector<TerrainVertex*> vertexVector)
 {
 	if (slopeVector.size() == 0)
 	{
@@ -806,9 +849,9 @@ void Terrain::SlopeHeight(vector<VertexTextureNormal*> vertexVector)
 	}
 }
 
-vector<VertexTextureNormal*> Terrain::SqureArea(Vector3 position, UINT type, UINT range)
+vector<TerrainVertex*> Terrain::SqureArea(Vector3 position, UINT type, UINT range)
 {
-	vector<VertexTextureNormal*> vertexVector;
+	vector<TerrainVertex*> vertexVector;
 	D3D11_BOX rect;
 	rect.left = (LONG)position.x - range;
 	rect.right = (LONG)position.x + range;
@@ -832,9 +875,9 @@ vector<VertexTextureNormal*> Terrain::SqureArea(Vector3 position, UINT type, UIN
 	return vertexVector;
 }
 
-vector<VertexTextureNormal*> Terrain::CircleArea(Vector3 position, UINT type, UINT range)
+vector<TerrainVertex*> Terrain::CircleArea(Vector3 position, UINT type, UINT range)
 {
-	vector<VertexTextureNormal*> vertexVector;
+	vector<TerrainVertex*> vertexVector;
 	D3D11_BOX rect;
 	rect.left = (LONG)position.x - range;
 	rect.right = (LONG)position.x + range;
