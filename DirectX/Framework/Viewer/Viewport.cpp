@@ -50,6 +50,36 @@ void Viewport::UnProject(Vector3 * outPosition, Vector3 source, Matrix & W, Matr
 	XMStoreFloat3(outPosition, XMVector3TransformCoord(XMLoadFloat3(outPosition), wvp));
 }
 
+/*
+void Viewport::Project(XMVECTOR& outPosition, Vector3 source, Matrix & W, Matrix & V, Matrix & P)
+{
+	Vector3 position = source;
+
+	Matrix wvp = W * V * P;
+	outPosition = XMVector3TransformCoord(XMLoadFloat3(&position), wvp);
+
+	//viewport ÁÂÇ¥
+	XMVectorSetX(outPosition, ((XMVectorGetX(outPosition) + 1.0f) * 0.5f) * width + x);
+	XMVectorSetY(outPosition, (-1.0f*(XMVectorGetY(outPosition) + 1.0f) * 0.5f) * height + y);
+	XMVectorSetZ(outPosition, ((XMVectorGetZ(outPosition) * (maxDepth - minDepth) + minDepth)));
+
+}
+
+void Viewport::UnProject(XMVECTOR & outPosition, Vector3 source, Matrix & W, Matrix & V, Matrix & P)
+{
+	Vector3 position = source;
+	XMVECTOR tempPos = XMLoadFloat3(&position);
+	//NDC ÁÂÇ¥
+	XMVectorSetX(outPosition, ((XMVectorGetX(tempPos) -x) / width) * 2.0f - 1.0f);
+	XMVectorSetY(outPosition, (((XMVectorGetY(tempPos) -y) / height) * 2.0f -1.0f)*-1.0f);
+	XMVectorSetZ(outPosition, ((XMVectorGetZ(tempPos) -minDepth)/ (maxDepth - minDepth)));
+
+	Matrix wvp = W * V * P;
+	wvp = XMMatrixInverse(NULL, wvp);
+	outPosition = XMVector3TransformCoord(outPosition, wvp);
+}
+*/
+
 
 
 void Viewport::RSSetViewport()

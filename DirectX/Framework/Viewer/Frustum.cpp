@@ -1,178 +1,184 @@
 #include "Framework.h"
 #include "Frustum.h"
 
-Frustum::Frustum(Camera * camera, Perspective * perspective):
-	camera(camera),
-	perspective(perspective)
-{
-	if (camera == NULL)
-		this->camera = Context::Get()->GetMainCamera();
 
-	if (perspective == NULL)
-		this->perspective = Context::Get()->GetMainCamera()->GetPerspective();
+Frustum::Frustum()
+{
 }
+
+
+Frustum::Frustum(const Frustum& other)
+{
+}
+
 
 Frustum::~Frustum()
 {
 }
 
-void Frustum::Update()
+
+
+
+void Frustum::ConstructFrustum(float screenDepth, XMMATRIX projectionMatrix, XMMATRIX viewMatrix)
 {
-	Matrix V, P;
-	V = camera->GetMatrix();
-	P = perspective->GetMatrix();
+	// 투영 행렬을 XMFLOAT4X4 유형으로 변환합니다.
+	XMFLOAT4X4 pMatrix;
+	XMStoreFloat4x4(&pMatrix, projectionMatrix);
 
+	// 절두체에서 최소 Z 거리를 계산합니다.
+	float zMinimum = -pMatrix._43 / pMatrix._33;
+	float r = screenDepth / (screenDepth - zMinimum);
+
+	// 업데이트 된 값을 다시 투영 행렬에 설정합니다.
+	pMatrix._33 = r;
+	pMatrix._43 = -r * zMinimum;
+	projectionMatrix = XMLoadFloat4x4(&pMatrix);
+
+	// 뷰 매트릭스와 업데이트 된 프로젝션 매트릭스에서 절두체 매트릭스를 만듭니다.
+	XMMATRIX finalMatrix = XMMatrixMultiply(viewMatrix, projectionMatrix);
+
+	// 최종 행렬을 XMFLOAT4X4 유형으로 변환합니다.
 	XMFLOAT4X4 matrix;
-	XMStoreFloat4x4(&matrix, V * P);
+	XMStoreFloat4x4(&matrix, finalMatrix);
 
-	//Right
+	// 절두체의 가까운 평면을 계산합니다.
 	float x = (float)(matrix._14 + matrix._13);
 	float y = (float)(matrix._24 + matrix._23);
 	float z = (float)(matrix._34 + matrix._33);
 	float w = (float)(matrix._44 + matrix._43);
-	planes[0] = XMVectorSet(x, y, z, w);
-	planes[0] = XMPlaneNormalize(planes[0]);
+	m_planes[0] = XMVectorSet(x, y, z, w);
+	m_planes[0] = XMPlaneNormalize(m_planes[0]);
 
-	planes[0].a = M._14 + M._11;
-	planes[0].b = M._24 + M._21;
-	planes[0].c = M._34 + M._31;
-	planes[0].d = M._44 + M._41;
+	// 절두체의 먼 평면을 계산합니다.
+	x = (float)(matrix._14 - matrix._13);
+	y = (float)(matrix._24 - matrix._23);
+	z = (float)(matrix._34 - matrix._33);
+	w = (float)(matrix._44 - matrix._43);
+	m_planes[1] = XMVectorSet(x, y, z, w);
+	m_planes[1] = XMPlaneNormalize(m_planes[1]);
 
-	//Left
-	planes[1].a = M._14 - M._11;
-	planes[1].b = M._24 - M._21;
-	planes[1].c = M._34 - M._31;
-	planes[1].d = M._44 - M._41;
+	// 절두체의 왼쪽 평면을 계산합니다.
+	x = (float)(matrix._14 + matrix._11);
+	y = (float)(matrix._24 + matrix._21);
+	z = (float)(matrix._34 + matrix._31);
+	w = (float)(matrix._44 + matrix._41);
+	m_planes[2] = XMVectorSet(x, y, z, w);
+	m_planes[2] = XMPlaneNormalize(m_planes[2]);
 
-	//Top
-	planes[2].a = M._14 + M._12;
-	planes[2].b = M._24 + M._22;
-	planes[2].c = M._34 + M._32;
-	planes[2].d = M._44 + M._42;
+	// 절두체의 오른쪽 평면을 계산합니다.
+	x = (float)(matrix._14 - matrix._11);
+	y = (float)(matrix._24 - matrix._21);
+	z = (float)(matrix._34 - matrix._31);
+	w = (float)(matrix._44 - matrix._41);
+	m_planes[3] = XMVectorSet(x, y, z, w);
+	m_planes[3] = XMPlaneNormalize(m_planes[3]);
 
-	//Bottom
-	planes[3].a = M._14 - M._12;
-	planes[3].b = M._24 - M._22;
-	planes[3].c = M._34 - M._32;
-	planes[3].d = M._44 - M._42;
+	// 절두체의 윗 평면을 계산합니다.
+	x = (float)(matrix._14 - matrix._12);
+	y = (float)(matrix._24 - matrix._22);
+	z = (float)(matrix._34 - matrix._32);
+	w = (float)(matrix._44 - matrix._42);
+	m_planes[4] = XMVectorSet(x, y, z, w);
+	m_planes[4] = XMPlaneNormalize(m_planes[4]);
 
-	//Near
-	planes[4].a =M._13;
-	planes[4].b =M._23;
-	planes[4].c =M._33;
-	planes[4].d =M._43;
-
-	//Far
-	planes[5].a = M._14 - M._13;
-	planes[5].b = M._24 - M._23;
-	planes[5].c = M._34 - M._33;
-	planes[5].d = M._44 - M._43;
-
-	for (int i = 0; i < 6; i++)
-	{
-		D3DXPlaneNormalize(&planes[i], &planes[i]);//평면의 법선을 normalize로 리턴
-	}
+	// 절두체의 아래 평면을 계산합니다.
+	x = (float)(matrix._14 + matrix._12);
+	y = (float)(matrix._24 + matrix._22);
+	z = (float)(matrix._34 + matrix._32);
+	w = (float)(matrix._44 + matrix._42);
+	m_planes[5] = XMVectorSet(x, y, z, w);
+	m_planes[5] = XMPlaneNormalize(m_planes[5]);
 }
 
-void Frustum::Planes(Plane * plane)
-{
-	memcpy(plane, this->planes, sizeof(Plane) * 6);
-}
 
-bool Frustum::CheckPoint(Vector3 position)
+bool Frustum::CheckPoint(float x, float y, float z)
 {
 	for (int i = 0; i < 6; i++)
 	{
-		if (D3DXPlaneDotCoord(&planes[i], &position) < 0.0f)
+		// 포인트가 뷰 frustum의 6 개 평면 모두 안에 있는지 확인합니다.
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet(x, y, z, 1.0f))) < 0.0f)
 			return false;
 	}
+
 	return true;
 }
 
-bool Frustum::CheckCube(Vector3 center, Vector3 size)
+bool Frustum::CheckCube(float xCenter, float yCenter, float zCenter, float radius)
 {
+	// 뷰 프러스 텀에 큐브의 한 점이 있는지 확인합니다.
 	for (int i = 0; i < 6; i++)
 	{
-		//좌하안
-		if (D3DXPlaneDotCoord(&planes[i], &Vector3(center.x - size.x, center.y - size.y, center.z - size.z)) >= 0.0f)
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter - radius), (yCenter - radius), (zCenter - radius), 1.0f))) >= 0.0f)
 			continue;
-		//우화안
-		if (D3DXPlaneDotCoord(&planes[i], &Vector3(center.x + size.x, center.y - size.y, center.z - size.z)) >= 0.0f)
+
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter + radius), (yCenter - radius), (zCenter - radius), 1.0f))) >= 0.0f)
 			continue;
-		//좌상안
-		if (D3DXPlaneDotCoord(&planes[i], &Vector3(center.x - size.x, center.y + size.y, center.z - size.z)) >= 0.0f)
+
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter - radius), (yCenter + radius), (zCenter - radius), 1.0f))) >= 0.0f)
 			continue;
-		//좌하밖
-		if (D3DXPlaneDotCoord(&planes[i], &Vector3(center.x - size.x, center.y - size.y, center.z +size.z)) >= 0.0f)
+
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter + radius), (yCenter + radius), (zCenter - radius), 1.0f))) >= 0.0f)
 			continue;
-		//우상안
-		if (D3DXPlaneDotCoord(&planes[i], &Vector3(center.x + size.x, center.y +size.y, center.z - size.z)) >= 0.0f)
+
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter - radius), (yCenter - radius), (zCenter + radius), 1.0f))) >= 0.0f)
 			continue;
-		// 우하밖
-		if (D3DXPlaneDotCoord(&planes[i], &Vector3(center.x + size.x, center.y - size.y, center.z + size.z)) >= 0.0f)
+
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter + radius), (yCenter - radius), (zCenter + radius), 1.0f))) >= 0.0f)
 			continue;
-		//좌상밖
-		if (D3DXPlaneDotCoord(&planes[i], &Vector3(center.x - size.x, center.y + size.y, center.z + size.z)) >= 0.0f)
+
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter - radius), (yCenter + radius), (zCenter + radius), 1.0f))) >= 0.0f)
 			continue;
-		//우상밖
-		if (D3DXPlaneDotCoord(&planes[i], &Vector3(center.x + size.x, center.y + size.y, center.z+size.z)) >= 0.0f)
+
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter + radius), (yCenter + radius), (zCenter + radius), 1.0f))) >= 0.0f)
 			continue;
+
+		return false;
 	}
-	return false;
+
+	return true;
 }
 
-bool Frustum::CheckCube(Vector3 center, float radius)
-{
-	Vector3 check;
 
+bool Frustum::CheckSphere(float xCenter, float yCenter, float zCenter, float radius)
+{
 	for (int i = 0; i < 6; i++)
 	{
-		check.x = center.x - radius;
-		check.y = center.y - radius;
-		check.z = center.z - radius;
-		if (D3DXPlaneDotCoord(&planes[i], &check) >= 0.0f)
+		// 구의 반경이 뷰 frustum 안에 있는지 확인합니다.
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet(xCenter, yCenter, zCenter, 1.0f))) < -radius)
+			return false;
+	}
+
+	return true;
+}
+
+
+bool Frustum::CheckRectangle(float xCenter, float yCenter, float zCenter, float xSize, float ySize, float zSize)
+{
+	// 사각형의 6 개의 평면 중 하나가 뷰 frustum 안에 있는지 확인합니다.
+	for (int i = 0; i < 6; i++)
+	{
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter - xSize), (yCenter - ySize), (zCenter - zSize), 1.0f))) >= 0.0f)
 			continue;
 
-		check.x = center.x + radius;
-		check.y = center.y - radius;
-		check.z = center.z - radius;
-		if (D3DXPlaneDotCoord(&planes[i], &check) >= 0.0f)
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter + xSize), (yCenter - ySize), (zCenter - zSize), 1.0f))) >= 0.0f)
 			continue;
 
-		check.x = center.x - radius;
-		check.y = center.y + radius;
-		check.z = center.z - radius;
-		if (D3DXPlaneDotCoord(&planes[i], &check) >= 0.0f)
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter - xSize), (yCenter + ySize), (zCenter - zSize), 1.0f))) >= 0.0f)
 			continue;
 
-		check.x = center.x + radius;
-		check.y = center.y + radius;
-		check.z = center.z - radius;
-		if (D3DXPlaneDotCoord(&planes[i], &check) >= 0.0f)
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter - xSize), (yCenter - ySize), (zCenter + zSize), 1.0f))) >= 0.0f)
 			continue;
 
-		check.x = center.x - radius;
-		check.y = center.y - radius;
-		check.z = center.z + radius;
-		if (D3DXPlaneDotCoord(&planes[i], &check) >= 0.0f)
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter + xSize), (yCenter + ySize), (zCenter - zSize), 1.0f))) >= 0.0f)
 			continue;
 
-		check.x = center.x + radius;
-		check.y = center.y - radius;
-		check.z = center.z + radius;
-		if (D3DXPlaneDotCoord(&planes[i], &check) >= 0.0f)
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter + xSize), (yCenter - ySize), (zCenter + zSize), 1.0f))) >= 0.0f)
 			continue;
 
-		check.x = center.x - radius;
-		check.y = center.y + radius;
-		check.z = center.z + radius;
-		if (D3DXPlaneDotCoord(&planes[i], &check) >= 0.0f)
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter - xSize), (yCenter + ySize), (zCenter + zSize), 1.0f))) >= 0.0f)
 			continue;
 
-		check.x = center.x + radius;
-		check.y = center.y + radius;
-		check.z = center.z + radius;
-		if (D3DXPlaneDotCoord(&planes[i], &check) >= 0.0f)
+		if (XMVectorGetX(XMPlaneDotCoord(m_planes[i], XMVectorSet((xCenter + xSize), (yCenter + ySize), (zCenter + zSize), 1.0f))) >= 0.0f)
 			continue;
 
 		return false;

@@ -73,7 +73,7 @@ private:
 		Vector4 Color = Vector4(0, 1, 0, 1);
 		Vector3 Location;
 		UINT Type = 0;
-		UINT Range = 1;
+		UINT Range = 10;
 		float Padding[3];
 	} brushDesc;
 

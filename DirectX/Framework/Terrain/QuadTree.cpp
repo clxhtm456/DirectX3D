@@ -87,6 +87,44 @@ int QuadTree::GetDrawCount()
 	return m_drawCount;
 }
 
+bool QuadTree::GetHeightAtPosition(float positionX, float positionZ, OUT float& height)
+{
+	float meshMinX = m_parentNode->positionX - (m_parentNode->width / 2.0f);
+	float meshMaxX = m_parentNode->positionX + (m_parentNode->width / 2.0f);
+
+	float meshMinZ = m_parentNode->positionZ - (m_parentNode->width / 2.0f);
+	float meshMaxZ = m_parentNode->positionZ + (m_parentNode->width / 2.0f);
+
+	// 좌표가 실제로 다각형 위에 있는지 확인하십시오.
+	if ((positionX < meshMinX) || (positionX > meshMaxX) || (positionZ < meshMinZ) || (positionZ > meshMaxZ))
+	{
+		return false;
+	}
+
+	// 이 위치에 대한 다각형을 포함하는 노드를 찾습니다.
+	FindNode(m_parentNode, positionX, positionZ, height);
+	return true;
+}
+
+bool QuadTree::GetPickedPosition(float mouseX, float mouseY, OUT Vector3& outPosition)
+{
+	Matrix V = Context::Get()->GetMainCamera()->GetViewMatrix();
+	Matrix P = Context::Get()->GetMainCamera()->GetProjectionMatrix();
+	Viewport* vp = Context::Get()->GetMainCamera()->GetViewport();
+	Matrix inverseVP = XMMatrixInverse(nullptr,V * P);
+	
+	XMVECTOR originPos = XMVectorSet(mouseX, mouseY, 0.0f,1.0f);
+	XMVECTOR farPos = XMVectorSet(mouseX, mouseY, 1.0f,1.0f);
+
+	XMVECTOR rayOrigin = XMVector3Transform(originPos, inverseVP);
+	XMVECTOR rayEnd = XMVector3Transform(farPos, inverseVP);
+
+	XMVECTOR rayDirection = XMVector3Normalize(rayEnd - rayOrigin);
+
+	
+	return false;
+}
+
 void QuadTree::CalculateMeshDimensions(int vertexCount, float& centerX, float& centerZ, float& meshWidth)
 {
 	// 메쉬의 중심 위치를 0으로 초기화합니다.
@@ -145,6 +183,8 @@ void QuadTree::CreateTreeNode(NodeType* node, float positionX, float positionZ, 
 	node->vertexBuffer = 0;
 	node->indexBuffer = 0;
 
+	node->vertexArray = 0;
+
 	// 이 노드의 자식 노드를 null로 초기화합니다.
 	node->nodes[0] = 0;
 	node->nodes[1] = 0;
@@ -196,6 +236,9 @@ void QuadTree::CreateTreeNode(NodeType* node, float positionX, float positionZ, 
 	// 인덱스 배열을 만듭니다.
 	unsigned long* indices = new unsigned long[vertexCount];
 
+	// 정점 배열을 만듭니다.
+	node->vertexArray = new VectorType[vertexCount];
+
 	// 이 새로운 정점 및 인덱스 배열의 인덱스를 초기화합니다.
 	int index = 0;
 	int vertexIndex = 0;
@@ -214,6 +257,9 @@ void QuadTree::CreateTreeNode(NodeType* node, float positionX, float positionZ, 
 			vertices[index].Uv = m_vertexList[vertexIndex].Uv;
 			vertices[index].Normal = m_vertexList[vertexIndex].Normal;
 			indices[index] = index;
+			node->vertexArray[index].x = m_vertexList[vertexIndex].Position.x;
+			node->vertexArray[index].y = m_vertexList[vertexIndex].Position.y;
+			node->vertexArray[index].z = m_vertexList[vertexIndex].Position.z;
 			index++;
 
 			vertexIndex++;
@@ -221,6 +267,9 @@ void QuadTree::CreateTreeNode(NodeType* node, float positionX, float positionZ, 
 			vertices[index].Uv = m_vertexList[vertexIndex].Uv;
 			vertices[index].Normal = m_vertexList[vertexIndex].Normal;
 			indices[index] = index;
+			node->vertexArray[index].x = m_vertexList[vertexIndex].Position.x;
+			node->vertexArray[index].y = m_vertexList[vertexIndex].Position.y;
+			node->vertexArray[index].z = m_vertexList[vertexIndex].Position.z;
 			index++;
 
 			vertexIndex++;
@@ -228,6 +277,9 @@ void QuadTree::CreateTreeNode(NodeType* node, float positionX, float positionZ, 
 			vertices[index].Uv = m_vertexList[vertexIndex].Uv;
 			vertices[index].Normal = m_vertexList[vertexIndex].Normal;
 			indices[index] = index;
+			node->vertexArray[index].x = m_vertexList[vertexIndex].Position.x;
+			node->vertexArray[index].y = m_vertexList[vertexIndex].Position.y;
+			node->vertexArray[index].z = m_vertexList[vertexIndex].Position.z;
 			index++;
 		}
 	}
@@ -370,6 +422,13 @@ void QuadTree::ReleaseNode(NodeType * node)
 		node->indexBuffer = 0;
 	}
 
+	// 이 노드의 정점 배열을 해제합니다.
+	if (node->vertexArray)
+	{
+		delete[] node->vertexArray;
+		node->vertexArray = 0;
+	}
+
 	// 네 개의 자식 노드를 해제합니다.
 	for (int i = 0; i < 4; i++)
 	{
@@ -438,4 +497,208 @@ void QuadTree::RenderNode(NodeType* node, Camera* viewer)
 
 	// 이 프레임 동안 렌더링 된 폴리곤의 수를 늘립니다.
 	m_drawCount += node->triangleCount;
+}
+
+void QuadTree::FindNode(NodeType* node, float x, float z, float& height)
+{
+	// 이 노드의 크기를 계산합니다.
+	float xMin = node->positionX - (node->width / 2.0f);
+	float xMax = node->positionX + (node->width / 2.0f);
+
+	float zMin = node->positionZ - (node->width / 2.0f);
+	float zMax = node->positionZ + (node->width / 2.0f);
+
+	// x 및 z 좌표가이 노드에 있는지 확인합니다. 그렇지 않으면 트리의이 부분을 탐색하지 않습니다.
+	if ((x < xMin) || (x > xMax) || (z < zMin) || (z > zMax))
+	{
+		return;
+	}
+
+	// 좌표가 이 노드에 있으면 자식 노드가 있는지 먼저 확인합니다.
+	int count = 0;
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (node->nodes[i] != 0)
+		{
+			count++;
+			FindNode(node->nodes[i], x, z, height);
+		}
+	}
+
+	// 자식 노드가 있는 경우 폴리곤이 자식중 하나에 있으므로 노드가 반환됩니다.
+	if (count > 0)
+	{
+		return;
+	}
+
+	float vertex1[3] = { 0.0f, 0.0f, 0.0f };
+	float vertex2[3] = { 0.0f, 0.0f, 0.0f };
+	float vertex3[3] = { 0.0f, 0.0f, 0.0f };
+
+	// 자식이 없으면 다각형이이 노드에 있어야합니다. 이 노드의 모든 다각형을 확인하여 찾습니다.
+	// 우리가 찾고있는 폴리곤의 높이.
+	for (int i = 0; i < node->triangleCount; i++)
+	{
+		int index = i * 3;
+		vertex1[0] = node->vertexArray[index].x;
+		vertex1[1] = node->vertexArray[index].y;
+		vertex1[2] = node->vertexArray[index].z;
+
+		index++;
+		vertex2[0] = node->vertexArray[index].x;
+		vertex2[1] = node->vertexArray[index].y;
+		vertex2[2] = node->vertexArray[index].z;
+
+		index++;
+		vertex3[0] = node->vertexArray[index].x;
+		vertex3[1] = node->vertexArray[index].y;
+		vertex3[2] = node->vertexArray[index].z;
+
+		// 이것이 우리가 찾고있는 폴리곤인지 확인합니다.
+		// 삼각형 인 경우 함수를 종료하고 높이가 호출 함수에 반환됩니다.
+		if (CheckHeightOfTriangle(x, z, height, vertex1, vertex2, vertex3))
+		{
+			return;
+		}
+	}
+}
+
+bool QuadTree::CheckHeightOfTriangle(float x, float z, float& height, float v0[3], float v1[3], float v2[3])
+{
+	float startVector[3] = { 0.0f, 0.0f, 0.0f };
+	float directionVector[3] = { 0.0f, 0.0f, 0.0f };
+	float edge1[3] = { 0.0f, 0.0f, 0.0f };
+	float edge2[3] = { 0.0f, 0.0f, 0.0f };
+	float normal[3] = { 0.0f, 0.0f, 0.0f };
+	float Q[3] = { 0.0f, 0.0f, 0.0f };
+	float e1[3] = { 0.0f, 0.0f, 0.0f };
+	float e2[3] = { 0.0f, 0.0f, 0.0f };
+	float e3[3] = { 0.0f, 0.0f, 0.0f };
+	float edgeNormal[3] = { 0.0f, 0.0f, 0.0f };
+	float temp[3] = { 0.0f, 0.0f, 0.0f };
+
+	// 전송중인 광선의 시작 위치.
+	startVector[0] = x;
+	startVector[1] = 0.0f;
+	startVector[2] = z;
+
+	// 광선이 투영되는 방향입니다.
+	directionVector[0] = 0.0f;
+	directionVector[1] = -1.0f;
+	directionVector[2] = 0.0f;
+
+	// 주어진 세 점으로부터 두 모서리를 계산합니다.
+	edge1[0] = v1[0] - v0[0];
+	edge1[1] = v1[1] - v0[1];
+	edge1[2] = v1[2] - v0[2];
+
+	edge2[0] = v2[0] - v0[0];
+	edge2[1] = v2[1] - v0[1];
+	edge2[2] = v2[2] - v0[2];
+
+	// 두 모서리에서 삼각형의 법선을 계산합니다.
+	normal[0] = (edge1[1] * edge2[2]) - (edge1[2] * edge2[1]);
+	normal[1] = (edge1[2] * edge2[0]) - (edge1[0] * edge2[2]);
+	normal[2] = (edge1[0] * edge2[1]) - (edge1[1] * edge2[0]);
+
+	float magnitude = (float)sqrt((normal[0] * normal[0]) + (normal[1] * normal[1]) + (normal[2] * normal[2]));
+	normal[0] = normal[0] / magnitude;
+	normal[1] = normal[1] / magnitude;
+	normal[2] = normal[2] / magnitude;
+
+	// 원점에서 평면까지의 거리를 구합니다.
+	float D = ((-normal[0] * v0[0]) + (-normal[1] * v0[1]) + (-normal[2] * v0[2]));
+
+	// 방정식의 분모를 구하십시오.
+	float denominator = ((normal[0] * directionVector[0]) + (normal[1] * directionVector[1]) + (normal[2] * directionVector[2]));
+
+	// 결과가 0에 너무 가까워지지 않도록하여 0으로 나누는 것을 방지하십시오.
+	if (fabs(denominator) < 0.0001f)
+	{
+		return false;
+	}
+
+	// 방정식의 분자를 구합니다.
+	float numerator = -1.0f * (((normal[0] * startVector[0]) + (normal[1] * startVector[1]) + (normal[2] * startVector[2])) + D);
+
+	// 삼각형과 교차하는 위치를 계산합니다.
+	float t = numerator / denominator;
+
+	// 교차 벡터를 찾습니다.
+	Q[0] = startVector[0] + (directionVector[0] * t);
+	Q[1] = startVector[1] + (directionVector[1] * t);
+	Q[2] = startVector[2] + (directionVector[2] * t);
+
+	// 삼각형의 세 모서리를 찾습니다.
+	e1[0] = v1[0] - v0[0];
+	e1[1] = v1[1] - v0[1];
+	e1[2] = v1[2] - v0[2];
+
+	e2[0] = v2[0] - v1[0];
+	e2[1] = v2[1] - v1[1];
+	e2[2] = v2[2] - v1[2];
+
+	e3[0] = v0[0] - v2[0];
+	e3[1] = v0[1] - v2[1];
+	e3[2] = v0[2] - v2[2];
+
+	// 첫 번째 가장자리의 법선을 계산합니다.
+	edgeNormal[0] = (e1[1] * normal[2]) - (e1[2] * normal[1]);
+	edgeNormal[1] = (e1[2] * normal[0]) - (e1[0] * normal[2]);
+	edgeNormal[2] = (e1[0] * normal[1]) - (e1[1] * normal[0]);
+
+	// 행렬이 내부, 외부 또는 직접 가장자리에 있는지 결정하기 위해 행렬식을 계산합니다.
+	temp[0] = Q[0] - v0[0];
+	temp[1] = Q[1] - v0[1];
+	temp[2] = Q[2] - v0[2];
+
+	float determinant = ((edgeNormal[0] * temp[0]) + (edgeNormal[1] * temp[1]) + (edgeNormal[2] * temp[2]));
+
+	// 외부에 있는지 확인하십시오.
+	if (determinant > 0.001f)
+	{
+		return false;
+	}
+
+	// 두 번째 가장자리의 법선을 계산합니다.
+	edgeNormal[0] = (e2[1] * normal[2]) - (e2[2] * normal[1]);
+	edgeNormal[1] = (e2[2] * normal[0]) - (e2[0] * normal[2]);
+	edgeNormal[2] = (e2[0] * normal[1]) - (e2[1] * normal[0]);
+
+	// 행렬이 내부, 외부 또는 직접 가장자리에 있는지 결정하기 위해 행렬식을 계산합니다.
+	temp[0] = Q[0] - v1[0];
+	temp[1] = Q[1] - v1[1];
+	temp[2] = Q[2] - v1[2];
+
+	determinant = ((edgeNormal[0] * temp[0]) + (edgeNormal[1] * temp[1]) + (edgeNormal[2] * temp[2]));
+
+	// 외부에 있는지 확인하십시오.
+	if (determinant > 0.001f)
+	{
+		return false;
+	}
+
+	// 세 번째 가장자리의 법선을 계산합니다.
+	edgeNormal[0] = (e3[1] * normal[2]) - (e3[2] * normal[1]);
+	edgeNormal[1] = (e3[2] * normal[0]) - (e3[0] * normal[2]);
+	edgeNormal[2] = (e3[0] * normal[1]) - (e3[1] * normal[0]);
+
+	// 행렬이 내부, 외부 또는 직접 가장자리에 있는지 결정하기 위해 행렬식을 계산합니다.
+	temp[0] = Q[0] - v2[0];
+	temp[1] = Q[1] - v2[1];
+	temp[2] = Q[2] - v2[2];
+
+	determinant = ((edgeNormal[0] * temp[0]) + (edgeNormal[1] * temp[1]) + (edgeNormal[2] * temp[2]));
+
+	// 외부에 있는지 확인하십시오.
+	if (determinant > 0.001f)
+	{
+		return false;
+	}
+
+	// 이제 우리 높이가 있습니다.
+	height = Q[1];
+
+	return true;
 }

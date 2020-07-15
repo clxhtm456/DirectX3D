@@ -14,6 +14,10 @@ public:
 
 	void Project(Vector3* outPosition, Vector3 source, Matrix& W, Matrix& V, Matrix& P);
 	void UnProject(Vector3* outPosition, Vector3 source, Matrix& W, Matrix& V, Matrix& P);
+	/*
+	void Project(XMVECTOR& outPosition, Vector3 source, Matrix& W, Matrix& V, Matrix& P);
+	void UnProject(XMVECTOR& outPosition, Vector3 source, Matrix& W, Matrix& V, Matrix& P);
+	*/
 
 private:
 	float x, y;

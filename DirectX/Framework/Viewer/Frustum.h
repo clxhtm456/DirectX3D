@@ -1,20 +1,19 @@
 #pragma once
 
-class Frustum
+class Frustum : public AlignedAllocationPolicy<16>
 {
 public:
-	Frustum(Camera* camera = NULL, Perspective* perspective = NULL);
+	Frustum();
+	Frustum(const Frustum&);
 	~Frustum();
 
-	void Update();
-	void Planes(Plane* plane);
+	void ConstructFrustum(float, XMMATRIX, XMMATRIX);
 
-	bool CheckPoint(Vector3 position);
-	bool CheckCube(Vector3 center, Vector3 size);
-	bool CheckCube(Vector3 center, float radius);
+	bool CheckPoint(float, float, float);
+	bool CheckCube(float, float, float, float);
+	bool CheckSphere(float, float, float, float);
+	bool CheckRectangle(float, float, float, float, float, float);
+
 private:
-	Plane planes[6];
-
-	Camera* camera;
-	Perspective* perspective;
+	XMVECTOR m_planes[6];
 };

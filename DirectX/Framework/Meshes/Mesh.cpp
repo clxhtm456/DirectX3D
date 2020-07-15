@@ -72,7 +72,7 @@ void Mesh::Update()
 
 void Mesh::ResourceBinding(Camera* viewer)
 {
-	Super::Render(viewer);
+	Super::ResourceBinding(viewer);
 
 	material->Render();
 

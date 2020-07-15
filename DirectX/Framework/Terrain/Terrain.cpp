@@ -148,6 +148,9 @@ void Terrain::Update()
 	ImGui::Separator();
 	brushDesc.Range %= 20;
 
+	string str = "MousePos : " + to_string(brushDesc.Location.x) + to_string(brushDesc.Location.y) + to_string(brushDesc.Location.z);
+	Gui::Get()->RenderText(5, 50, 1, 1, 1, str);
+
 	if (brushDesc.Type > 0)
 	{
 		float mouseDiff = sqrt(Mouse::Get()->GetMoveValue().x* Mouse::Get()->GetMoveValue().x + Mouse::Get()->GetMoveValue().y* Mouse::Get()->GetMoveValue().y);
@@ -377,21 +380,24 @@ Vector3 Terrain::GetPickedPosition()
 	start.y = n.y;
 	start.z = n.z;
 	D3DXVECTOR3 direction = fx - nx;
+	D3DXVec3Normalize(&direction, &direction);
 
 	XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1,0);
 
-	for (UINT z = 0; z < height; z++)
+	for (UINT z = 0; z < height-1; z++)
 	{
-		for (UINT x = 0; x < width; x++)
+		for (UINT x = 0; x < width-1; x++)
 		{
-			UINT index[4];
-			index[0] = width * z + x;
-			index[1] = width * (z + 1) + x;
-			index[2] = width * z + (x + 1);
-			index[3] = width * (z + 1) + (x + 1);
+			UINT index[6];
+			index[0] = width * (z + 1) + x;
+			index[1] = width * (z + 1) + (x + 1);
+			index[2] = width * z + x;
+			index[3] = width * z + x;
+			index[4] = width * (z + 1) + (x + 1);
+			index[5] = width * z + (x + 1);
 
-			D3DXVECTOR3 p[4];
-			for (int i = 0; i < 4; i++)
+			D3DXVECTOR3 p[6];
+			for (int i = 0; i < 6; i++)
 			{
 				p[i].x = vertices[index[i]].Position.x;
 				p[i].y = vertices[index[i]].Position.y;
@@ -406,12 +412,14 @@ Vector3 Terrain::GetPickedPosition()
 				result.x = temp.x;
 				result.y = temp.y;
 				result.z = temp.z;
+				
+
 				return result;
 			}
 
-			if (D3DXIntersectTri(&p[3], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
+			if (D3DXIntersectTri(&p[3], &p[4], &p[5], &start, &direction, &u, &v, &distance) == TRUE)
 			{
-				D3DXVECTOR3 temp = p[3] + (p[1] - p[3]) * u + (p[2] - p[3]) * v;
+				D3DXVECTOR3 temp = p[3] + (p[4] - p[3]) * u + (p[5] - p[3]) * v;
 				Vector3 result;
 				result.x = temp.x;
 				result.y = temp.y;
@@ -422,6 +430,58 @@ Vector3 Terrain::GetPickedPosition()
 	}
 
 	return Vector3(-1, FLT_MIN, -1);
+
+	//Matrix V = Context::Get()->GetMainCamera()->GetViewMatrix();
+	//Matrix P = Context::Get()->GetMainCamera()->GetProjectionMatrix();
+	//Viewport* vp = Context::Get()->GetMainCamera()->GetViewport();
+
+	//Vector3 mouse = Mouse::Get()->GetPosition();
+
+	//Vector3 n, f;
+
+	//mouse.z = 0.0f;
+	//vp->UnProject(&n, mouse, GetWorld(), V, P);
+
+	//mouse.z = 1.0f;
+	//vp->UnProject(&f, mouse, GetWorld(), V, P);
+
+	//XMVECTOR start = XMLoadFloat3(&n);
+	//XMVECTOR direction = XMLoadFloat3(&f) - XMLoadFloat3(&n);
+	//direction = XMVector3Normalize(direction);
+
+	//XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1, 0);
+	//Vector3 fResult;
+	//for (UINT z = 0; z < height - 1; z++)
+	//{
+	//	for (UINT x = 0; x < width - 1; x++)
+	//	{
+	//		UINT index[4];
+	//		index[0] = width * z + x;
+	//		index[1] = width * (z + 1) + x;
+	//		index[2] = width * z + (x + 1);
+	//		index[3] = width * (z + 1) + (x + 1);
+
+	//		XMVECTOR p[4];
+	//		for (int i = 0; i < 4; i++)
+	//			p[i] = XMLoadFloat3(&vertices[index[i]].Position);
+
+	//		float u, v, distance;
+
+	//		if (Intersects(start, direction, p[0], p[1], p[2], distance) == TRUE)
+	//		{
+	//			result = (p[0] + (p[1] - p[0])  + (p[2] - p[0]) );
+	//			break;
+	//		}
+
+	//		if (Intersects(start, direction, p[3], p[1], p[2], distance) == TRUE)
+	//		{
+	//			result = (p[3] + (p[1] - p[3])  + (p[2] - p[3]) );
+	//			break;
+	//		}
+	//	}
+	//}
+	//XMStoreFloat3(&fResult, result);
+	//return fResult;
 }
 
 void Terrain::SetHeight(float x, float z, float height)

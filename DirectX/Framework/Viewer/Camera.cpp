@@ -236,7 +236,7 @@ void Camera::LateUpdate()
 
 void Camera::SetUpRender()
 {
-	m_Frustum->ConstructFrustum(default.zf, GetProjectionMatrix(), GetViewMatrix());
+	m_Frustum->ConstructFrustum(default.zf*0.5f, GetProjectionMatrix(), GetViewMatrix());
 	if (default.useGBuffer == false)
 	{
 		viewport->RSSetViewport();

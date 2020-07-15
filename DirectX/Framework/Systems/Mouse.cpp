@@ -128,7 +128,7 @@ LRESULT Mouse::InputProc(UINT message, WPARAM wParam, LPARAM lParam)
 	if (message == WM_LBUTTONDOWN || message == WM_MOUSEMOVE)
 	{
 		position = XMVectorSetX(position,(float)LOWORD(lParam));
-		position = XMVectorSetY(position,(float)LOWORD(lParam));
+		position = XMVectorSetY(position,(float)HIWORD(lParam));
 	}
 
 	if (message == WM_MOUSEWHEEL)
