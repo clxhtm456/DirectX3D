@@ -73,7 +73,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR param, int 
 	desc.Background = Color(0.3f, 0.3f, 0.3f, 1.0f);	
 	D3D::SetDesc(desc);
 
-	//_CrtSetBreakAlloc(37357);
+	//_CrtSetBreakAlloc(375388);
 	Main* main = new Main();
 	WPARAM wParam = Window::Run(main);
 

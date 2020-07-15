@@ -34,6 +34,9 @@
     <Filter Include="ExampleScene">
       <UniqueIdentifier>{dcc7eacf-3e96-4bf3-83f7-6a77f2dc81e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Terrain">
+      <UniqueIdentifier>{da5ced0a-9ce6-42d2-8a31-ed465b3f69db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Keyboard.cpp">
@@ -130,9 +133,6 @@
     <ClCompile Include="Meshes\MeshSphere.cpp">
       <Filter>Meshes</Filter>
     </ClCompile>
-    <ClCompile Include="Meshes\Terrain.cpp">
-      <Filter>Meshes</Filter>
-    </ClCompile>
     <ClCompile Include="Model\ModelData.cpp">
       <Filter>Model</Filter>
     </ClCompile>
@@ -159,12 +159,6 @@
     </ClCompile>
     <ClCompile Include="Renders\ShaderState\SamplerState.cpp">
       <Filter>Render\ShaderState</Filter>
-    </ClCompile>
-    <ClCompile Include="Model\FModel.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Model\FModelData.cpp">
-      <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="DefferedRender\GBuffer.cpp">
       <Filter>DefferedRender</Filter>
@@ -195,6 +189,15 @@
     </ClCompile>
     <ClCompile Include="Objects\EmptyNode.cpp">
       <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain\Terrain.cpp">
+      <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain\QuadTree.cpp">
+      <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer\Frustum.cpp">
+      <Filter>Viewer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,9 +301,6 @@
     <ClInclude Include="Meshes\MeshSphere.h">
       <Filter>Meshes</Filter>
     </ClInclude>
-    <ClInclude Include="Meshes\Terrain.h">
-      <Filter>Meshes</Filter>
-    </ClInclude>
     <ClInclude Include="Model\FbxType.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -330,12 +330,6 @@
     </ClInclude>
     <ClInclude Include="Renders\ShaderState\SamplerState.h">
       <Filter>Render\ShaderState</Filter>
-    </ClInclude>
-    <ClInclude Include="Model\FModel.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Model\FModelData.h">
-      <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="DefferedRender\GBuffer.h">
       <Filter>DefferedRender</Filter>
@@ -375,6 +369,15 @@
     </ClInclude>
     <ClInclude Include="Systems\AlignAllocationPolicy.h">
       <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain\Terrain.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain\QuadTree.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer\Frustum.h">
+      <Filter>Viewer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

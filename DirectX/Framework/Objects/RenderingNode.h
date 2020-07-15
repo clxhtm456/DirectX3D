@@ -11,9 +11,9 @@ public:
 	virtual void PostUpdate() override;
 	virtual void Update() override;
 	virtual void LateUpdate() override;
-	virtual void Render(Camera* viewer) override;
+	virtual void ResourceBinding(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
-	virtual void Draw(Camera* viewer) override;
+	virtual void Render(Camera* viewer) override;
 public:
 	void SetPosition(Vector3 position)override;
 	void SetRotation(Vector3 rotation)override;

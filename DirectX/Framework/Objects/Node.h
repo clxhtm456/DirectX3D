@@ -14,7 +14,8 @@ protected:
 	virtual void PostUpdate() = 0;
 	virtual void Update() = 0;
 	virtual void LateUpdate() = 0;
-	virtual void Render(class Camera* viewer) = 0;
+	virtual void ResourceBinding(class Camera* viewer) = 0;
+	virtual void Render(class Camera* viewr = nullptr);
 	virtual void PostRender(class Camera* viewer) = 0;
 	void Destroy();
 private:
@@ -23,8 +24,7 @@ private:
 	void AutoLateUpdate();
 	void AutoRender(class Camera* viewer = nullptr);
 	void AutoPostRender(class Camera* viewer = nullptr);
-protected:
-	virtual void Draw(class Camera* viewr = nullptr);
+
 public:
 	Vector3 GetPosition();
 	Vector3 GetRotation();

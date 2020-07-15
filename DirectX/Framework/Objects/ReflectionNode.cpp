@@ -54,7 +54,7 @@ void ReflectionNode::SetUpRender()
 	viewport->RSSetViewport();
 }
 
-void ReflectionNode::Render(Camera* viewer)
+void ReflectionNode::ResourceBinding(Camera* viewer)
 {
 }
 

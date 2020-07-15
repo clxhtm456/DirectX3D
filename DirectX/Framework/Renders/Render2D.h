@@ -10,8 +10,8 @@ public:
 	virtual ~Render2D();
 
 	void Update() override;
+	void ResourceBinding(Camera* viewer) override;
 	void Render(Camera* viewer) override;
-	void Draw(Camera* viewer) override;
 
 	void PostUpdate() override;
 	void LateUpdate() override;

@@ -154,7 +154,7 @@ typedef enum _TYPEMASK
 #include "Meshes/MeshGrid.h"
 #include "Meshes/MeshQuad.h"
 #include "Meshes/MeshSphere.h"
-#include "Meshes/Terrain.h"
+#include "Terrain/Terrain.h"
 
 #include "Model/Model.h"
 #include "Model/ModelAnim.h"

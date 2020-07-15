@@ -137,10 +137,8 @@ void Model::Update()
 {
 }
 
-void Model::Draw(Camera* viewer)
+void Model::Render(Camera* viewer)
 {
-	//Super::Render(viewer);
-
 	VPSet(viewer);
 	LightSet();
 

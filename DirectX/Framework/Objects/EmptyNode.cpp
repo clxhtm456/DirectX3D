@@ -45,7 +45,7 @@ void EmptyNode::LateUpdate()
 {
 }
 
-void EmptyNode::Render(Camera* viewer)
+void EmptyNode::ResourceBinding(Camera* viewer)
 {
 }
 

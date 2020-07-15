@@ -28,7 +28,7 @@ private:
 public:
 	void CalcWorldMatrix() override;
 	void Update() override;
-	void Draw(Camera* viewer) override;
+	void Render(Camera* viewer) override;
 
 	class ModelData* GetModelData() { return modelData; }
 public:

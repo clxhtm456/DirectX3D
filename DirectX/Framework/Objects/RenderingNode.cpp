@@ -40,12 +40,17 @@ void RenderingNode::LateUpdate()
 {
 }
 
-void RenderingNode::Render(Camera* viewer)
+void RenderingNode::ResourceBinding(Camera* viewer)
 {
 	if (shadowMap != NULL)
 	{
 		D3D::GetDC()->PSSetShaderResources(10, 1, &shadowMap);
 	}
+
+	VPSet(viewer);
+	WorldSet();
+
+	LightSet();
 }
 
 
@@ -53,12 +58,8 @@ void RenderingNode::PostRender(Camera* viewer)
 {
 }
 
-void RenderingNode::Draw(Camera * viewer)
+void RenderingNode::Render(Camera * viewer)
 {
-	VPSet(viewer);
-	WorldSet();
-
-	LightSet();
 
 	if (vertexBuffer != NULL && indexBuffer != NULL)
 	{

@@ -29,11 +29,11 @@ public:
 	virtual void PostUpdate() override;
 	virtual void LateUpdate() override;
 	void SetUpRender();
-	virtual void Render(Camera* viewer) override;
+	virtual void ResourceBinding(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
 
 public:
-	void GetMatrix(Matrix* matrix);
+	Matrix GetMatrix();
 	void SetPosition(Vector3 position) override;
 	void SetRotation(Vector3 rotation) override;
 	void SetRotationDegree(Vector3 rotation) override;
@@ -47,11 +47,11 @@ public:
 	XMVECTOR Up() { return up; }
 	ViewProjectionBuffer* GetVPBuffer() { return viewProjection; }
 
-	Matrix ViewMatrix();
-	Matrix ProjectionMatrix();
+	Matrix GetViewMatrix();
+	Matrix GetProjectionMatrix();
 	class Perspective* GetPerspective() { return perspective; }
 	class Viewport* GetViewport() { return viewport; }
-
+	class Frustum* GetFrustum() { return m_Frustum; }
 	UINT ChildType() override
 	{
 		return TYPE_VIEWER;
@@ -82,6 +82,8 @@ protected:
 	class Perspective* perspective;
 	class Viewport* viewport;
 	class Viewport* renderViewport;
+
+	class Frustum* m_Frustum;
 	
 	CameraOption default;
 	
@@ -93,9 +95,5 @@ private:
 	class RenderTarget* renderTarget;
 	class Render2D* renderImage;
 	
-
-
-	// Node을(를) 통해 상속됨
-	virtual void Draw(Camera* viewr = nullptr) override;
 
 };

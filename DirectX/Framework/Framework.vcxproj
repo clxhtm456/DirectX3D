@@ -33,9 +33,6 @@
     <ClCompile Include="Meshes\MeshGrid.cpp" />
     <ClCompile Include="Meshes\MeshQuad.cpp" />
     <ClCompile Include="Meshes\MeshSphere.cpp" />
-    <ClCompile Include="Meshes\Terrain.cpp" />
-    <ClCompile Include="Model\FModel.cpp" />
-    <ClCompile Include="Model\FModelData.cpp" />
     <ClCompile Include="Model\Model.cpp" />
     <ClCompile Include="Model\ModelAnim.cpp" />
     <ClCompile Include="Model\ModelData.cpp" />
@@ -62,6 +59,8 @@
     <ClCompile Include="Systems\Scene.cpp" />
     <ClCompile Include="Systems\Time.cpp" />
     <ClCompile Include="Systems\Window.cpp" />
+    <ClCompile Include="Terrain\QuadTree.cpp" />
+    <ClCompile Include="Terrain\Terrain.cpp" />
     <ClCompile Include="Utilities\BinaryFile.cpp" />
     <ClCompile Include="Utilities\Math.cpp" />
     <ClCompile Include="Utilities\Path.cpp" />
@@ -70,6 +69,7 @@
     <ClCompile Include="Viewer\Camera.cpp" />
     <ClCompile Include="Viewer\DepthStencil.cpp" />
     <ClCompile Include="Viewer\Freedom.cpp" />
+    <ClCompile Include="Viewer\Frustum.cpp" />
     <ClCompile Include="Viewer\Orthographic.cpp" />
     <ClCompile Include="Viewer\Perspective.cpp" />
     <ClCompile Include="Viewer\Projection.cpp" />
@@ -89,10 +89,7 @@
     <ClInclude Include="Meshes\MeshGrid.h" />
     <ClInclude Include="Meshes\MeshQuad.h" />
     <ClInclude Include="Meshes\MeshSphere.h" />
-    <ClInclude Include="Meshes\Terrain.h" />
     <ClInclude Include="Model\FbxType.h" />
-    <ClInclude Include="Model\FModel.h" />
-    <ClInclude Include="Model\FModelData.h" />
     <ClInclude Include="Model\Model.h" />
     <ClInclude Include="Model\ModelAnim.h" />
     <ClInclude Include="Model\ModelData.h" />
@@ -124,6 +121,8 @@
     <ClInclude Include="Systems\Scene.h" />
     <ClInclude Include="Systems\Time.h" />
     <ClInclude Include="Systems\Window.h" />
+    <ClInclude Include="Terrain\QuadTree.h" />
+    <ClInclude Include="Terrain\Terrain.h" />
     <ClInclude Include="Utilities\BinaryFile.h" />
     <ClInclude Include="Utilities\Math.h" />
     <ClInclude Include="Utilities\Path.h" />
@@ -132,6 +131,7 @@
     <ClInclude Include="Viewer\Camera.h" />
     <ClInclude Include="Viewer\DepthStencil.h" />
     <ClInclude Include="Viewer\Freedom.h" />
+    <ClInclude Include="Viewer\Frustum.h" />
     <ClInclude Include="Viewer\Orthographic.h" />
     <ClInclude Include="Viewer\Perspective.h" />
     <ClInclude Include="Viewer\Projection.h" />

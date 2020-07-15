@@ -100,9 +100,9 @@ void Node::AutoRender(Camera* viewer)
 	if (_visible == false)
 		return;
 
-	Render(viewer);
+	ResourceBinding(viewer);
 
-	Draw(viewer);
+	Render(viewer);
 
 	auto list = _childList;
 	for (auto object : list)
@@ -117,7 +117,7 @@ void Node::AutoPostRender(Camera* viewer)
 		object->AutoPostRender(viewer);
 }
 
-void Node::Draw(Camera* viewr)
+void Node::Render(Camera* viewr)
 {
 }
 

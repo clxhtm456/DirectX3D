@@ -75,27 +75,12 @@ void Render2D::Update()
 	worldBuffer->SetWorld(_world);
 }
 
-void Render2D::Render(Camera* viewer)
+void Render2D::ResourceBinding(Camera* viewer)
 {
 }
 
-void Render2D::Draw(Camera * viewer)
+void Render2D::Render(Camera * viewer)
 {
-	//VPSet();
-	/*vpBuffer->SetVSBuffer(2);
-	worldBuffer->SetVSBuffer(1);
-
-	vertexBuffer->Render();
-	shader->Render();
-	if (diffuseMap != NULL)
-	{
-		D3D::GetDC()->PSSetShaderResources(0, 1, &diffuseMap);
-		D3D::GetDC()->PSSetSamplers(0, 1, &diffuseSampler);
-	}
-
-	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	D3D::GetDC()->Draw(6, 0);*/
 }
 
 void Render2D::SetSRV(ID3D11ShaderResourceView * srv)

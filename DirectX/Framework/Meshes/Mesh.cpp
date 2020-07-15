@@ -70,7 +70,7 @@ void Mesh::Update()
 	Super::Update();
 }
 
-void Mesh::Render(Camera* viewer)
+void Mesh::ResourceBinding(Camera* viewer)
 {
 	Super::Render(viewer);
 
@@ -80,7 +80,7 @@ void Mesh::Render(Camera* viewer)
 	D3D::GetDC()->PSSetShaderResources(3, 1, &diffuseMap);*/
 }
 
-void Mesh::Draw(Camera * viewer)
+void Mesh::Render(Camera * viewer)
 {
 	VPSet(viewer);
 	//WorldSet();

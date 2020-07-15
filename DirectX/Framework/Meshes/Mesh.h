@@ -18,8 +18,8 @@ public:
 		return material;
 	}
 	void Update() override;
+	void ResourceBinding(Camera* viewer) override;
 	void Render(Camera* viewer) override;
-	void Draw(Camera* viewer) override;
 	void CalcWorldMatrix() override;
 public:
 	Node* CreateInstance();

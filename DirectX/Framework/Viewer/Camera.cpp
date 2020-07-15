@@ -4,6 +4,7 @@
 #include "Viewport.h"
 #include "Renders/Render2D.h"
 #include "DefferedRender/GBuffer.h"
+#include "Frustum.h"
 
 Camera * Camera::Create(CameraOption option)
 {
@@ -48,6 +49,7 @@ Camera::~Camera()
 	delete perspective;
 	delete viewport;
 	delete viewProjection;
+	delete m_Frustum;
 
 	if (default.useGBuffer == false)
 		return;
@@ -61,8 +63,8 @@ Camera::~Camera()
 
 void Camera::Update()
 {
-	GetVPBuffer()->SetView(ViewMatrix());
-	GetVPBuffer()->SetProjection(ProjectionMatrix());
+	GetVPBuffer()->SetView(GetViewMatrix());
+	GetVPBuffer()->SetProjection(GetProjectionMatrix());
 
 	if (default.useGBuffer == false)
 		return;
@@ -71,9 +73,9 @@ void Camera::Update()
 }
 
 
-void Camera::GetMatrix(Matrix * matrix)
+Matrix Camera::GetMatrix()
 {
-	memcpy(matrix, &matView, sizeof(Matrix));
+	return matView;
 }
 
 void Camera::SetPosition(Vector3 position)
@@ -132,6 +134,9 @@ void Camera::CreateCameraDefault()
 	viewProjection = new ViewProjectionBuffer();
 
 	viewProjection->SetProjection(perspective->GetMatrix());
+
+	m_Frustum = new Frustum();
+	m_Frustum->ConstructFrustum(default.zf, GetProjectionMatrix(), GetViewMatrix());
 }
 
 void Camera::CreateRender2DOption()
@@ -203,10 +208,6 @@ void Camera::SetAllCameraMask()
 	AddMask(TYPEMASK::ALL);
 }
 
-void Camera::Draw(Camera* viewr)
-{
-}
-
 RenderTarget* Camera::GetRenderTarget()
 {
 	if (default.useGBuffer == false)
@@ -215,12 +216,12 @@ RenderTarget* Camera::GetRenderTarget()
 	return renderTarget;
 }
 
-Matrix Camera::ViewMatrix()
+Matrix Camera::GetViewMatrix()
 {
 	return matView;
 }
 
-Matrix Camera::ProjectionMatrix()
+Matrix Camera::GetProjectionMatrix()
 {
 	return perspective->GetMatrix();
 }
@@ -235,7 +236,7 @@ void Camera::LateUpdate()
 
 void Camera::SetUpRender()
 {
-
+	m_Frustum->ConstructFrustum(default.zf, GetProjectionMatrix(), GetViewMatrix());
 	if (default.useGBuffer == false)
 	{
 		viewport->RSSetViewport();
@@ -248,7 +249,7 @@ void Camera::SetUpRender()
 	}
 }
 
-void Camera::Render(Camera* viewer)
+void Camera::ResourceBinding(Camera* viewer)
 {
 	if (default.useGBuffer == false)
 		return;

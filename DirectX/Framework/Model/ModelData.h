@@ -74,7 +74,7 @@ public:
 	ModelMeshPart();
 	~ModelMeshPart();
 
-	void Render();
+	void ResourceBinding();
 
 	void Binding();
 };

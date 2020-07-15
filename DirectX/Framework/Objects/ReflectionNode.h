@@ -17,7 +17,7 @@ protected:
 	virtual void PostUpdate() override;
 	virtual void Update() override;
 	virtual void LateUpdate() override;
-	virtual void Render(Camera* viewer) override;
+	virtual void ResourceBinding(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
 public:
 	Shader* GetDepthShader() { return depthShader; }
