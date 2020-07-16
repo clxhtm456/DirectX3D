@@ -326,7 +326,6 @@ float Terrain::GetHeightPick(Vector3 & position)
 
 Vector3 Terrain::GetPickedPosition()
 {
-	//XMMATRIX V = Context::Get()->GetMainCamera()->ViewMatrix();
 	Matrix V = Context::Get()->GetMainCamera()->GetViewMatrix();
 	D3DXMATRIX Vx;
 	for (int i = 0; i < 4; i++)
@@ -384,104 +383,85 @@ Vector3 Terrain::GetPickedPosition()
 
 	XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1,0);
 
-	for (UINT z = 0; z < height-1; z++)
+	for (int index = 0; index < indexCount; index+=6)
 	{
-		for (UINT x = 0; x < width-1; x++)
+		D3DXVECTOR3 p[6];
+		for (int i = 0; i < 6; i++)
 		{
-			UINT index[6];
-			index[0] = width * (z + 1) + x;
-			index[1] = width * (z + 1) + (x + 1);
-			index[2] = width * z + x;
-			index[3] = width * z + x;
-			index[4] = width * (z + 1) + (x + 1);
-			index[5] = width * z + (x + 1);
+			p[i].x = vertices[index + i].Position.x;
+			p[i].y = vertices[index + i].Position.y;
+			p[i].z = vertices[index + i].Position.z;
+		}
 
-			D3DXVECTOR3 p[6];
-			for (int i = 0; i < 6; i++)
-			{
-				p[i].x = vertices[index[i]].Position.x;
-				p[i].y = vertices[index[i]].Position.y;
-				p[i].z = vertices[index[i]].Position.z;
-			}
+		float u, v, distance;
+		if (D3DXIntersectTri(&p[0], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
+		{
+			D3DXVECTOR3 temp = p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v;
+			Vector3 result;
+			result.x = temp.x;
+			result.y = temp.y;
+			result.z = temp.z;
 
-			float u, v, distance;
-			if (D3DXIntersectTri(&p[0], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
-			{
-				D3DXVECTOR3 temp = p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v;
-				Vector3 result;
-				result.x = temp.x;
-				result.y = temp.y;
-				result.z = temp.z;
-				
 
-				return result;
-			}
+			return result;
+		}
 
-			if (D3DXIntersectTri(&p[3], &p[4], &p[5], &start, &direction, &u, &v, &distance) == TRUE)
-			{
-				D3DXVECTOR3 temp = p[3] + (p[4] - p[3]) * u + (p[5] - p[3]) * v;
-				Vector3 result;
-				result.x = temp.x;
-				result.y = temp.y;
-				result.z = temp.z;
-				return result;
-			}
+		if (D3DXIntersectTri(&p[3], &p[4], &p[5], &start, &direction, &u, &v, &distance) == TRUE)
+		{
+			D3DXVECTOR3 temp = p[3] + (p[4] - p[3]) * u + (p[5] - p[3]) * v;
+			Vector3 result;
+			result.x = temp.x;
+			result.y = temp.y;
+			result.z = temp.z;
+			return result;
 		}
 	}
 
 	return Vector3(-1, FLT_MIN, -1);
 
-	//Matrix V = Context::Get()->GetMainCamera()->GetViewMatrix();
-	//Matrix P = Context::Get()->GetMainCamera()->GetProjectionMatrix();
-	//Viewport* vp = Context::Get()->GetMainCamera()->GetViewport();
+	/*Matrix V = Context::Get()->GetMainCamera()->GetViewMatrix();
+	Matrix P = Context::Get()->GetMainCamera()->GetProjectionMatrix();
+	Viewport* vp = Context::Get()->GetMainCamera()->GetViewport();
 
-	//Vector3 mouse = Mouse::Get()->GetPosition();
+	Vector3 mouse = Mouse::Get()->GetPosition();
 
-	//Vector3 n, f;
+	Vector3 n, f;
 
-	//mouse.z = 0.0f;
-	//vp->UnProject(&n, mouse, GetWorld(), V, P);
+	mouse.z = 0.0f;
+	vp->UnProject(&n, mouse, GetWorld(), V, P);
 
-	//mouse.z = 1.0f;
-	//vp->UnProject(&f, mouse, GetWorld(), V, P);
+	mouse.z = 1.0f;
+	vp->UnProject(&f, mouse, GetWorld(), V, P);
 
-	//XMVECTOR start = XMLoadFloat3(&n);
-	//XMVECTOR direction = XMLoadFloat3(&f) - XMLoadFloat3(&n);
-	//direction = XMVector3Normalize(direction);
+	XMVECTOR start = XMLoadFloat3(&n);
+	XMVECTOR direction = XMLoadFloat3(&f) - XMLoadFloat3(&n);
+	direction = XMVector3Normalize(direction);
 
-	//XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1, 0);
-	//Vector3 fResult;
-	//for (UINT z = 0; z < height - 1; z++)
-	//{
-	//	for (UINT x = 0; x < width - 1; x++)
-	//	{
-	//		UINT index[4];
-	//		index[0] = width * z + x;
-	//		index[1] = width * (z + 1) + x;
-	//		index[2] = width * z + (x + 1);
-	//		index[3] = width * (z + 1) + (x + 1);
+	XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1, 0);
+	Vector3 fResult;
+	for (int index = 0; index < indexCount; index += 6)
+	{
+		XMVECTOR p[6];
+		for (int i = 0; i < 6; i++)
+		{
+			p[i] = XMLoadFloat3(&vertices[index+i].Position);
+		}
+		float distance;
+		if (Intersects(start, direction, p[0], p[1], p[2], distance) == TRUE)
+		{
+			result = (p[0] + (p[1] - p[0]) + (p[2] - p[0]));
+			break;
+		}
 
-	//		XMVECTOR p[4];
-	//		for (int i = 0; i < 4; i++)
-	//			p[i] = XMLoadFloat3(&vertices[index[i]].Position);
+		if (Intersects(start, direction, p[3], p[1], p[2], distance) == TRUE)
+		{
+			result = (p[3] + (p[1] - p[3]) + (p[2] - p[3]));
+			break;
+		}
+	}
 
-	//		float u, v, distance;
-
-	//		if (Intersects(start, direction, p[0], p[1], p[2], distance) == TRUE)
-	//		{
-	//			result = (p[0] + (p[1] - p[0])  + (p[2] - p[0]) );
-	//			break;
-	//		}
-
-	//		if (Intersects(start, direction, p[3], p[1], p[2], distance) == TRUE)
-	//		{
-	//			result = (p[3] + (p[1] - p[3])  + (p[2] - p[3]) );
-	//			break;
-	//		}
-	//	}
-	//}
-	//XMStoreFloat3(&fResult, result);
-	//return fResult;
+	XMStoreFloat3(&fResult, result);
+	return fResult;*/
 }
 
 void Terrain::SetHeight(float x, float z, float height)
@@ -829,7 +809,7 @@ void Terrain::CalculateTextureCoordinate()
 
 void Terrain::ReDrawNormal()
 {
-	for (UINT i = 0; i < indexCount / 3; i++)
+	/*for (UINT i = 0; i < indexCount / 3; i++)
 	{
 		UINT index0 = indices[i * 3 + 0];
 		UINT index1 = indices[i * 3 + 1];
@@ -849,14 +829,19 @@ void Terrain::ReDrawNormal()
 		vertices[index0].Normal = vNormal;
 		vertices[index1].Normal = vNormal;
 		vertices[index2].Normal = vNormal;
-	}
+	}*/
 
-	for (UINT i = 0; i < vertexCount; i++)
+	/*for (UINT i = 0; i < vertexCount; i++)
 	{
 		XMVECTOR temp = XMLoadFloat3(&vertices[i].Normal);
 		temp = XMVector3Normalize(temp);
 		XMStoreFloat3(&vertices[i].Normal, temp);
-	}
+	}*/
+
+	/*D3D::GetDC()->UpdateSubresource
+	(
+		vertexBuffer->Buffer(), 0, NULL, vertices, sizeof(VertexTextureNormal) * vertexCount, 0
+	);*/
 
 	D3D11_MAPPED_SUBRESOURCE subResource;
 	D3D::GetDC()->Map(vertexBuffer->Buffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
@@ -986,6 +971,7 @@ vector<VertexTextureNormal*> Terrain::SqureArea(Vector3 position, UINT type, UIN
 	if (rect.bottom < 0) rect.bottom = 0;
 	if (rect.top > height) rect.top = height;
 
+
 	for (LONG z = rect.bottom; z < rect.top; z++)
 	{
 		for (LONG x = rect.left; x < rect.right; x++)
@@ -994,6 +980,7 @@ vector<VertexTextureNormal*> Terrain::SqureArea(Vector3 position, UINT type, UIN
 			vertexVector.push_back(&vertices[index]);
 		}
 	}
+
 	return vertexVector;
 }
 

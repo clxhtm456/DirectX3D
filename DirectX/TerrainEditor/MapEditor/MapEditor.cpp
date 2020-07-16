@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "MapEditor.h"
 
-#define DEFAULT_HORIZONTAL	512
-#define DEFAULT_VERTICAL	512
+#define DEFAULT_HORIZONTAL	128
+#define DEFAULT_VERTICAL	128
 #define DEFAULT_DISTANCE	DEFAULT_VERTICAL*540/512
 
 MapEditor::MapEditor(Scene* scene):
@@ -185,7 +185,7 @@ void MapEditor::CreateNewMap()
 	auto posZ = (DEFAULT_VERTICAL + (DEFAULT_VERTICAL * sin(50))) * -1.0f;
 
 	m_scene->AddChild(terrain);
-	m_scene->GetMainCamera()->SetPosition(posX, 500, posZ);
+	m_scene->GetMainCamera()->SetPosition(posX, DEFAULT_DISTANCE, posZ);
 	m_scene->GetMainCamera()->SetRotationDegree(40, 0, 0);
 
 	mapWidth = DEFAULT_HORIZONTAL;
