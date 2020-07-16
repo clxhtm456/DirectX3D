@@ -46,6 +46,8 @@ public:
 	UINT GetHorizontalSize() { return width; }
 	UINT GetVerticalSize() { return height; }
 
+	vector<UINT> GetVertexIndex(float posX, float posZ);
+
 	void CopyVertexArray(void* vertexList);
 	ID3D11SamplerState& GetSampleState() { return (*m_sampleState); }
 private:

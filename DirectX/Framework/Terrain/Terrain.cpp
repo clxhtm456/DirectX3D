@@ -151,6 +151,11 @@ void Terrain::Update()
 	string str = "MousePos : " + to_string(brushDesc.Location.x) + to_string(brushDesc.Location.y) + to_string(brushDesc.Location.z);
 	Gui::Get()->RenderText(5, 50, 1, 1, 1, str);
 
+	auto verindex = GetVertexIndex(brushDesc.Location.x, brushDesc.Location.z);
+	string str2 = "vertexIndex : " + to_string(verindex);
+	Gui::Get()->RenderText(5, 70, 1, 1, 1, str2);
+	
+
 	if (brushDesc.Type > 0)
 	{
 		float mouseDiff = sqrt(Mouse::Get()->GetMoveValue().x* Mouse::Get()->GetMoveValue().x + Mouse::Get()->GetMoveValue().y* Mouse::Get()->GetMoveValue().y);
@@ -466,6 +471,57 @@ Vector3 Terrain::GetPickedPosition()
 
 void Terrain::SetHeight(float x, float z, float height)
 {
+}
+
+vector<UINT> Terrain::GetVertexIndex(float posX, float posZ)
+{
+	vector<UINT> vector;
+
+	UINT index = height * posZ + posX;
+	//128
+	if (posZ >= 1 && posZ <= height -1)
+	{
+		UINT leftUp = height * (posZ-1)+ posX;//0
+		vector.push_back(leftUp);
+	}
+
+	if (index >= height)
+	{
+		UINT rightUp = height * (posZ - 1) + posX;
+		vector.push_back(rightUp);
+	}
+
+	if (posZ < height - 1)
+	{
+		UINT leftDown = height * (posZ + 1) + posX;
+		vector.push_back(leftDown);
+	}
+
+	if ()
+	{
+		UINT rightDown
+		vector.push_back(rightDown);
+	}
+	
+	
+	UINT leftDown = ;
+	UINT rightDown;
+	if()
+	width 
+	128 = return 0;
+	129 = return 1;
+	0 = return 2;
+	0 = return 3;
+	129 = return 4;
+	1 = return 5;
+
+	129 = return 6;
+	130 = return 7;
+	1 = return 8;
+	1 = return 9;
+	130 = return 10;
+	2 = return 11;
+	return vector;
 }
 
 void Terrain::CopyVertexArray(void * vertexList)
@@ -970,7 +1026,6 @@ vector<VertexTextureNormal*> Terrain::SqureArea(Vector3 position, UINT type, UIN
 
 	if (rect.bottom < 0) rect.bottom = 0;
 	if (rect.top > height) rect.top = height;
-
 
 	for (LONG z = rect.bottom; z < rect.top; z++)
 	{
