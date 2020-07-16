@@ -9,8 +9,7 @@ private:
 	{
 		float positionX, positionZ, width;
 		int triangleCount;
-		ID3D11Buffer *vertexBuffer, *indexBuffer;
-		VectorType* vertexArray;
+		ID3D11Buffer *indexBuffer;
 		NodeType* nodes[4];
 	};
 public:
@@ -22,7 +21,6 @@ public:
 	void Render(Camera* viewer);
 
 	int GetDrawCount();
-	bool GetHeightAtPosition(float, float, OUT float&);
 	void QuadVertex(UINT x, UINT z);
 private:
 	void CalculateMeshDimensions(int, float&, float&, float&);
@@ -32,8 +30,6 @@ private:
 	void ReleaseNode(NodeType*);
 	void RenderNode(NodeType*, Camera*);
 
-	void FindNode(NodeType*, float, float, float&);
-	bool CheckHeightOfTriangle(float, float, float&, float[3], float[3], float[3]);
 	void SearchVertex(NodeType* node, UINT x, UINT z);
 private:
 	int m_triangleCount, m_drawCount;

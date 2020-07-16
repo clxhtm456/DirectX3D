@@ -237,23 +237,11 @@ void Terrain::ResourceBinding(Camera* viewer)
 
 void Terrain::Render(Camera * viewer)
 {
-	//if (vertexBuffer != NULL && indexBuffer != NULL)
-	//{
-	//	vertexBuffer->Render();
-	//	//indexBuffer->Render();
-	//	rasterizerState->SetState();
-
-	//	/*if (vsShader == NULL && psShader == NULL)
-	//		shader->Render();
-	//	else
-	//	{
-	//		vsShader->RenderVS();
-	//		psShader->RenderPS();
-	//	}*/
-
-	//	/*D3D::GetDC()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//	D3D::GetDC()->DrawIndexed(indexCount, 0, 0);*/
-	//}
+	if (vertexBuffer != NULL && indexBuffer != NULL)
+	{
+		vertexBuffer->Render();
+		rasterizerState->SetState();
+	}
 
 	m_QuadTree->Render(viewer);
 }
