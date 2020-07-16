@@ -33,9 +33,10 @@ bool QuadTree::Initialize()
 
 	// 지형 정점 배열의 정점 수를 가져옵니다.
 	int vertexCount = m_Terrain->GetVertexCount();
+	int indexCount = m_Terrain->GetIndexCount();
 
 	// 정점리스트의 총 삼각형 수를 저장합니다.
-	m_triangleCount = vertexCount / 3;
+	m_triangleCount = indexCount / 3;
 
 	// 모든 지형 정점을 포함하는 정점 배열을 만듭니다.
 	m_vertexList = new VertexTextureNormal[vertexCount];
@@ -43,9 +44,15 @@ bool QuadTree::Initialize()
 	{
 		return false;
 	}
+	m_indexList = new UINT[indexCount];
+	if (!m_indexList)
+	{
+		return false;
+	}
 
 	// 지형 정점을 정점 목록에 복사합니다.
 	m_Terrain->CopyVertexArray((void*)m_vertexList);
+	m_Terrain->CopyIndexArray((void*)m_indexList);
 
 	// 중심 x, z와 메쉬의 너비를 계산합니다.
 	CalculateMeshDimensions(vertexCount, centerX, centerZ, width);
@@ -65,6 +72,12 @@ bool QuadTree::Initialize()
 	{
 		delete[] m_vertexList;
 		m_vertexList = 0;
+	}
+
+	if (m_indexList)
+	{
+		delete[] m_indexList;
+		m_indexList = 0;
 	}
 
 	return true;
@@ -106,24 +119,8 @@ bool QuadTree::GetHeightAtPosition(float positionX, float positionZ, OUT float& 
 	return true;
 }
 
-bool QuadTree::GetPickedPosition(float mouseX, float mouseY, OUT Vector3& outPosition)
-{
-	Matrix V = Context::Get()->GetMainCamera()->GetViewMatrix();
-	Matrix P = Context::Get()->GetMainCamera()->GetProjectionMatrix();
-	Viewport* vp = Context::Get()->GetMainCamera()->GetViewport();
-	Matrix inverseVP = XMMatrixInverse(nullptr,V * P);
-	
-	XMVECTOR originPos = XMVectorSet(mouseX, mouseY, 0.0f,1.0f);
-	XMVECTOR farPos = XMVectorSet(mouseX, mouseY, 1.0f,1.0f);
 
-	XMVECTOR rayOrigin = XMVector3Transform(originPos, inverseVP);
-	XMVECTOR rayEnd = XMVector3Transform(farPos, inverseVP);
 
-	XMVECTOR rayDirection = XMVector3Normalize(rayEnd - rayOrigin);
-
-	
-	return false;
-}
 
 void QuadTree::CalculateMeshDimensions(int vertexCount, float& centerX, float& centerZ, float& meshWidth)
 {
@@ -242,6 +239,7 @@ void QuadTree::CreateTreeNode(NodeType* node, float positionX, float positionZ, 
 	// 이 새로운 정점 및 인덱스 배열의 인덱스를 초기화합니다.
 	int index = 0;
 	int vertexIndex = 0;
+	int IndicesIndex = 0;
 
 	// 정점 목록의 모든 삼각형을 살펴 봅니다.
 	for (int i = 0; i < m_triangleCount; i++)
@@ -250,7 +248,8 @@ void QuadTree::CreateTreeNode(NodeType* node, float positionX, float positionZ, 
 		if (IsTriangleContained(i, positionX, positionZ, width) == true)
 		{
 			// 지형 버텍스 목록에 인덱스를 계산합니다.
-			vertexIndex = i * 3;
+			IndicesIndex = i * 3;
+			vertexIndex = m_indexList[IndicesIndex];
 
 			// 정점 목록에서 이 삼각형의 세 꼭지점을 가져옵니다.
 			vertices[index].Position = m_vertexList[vertexIndex].Position;
@@ -262,7 +261,9 @@ void QuadTree::CreateTreeNode(NodeType* node, float positionX, float positionZ, 
 			node->vertexArray[index].z = m_vertexList[vertexIndex].Position.z;
 			index++;
 
-			vertexIndex++;
+			IndicesIndex++;
+			vertexIndex = m_indexList[IndicesIndex];
+
 			vertices[index].Position = m_vertexList[vertexIndex].Position;
 			vertices[index].Uv = m_vertexList[vertexIndex].Uv;
 			vertices[index].Normal = m_vertexList[vertexIndex].Normal;
@@ -272,7 +273,9 @@ void QuadTree::CreateTreeNode(NodeType* node, float positionX, float positionZ, 
 			node->vertexArray[index].z = m_vertexList[vertexIndex].Position.z;
 			index++;
 
-			vertexIndex++;
+			IndicesIndex++;
+			vertexIndex = m_indexList[IndicesIndex];
+
 			vertices[index].Position = m_vertexList[vertexIndex].Position;
 			vertices[index].Uv = m_vertexList[vertexIndex].Uv;
 			vertices[index].Normal = m_vertexList[vertexIndex].Normal;
@@ -352,16 +355,19 @@ bool QuadTree::IsTriangleContained(int index, float positionX, float positionZ, 
 	float radius = width / 2.0f;
 
 	// 인덱스를 정점 목록으로 가져옵니다.
-	int vertexIndex = index * 3;
+	int IndicesIndex = index * 3;
+	int vertexIndex = m_indexList[IndicesIndex];
 
 	// 정점 목록에서 이 삼각형의 세 꼭지점을 가져옵니다.
 	float x1 = m_vertexList[vertexIndex].Position.x;
 	float z1 = m_vertexList[vertexIndex].Position.z;
-	vertexIndex++;
+	IndicesIndex++;
+	vertexIndex = m_indexList[IndicesIndex];
 
 	float x2 = m_vertexList[vertexIndex].Position.x;
 	float z2 = m_vertexList[vertexIndex].Position.z;
-	vertexIndex++;
+	IndicesIndex++;
+	vertexIndex = m_indexList[IndicesIndex];
 
 	float x3 = m_vertexList[vertexIndex].Position.x;
 	float z3 = m_vertexList[vertexIndex].Position.z;
@@ -564,6 +570,7 @@ void QuadTree::FindNode(NodeType* node, float x, float z, float& height)
 	}
 }
 
+
 bool QuadTree::CheckHeightOfTriangle(float x, float z, float& height, float v0[3], float v1[3], float v2[3])
 {
 	float startVector[3] = { 0.0f, 0.0f, 0.0f };
@@ -701,4 +708,42 @@ bool QuadTree::CheckHeightOfTriangle(float x, float z, float& height, float v0[3
 	height = Q[1];
 
 	return true;
+}
+
+
+void QuadTree::SearchVertex(NodeType* node, UINT x, UINT z)
+{
+	int count = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (node->nodes[i] != 0)
+		{
+			count++;
+			SearchVertex(node->nodes[i],x,z);
+		}
+	}
+
+	float margin = node->width * 0.5f;
+	if (x < node->positionX - margin ||
+		x > node->positionX + margin ||
+		z < node->positionZ - margin ||
+		z > node->positionZ + margin)
+		return;
+
+	// 자식 노드가 있는 경우 부모 노드가 렌더링 할 삼각형을 포함하지 않으므로 계속할 필요가 없습니다.
+	if (count != 0)
+	{
+		return;
+	}
+
+
+	return;
+}
+
+void QuadTree::QuadVertex(UINT x, UINT z)
+{
+	SearchVertex(m_parentNode, x, z);
+
+	return;
+	// TODO: 여기에 반환 구문을 삽입합니다.
 }

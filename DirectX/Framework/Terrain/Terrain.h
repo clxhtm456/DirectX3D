@@ -40,6 +40,7 @@ public:
 	float GetHeightPick(Vector3& position);
 	Vector3 GetPickedPosition();
 	UINT GetVertexCount() { return vertexCount; }
+	UINT GetIndexCount() { return indexCount; }
 
 	void SetHeight(float x, float z, float height);
 
@@ -49,6 +50,7 @@ public:
 	vector<UINT> GetVertexIndex(float posX, float posZ);
 
 	void CopyVertexArray(void* vertexList);
+	void CopyIndexArray(void* indexList);
 	ID3D11SamplerState& GetSampleState() { return (*m_sampleState); }
 private:
 	bool LoadHeightMap(const char* filename);

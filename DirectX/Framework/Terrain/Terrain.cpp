@@ -62,7 +62,7 @@ bool Terrain::Init(UINT horizontal, UINT vertical, UINT textureDetail)
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[0] = 1;
 	samplerDesc.BorderColor[1] = 0;
 	samplerDesc.BorderColor[2] = 0;
 	samplerDesc.BorderColor[3] = 0;
@@ -151,8 +151,8 @@ void Terrain::Update()
 	string str = "MousePos : " + to_string(brushDesc.Location.x) + to_string(brushDesc.Location.y) + to_string(brushDesc.Location.z);
 	Gui::Get()->RenderText(5, 50, 1, 1, 1, str);
 
-	auto verindex = GetVertexIndex(brushDesc.Location.x, brushDesc.Location.z);
-	string str2 = "vertexIndex : " + to_string(verindex);
+	auto verindex = GetVertexIndex(1, 1);
+	string str2 = "vertexIndex : ";
 	Gui::Get()->RenderText(5, 70, 1, 1, 1, str2);
 	
 
@@ -226,6 +226,8 @@ void Terrain::ResourceBinding(Camera* viewer)
 	brushBuffer->SetPSBuffer(3);
 	lineBuffer->SetPSBuffer(4);
 
+	D3D::GetDC()->PSSetSamplers(10, 1, &m_sampleState);
+
 	VPSet(viewer);
 	WorldSet();
 
@@ -235,23 +237,23 @@ void Terrain::ResourceBinding(Camera* viewer)
 
 void Terrain::Render(Camera * viewer)
 {
-	/*if (vertexBuffer != NULL && indexBuffer != NULL)
-	{
-		vertexBuffer->Render();
-		indexBuffer->Render();
-		rasterizerState->SetState();
+	//if (vertexBuffer != NULL && indexBuffer != NULL)
+	//{
+	//	vertexBuffer->Render();
+	//	//indexBuffer->Render();
+	//	rasterizerState->SetState();
 
-		if (vsShader == NULL && psShader == NULL)
-			shader->Render();
-		else
-		{
-			vsShader->RenderVS();
-			psShader->RenderPS();
-		}
+	//	/*if (vsShader == NULL && psShader == NULL)
+	//		shader->Render();
+	//	else
+	//	{
+	//		vsShader->RenderVS();
+	//		psShader->RenderPS();
+	//	}*/
 
-		D3D::GetDC()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		D3D::GetDC()->DrawIndexed(indexCount, 0, 0);
-	}*/
+	//	/*D3D::GetDC()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//	D3D::GetDC()->DrawIndexed(indexCount, 0, 0);*/
+	//}
 
 	m_QuadTree->Render(viewer);
 }
@@ -388,39 +390,50 @@ Vector3 Terrain::GetPickedPosition()
 
 	XMVECTOR result = XMVectorSet(-1, FLT_MIN, -1,0);
 
-	for (int index = 0; index < indexCount; index+=6)
+	for (UINT z = 0; z < height - 1; z++)
 	{
-		D3DXVECTOR3 p[6];
-		for (int i = 0; i < 6; i++)
+		for (UINT x = 0; x < width - 1; x++)
 		{
-			p[i].x = vertices[index + i].Position.x;
-			p[i].y = vertices[index + i].Position.y;
-			p[i].z = vertices[index + i].Position.z;
-		}
+			UINT index[4];
+			index[0] = width * z + x;
+			index[1] = width * (z + 1) + x;
+			index[2] = width * z + (x + 1);
+			index[3] = width * (z + 1) + (x + 1);
 
-		float u, v, distance;
-		if (D3DXIntersectTri(&p[0], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
-		{
-			D3DXVECTOR3 temp = p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v;
-			Vector3 result;
-			result.x = temp.x;
-			result.y = temp.y;
-			result.z = temp.z;
+			D3DXVECTOR3 p[4];
+			for (int i = 0; i < 4; i++)
+			{
+				p[i].x = vertices[index[i]].Position.x;
+				p[i].y = vertices[index[i]].Position.y;
+				p[i].z = vertices[index[i]].Position.z;
+
+			}
+
+			float u, v, distance;
+			if (D3DXIntersectTri(&p[0], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
+			{
+				D3DXVECTOR3 temp = p[0] + (p[1] - p[0]) * u + (p[2] - p[0]) * v;
+				Vector3 result;
+				result.x = temp.x;
+				result.y = temp.y;
+				result.z = temp.z;
 
 
-			return result;
-		}
+				return result;
+			}
 
-		if (D3DXIntersectTri(&p[3], &p[4], &p[5], &start, &direction, &u, &v, &distance) == TRUE)
-		{
-			D3DXVECTOR3 temp = p[3] + (p[4] - p[3]) * u + (p[5] - p[3]) * v;
-			Vector3 result;
-			result.x = temp.x;
-			result.y = temp.y;
-			result.z = temp.z;
-			return result;
+			if (D3DXIntersectTri(&p[3], &p[1], &p[2], &start, &direction, &u, &v, &distance) == TRUE)
+			{
+				D3DXVECTOR3 temp = p[3] + (p[1] - p[3]) * u + (p[2] - p[3]) * v;
+				Vector3 result;
+				result.x = temp.x;
+				result.y = temp.y;
+				result.z = temp.z;
+				return result;
+			}
 		}
 	}
+	
 
 	return Vector3(-1, FLT_MIN, -1);
 
@@ -478,55 +491,75 @@ vector<UINT> Terrain::GetVertexIndex(float posX, float posZ)
 	vector<UINT> vector;
 
 	UINT index = height * posZ + posX;
-	//128
-	if (posZ >= 1 && posZ <= height -1)
+
+	for (int index = 0; index < vertexCount; index++)
 	{
-		UINT leftUp = height * (posZ-1)+ posX;//0
+		if (vertices[index].Position.x == posX && vertices[index].Position.z == posZ)
+			vector.push_back(index);
+	}
+	//1,0
+	//129
+
+	//leftUp
+	if (posZ >= 1 && posZ <= height - 1)
+	{
+		UINT leftUp = (6*height) * (posZ)+ (posX) + 4;//5
 		vector.push_back(leftUp);
 	}
-
-	if (index >= height)
+	//leftDown
+	if (posZ >= 1 && posZ <= height - 1)
 	{
-		UINT rightUp = height * (posZ - 1) + posX;
-		vector.push_back(rightUp);
+		UINT leftUp = (6 * height) * (posZ + 1) + (posX + 1);//1
+		vector.push_back(leftUp);
 	}
-
-	if (posZ < height - 1)
+	//rightUp
+	if (posZ >= 1 && posZ <= height - 1)
 	{
-		UINT leftDown = height * (posZ + 1) + posX;
-		vector.push_back(leftDown);
+		UINT leftUp = (6 * height) * (posZ)+(posX)+7;
+		vector.push_back(leftUp);
 	}
-
-	if ()
+	//rightUp
+	if (posZ >= 1 && posZ <= height - 1)
 	{
-		UINT rightDown
-		vector.push_back(rightDown);
+		UINT leftUp = (6 * height) * (posZ)+(posX)+8;
+		vector.push_back(leftUp);
 	}
-	
-	
-	UINT leftDown = ;
-	UINT rightDown;
-	if()
-	width 
-	128 = return 0;
-	129 = return 1;
-	0 = return 2;
-	0 = return 3;
-	129 = return 4;
-	1 = return 5;
+	//leftDown
+	//rightDown
+	//if (posZ >= 1 && posZ <= height -1)
+	//{
+	//	UINT left = (6*height) * (posZ-1)+ posX;//1
+	//	vector.push_back(left);
+	//}
 
-	129 = return 6;
-	130 = return 7;
-	1 = return 8;
-	1 = return 9;
-	130 = return 10;
-	2 = return 11;
+	//if (posX >= 1 && posX <= width -1)
+	//{
+	//	UINT right = (6* height) * (posZ - 1) + posX;
+	//	vector.push_back(right);
+	//}
+
+	//if (posZ < height - 1)
+	//{
+	//	UINT Up = (6 * height) * (posZ) + posX;
+	//	vector.push_back(Up);
+	//}
+
+	//if ()
+	//{
+	//	UINT Down = (6 * height) * (posZ-2)+posX;
+	//	vector.push_back(rightDown);
+	//}
 	return vector;
 }
 
 void Terrain::CopyVertexArray(void * vertexList)
 {
 	memcpy(vertexList, vertices, sizeof(VertexTextureNormal) * vertexCount);
+}
+
+void Terrain::CopyIndexArray(void* indexList)
+{
+	memcpy(indexList, indices, sizeof(UINT) * indexCount);
 }
 
 bool Terrain::LoadHeightMap(const char * filename)
@@ -704,8 +737,8 @@ bool Terrain::InitializeBuffers()
 	float tu = 0.0f;
 	float tv = 0.0f;
 
-	vertexCount = (width - 1) *(height - 1) * 6;
-	indexCount = vertexCount;
+	vertexCount = (width ) *(height );
+	indexCount = (width - 1) * (height - 1) * 6;
 
 	vertices = new VertexTextureNormal[vertexCount];
 	if (!vertices)
@@ -717,97 +750,43 @@ bool Terrain::InitializeBuffers()
 
 	int index = 0;
 
+	for (int j = 0; j < height; j++)
+	{
+		for (int i = 0; i < width; i++)
+		{
+			int index = (width * j) + (i);
+
+			vertices[index].Position = XMFLOAT3(_heightMap[index].x, _heightMap[index].y, _heightMap[index].z);
+			vertices[index].Uv = XMFLOAT2(_heightMap[index].tu, _heightMap[index].tv);
+			vertices[index].Normal = XMFLOAT3(_heightMap[index].nx, _heightMap[index].ny, _heightMap[index].nz);
+		}
+	}
+	index = 0;
 	for (int j = 0; j < height - 1; j++)
 	{
 		for (int i = 0; i < width - 1; i++)
 		{
-			int index1 = (height * j) + (i);
-			int index2= (height * j) + (i+1);
-			int index3 = (height * (j+1)) + (i);
-			int index4 = (height * (j+1)) + (i+1);
+			UINT index1 = (height * j) + i;          // 왼쪽 아래.
+			UINT index2 = (height * j) + (i + 1);      // 오른쪽 아래.
+			UINT index3 = (height * (j + 1)) + i;      // 왼쪽 위.
+			UINT index4 = (height * (j + 1)) + (i + 1);  // 오른쪽 위.
 
-			//0,1 왼쪽 위
-			{
-				tv = _heightMap[index3].tv;
+			indices[index] = index3;
+			index++;
 
-				if (tv == 1.0f)
-				{
-					tv = 0.0f;
-				}
+			indices[index] = index4;
+			index++;
 
-				vertices[index].Position = XMFLOAT3(_heightMap[index3].x, _heightMap[index3].y, _heightMap[index3].z);
-				vertices[index].Uv = XMFLOAT2(_heightMap[index3].tu, tv);
-				vertices[index].Normal = XMFLOAT3(_heightMap[index3].nx, _heightMap[index3].ny, _heightMap[index3].nz);
+			indices[index] = index1;
+			index++;
+			indices[index] = index1;
+			index++;
 
-				indices[index] = index;
-				index++;
-			}
-			
-			//1,1 오른쪽 위 
-			{
-				tu = _heightMap[index4].tu;
-				tv = _heightMap[index4].tv;
+			indices[index] = index4;
+			index++;
 
-				if (tu == 0.0f)
-					tu = 1.0f;
-				if (tv == 1.0f)
-					tv = 0.0f;
-
-				vertices[index].Position = XMFLOAT3(_heightMap[index4].x, _heightMap[index4].y, _heightMap[index4].z);
-				vertices[index].Uv = XMFLOAT2(tu, tv);
-				vertices[index].Normal = XMFLOAT3(_heightMap[index4].nx, _heightMap[index4].ny, _heightMap[index4].nz);
-				indices[index] = index;
-				index++;
-			}
-			
-			//0,0 왼쪽 아래
-			{
-				vertices[index].Position = XMFLOAT3(_heightMap[index1].x, _heightMap[index1].y, _heightMap[index1].z);
-				vertices[index].Uv = XMFLOAT2(_heightMap[index1].tu, _heightMap[index1].tv);
-				vertices[index].Normal = XMFLOAT3(_heightMap[index1].nx, _heightMap[index1].ny, _heightMap[index1].nz);
-				indices[index] = index;
-				index++;
-			}
-
-			//0,0 왼쪽 아래
-			{
-				vertices[index].Position = XMFLOAT3(_heightMap[index1].x, _heightMap[index1].y, _heightMap[index1].z);
-				vertices[index].Uv = XMFLOAT2(_heightMap[index1].tu, _heightMap[index1].tv);
-				vertices[index].Normal = XMFLOAT3(_heightMap[index1].nx, _heightMap[index1].ny, _heightMap[index1].nz);
-				indices[index] = index;
-				index++;
-			}
-
-			//1,1 오른쪽 위
-			{
-				tu = _heightMap[index4].tu;
-				tv = _heightMap[index4].tv;
-
-				if (tu == 0.0f)
-					tu = 1.0f;
-				if (tv == 1.0f)
-					tv = 0.0f;
-
-				vertices[index].Position = XMFLOAT3(_heightMap[index4].x, _heightMap[index4].y, _heightMap[index4].z);
-				vertices[index].Uv = XMFLOAT2(tu, tv);
-				vertices[index].Normal = XMFLOAT3(_heightMap[index4].nx, _heightMap[index4].ny, _heightMap[index4].nz);
-				indices[index] = index;
-				index++;
-			}
-			
-			//1,0 오른쪽 아래
-			{
-				tu = _heightMap[index2].tu;
-
-				if (tu == 0.0f)
-					tu = 1.0f;
-
-				vertices[index].Position = XMFLOAT3(_heightMap[index2].x, _heightMap[index2].y, _heightMap[index2].z);
-				vertices[index].Uv = XMFLOAT2(tu, _heightMap[index2].tv);
-				vertices[index].Normal = XMFLOAT3(_heightMap[index2].nx, _heightMap[index2].ny, _heightMap[index2].nz);
-				indices[index] = index;
-				index++;
-			}
+			indices[index] = index2;
+			index++;
 		}
 	}
 
@@ -828,7 +807,7 @@ void Terrain::CalculateTextureCoordinate()
 	int incrementCount = width / detail;
 
 	float tuCoordinate = 0.0f;
-	float tvCoordinate = 1.0f;
+	float tvCoordinate = 0.0f;
 
 	int tuCount = 0;
 	int tvCount = 0;
@@ -843,29 +822,16 @@ void Terrain::CalculateTextureCoordinate()
 			_heightMap[index].tv = tvCoordinate;
 
 			tuCoordinate += incrementValue;
-			tuCount++;
-
-			if (tuCount == incrementCount)
-			{
-				tuCoordinate = 0.0f;
-				tuCount = 0;
-			}
 		}
 
-		tvCoordinate -= incrementValue;
-		tvCount++;
-
-		if (tvCount == incrementCount)
-		{
-			tvCoordinate = 1.0f;
-			tvCount = 0;
-		}
+		tvCoordinate += incrementValue;
+		tuCoordinate = 0.0f;
 	}
 }
 
 void Terrain::ReDrawNormal()
 {
-	/*for (UINT i = 0; i < indexCount / 3; i++)
+	for (UINT i = 0; i < indexCount / 3; i++)
 	{
 		UINT index0 = indices[i * 3 + 0];
 		UINT index1 = indices[i * 3 + 1];
@@ -885,14 +851,14 @@ void Terrain::ReDrawNormal()
 		vertices[index0].Normal = vNormal;
 		vertices[index1].Normal = vNormal;
 		vertices[index2].Normal = vNormal;
-	}*/
+	}
 
-	/*for (UINT i = 0; i < vertexCount; i++)
+	for (UINT i = 0; i < vertexCount; i++)
 	{
 		XMVECTOR temp = XMLoadFloat3(&vertices[i].Normal);
 		temp = XMVector3Normalize(temp);
 		XMStoreFloat3(&vertices[i].Normal, temp);
-	}*/
+	}
 
 	/*D3D::GetDC()->UpdateSubresource
 	(

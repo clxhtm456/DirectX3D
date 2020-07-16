@@ -23,7 +23,7 @@ public:
 
 	int GetDrawCount();
 	bool GetHeightAtPosition(float, float, OUT float&);
-	bool GetPickedPosition(float, float, OUT Vector3&);
+	void QuadVertex(UINT x, UINT z);
 private:
 	void CalculateMeshDimensions(int, float&, float&, float&);
 	void CreateTreeNode(NodeType*, float, float, float);
@@ -34,9 +34,11 @@ private:
 
 	void FindNode(NodeType*, float, float, float&);
 	bool CheckHeightOfTriangle(float, float, float&, float[3], float[3], float[3]);
+	void SearchVertex(NodeType* node, UINT x, UINT z);
 private:
 	int m_triangleCount, m_drawCount;
 	VertexTextureNormal* m_vertexList = nullptr;
+	UINT* m_indexList = nullptr;
 	NodeType* m_parentNode = nullptr;
 private:
 	Terrain* m_Terrain;

@@ -1,5 +1,22 @@
 #include "RenderingNode.hlsli"
 
+SamplerState terrainSample : register(s10);
+
+SamplerState Sampler_Filter_Point
+{
+	Filter = MIN_MAG_MIP_POINT;
+};
+
+SamplerState Sampler_Filter_Linear
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+};
+
+SamplerState Sampler_Filter_ANISOTROPIC
+{
+	Filter = ANISOTROPIC;
+};
+
 struct VertexInput
 {
 	float4 Position : POSITION;
@@ -124,7 +141,7 @@ VertexOutput VS(VertexInput input)
 
 float4 PS(VertexOutput input) : SV_TARGET
 {
-	float3 diffuse = BaseMap.Sample(BaseSamp, input.Uv).rgb;
+	float3 diffuse = BaseMap.Sample(terrainSample, input.Uv).rgb;
 	float NdotL = dot(normalize(input.Normal), -CB_Light.Direction);
 
     float4 brush = GetBrushColor(input.WPosition.xyz);
