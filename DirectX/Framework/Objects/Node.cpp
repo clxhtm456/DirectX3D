@@ -117,6 +117,10 @@ void Node::AutoPostRender(Camera* viewer)
 		object->AutoPostRender(viewer);
 }
 
+void Node::ResourceBinding(Camera * viewer)
+{
+}
+
 void Node::Render(Camera* viewr)
 {
 }

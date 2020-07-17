@@ -57,6 +57,7 @@ Camera::~Camera()
 	delete renderTarget;
 	delete depthStencil;
 	delete renderViewport;
+	delete gBuffer;
 	renderImage->Release();
 	//delete renderImage;
 }
@@ -187,6 +188,20 @@ void Camera::View()
 	matView = XMMatrixLookAtLH(_position, _position + (forward), up);
 }
 
+void Camera::SetRNShader2Depth(RenderingNode * node)
+{
+	psShaderSlot = node->GetPSShader();
+	//psShaderSlot = node->GetVSShader();
+	//node->SetShader(depthShader);
+	node->SetPSShader(gBuffer->GetShader());
+}
+
+void Camera::SetRNShader2Origin(RenderingNode * node)
+{
+	node->SetPSShader(psShaderSlot);
+	//node->SetPSShader(psShaderSlot);
+}
+
 bool Camera::CheckMask(UINT targetMask)
 {
 	return cameraMask & targetMask;
@@ -249,7 +264,7 @@ void Camera::SetUpRender()
 	}
 }
 
-void Camera::ResourceBinding(Camera* viewer)
+void Camera::Render(Camera* viewer)
 {
 	if (default.useGBuffer == false)
 		return;

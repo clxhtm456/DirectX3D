@@ -119,7 +119,7 @@ void TestScene::CreateFreedomCamera()
 	CameraOption option;
 	option.Width = desc.Width;
 	option.Height = desc.Height;
-	//option.useGBuffer = true;
+	option.useGBuffer = true;
 
 	freedomCam = Freedom::Create(option);
 	freedomCam->SetPosition(20, 37, -68);

@@ -3,8 +3,18 @@
 struct HeightMapType
 {
 	float x, y, z;
+	float nx, ny, nz;
+	float r, g, b;
+};
+
+struct ModelType
+{
+	float x, y, z;
 	float tu, tv;
 	float nx, ny, nz;
+	float tx, ty, tz;
+	float bx, by, bz;
+	float r, g, b;
 };
 
 struct VectorType
@@ -17,6 +27,13 @@ struct TerrainVertex
 	Vector3 Position = Vector3(0,0,0);
 	Vector2 Uv = Vector2(0, 0);
 	Vector3 Normal = Vector3(0, 0, 0);
+};
+
+struct TempVertexType
+{
+	float x, y, z;
+	float tu, tv;
+	float nx, ny, nz;
 };
 
 class Terrain : public RenderingNode
@@ -53,12 +70,23 @@ public:
 	void CopyIndexArray(void* indexList);
 	ID3D11SamplerState& GetSampleState() { return (*m_sampleState); }
 private:
-	bool LoadHeightMap(const char* filename);
+	bool LoadSetupFile(const char*);
+	bool LoadRawHeightMap();
+	void ShutdownHeightMap();
+	void SetTerrainCoordinates();
 	bool CalculateNormals();
-	bool InitializeBuffers();
-	void CalculateTextureCoordinate();
-	void ReDrawNormal();
+	bool LoadColorMap();
+	bool BuildTerrainModel();
+	void ShutdownTerrainModel();
+	void CalculateTerrainVectors();
+	void CalculateTangentBinormal(TempVertexType, TempVertexType, TempVertexType, VectorType&, VectorType&);
+	bool LoadTerrainCells();
+	void ShutdownTerrainCells();
 
+	bool RenderCell(int, class Frustum*);
+	void RenderCellLines(int);
+
+	void ReDrawNormal();
 	void RaiseHeight(vector<VertexTextureNormal*> vertexVector, float speed);
 	void FallHeight(vector<VertexTextureNormal*> vertexVector, float speed);
 	void NoiseHeight(vector<VertexTextureNormal*> vertexVector, float min, float max);
@@ -103,10 +131,10 @@ private:
 private:
 	VertexTextureNormal* vertices;
 	UINT* indices;
-	HeightMapType* _heightMap;
 
 	ConstantBuffer* brushBuffer;
 	ConstantBuffer* lineBuffer;
+
 
 	ID3D11SamplerState* m_sampleState;
 private:
@@ -115,6 +143,22 @@ private:
 	UINT detail;
 private:
 	class QuadTree* m_QuadTree;
+
+	int m_terrainHeight = 0;
+	int m_terrainWidth = 0;
+	float m_heightScale = 0.0f;
+	char* m_terrainFilename = nullptr;
+	char* m_colorMapFilename = nullptr;
+
+	HeightMapType* m_heightMap = nullptr;
+	ModelType* m_terrainModel = nullptr;
+
+	class TerrainCellClass* m_TerrainCells = nullptr;
+
+	int m_cellCount = 0;
+	int m_renderCount = 0;
+	int m_cellsDrawn = 0;
+	int m_cellsCulled = 0;
 
 	
 };

@@ -124,8 +124,16 @@ void Scene::AutoRender()
 		for (auto niter = _childList.begin(); niter != _childList.end(); niter++)
 		{
 			Node* object = *niter;
+
+			RenderingNode* renderObject = dynamic_cast<RenderingNode*>(object);
+			if(renderObject != NULL)
+				camera->SetRNShader2Depth(renderObject);
+
 			if (camera->CheckMask(object->GetObjectMask()))
 				object->AutoRender(camera);
+
+			if (renderObject != NULL)
+				camera->SetRNShader2Origin(renderObject);
 		}
 		camera->AutoRender(camera);
 	}

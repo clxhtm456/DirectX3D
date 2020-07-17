@@ -39,12 +39,8 @@ struct ShadowPixelInput
 	float3 ViewPos : VIEWPOS;
 };
 
-float4 PS_Shadow(ShadowPixelInput input) : SV_Target
+float4 PS_Shadow(ShadowPixelInput input, float4 color) : SV_Target0
 {
-	float3 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv).rgb;
-	float4 result = ComputeLight(input.Normal, input.ViewPos, input.wPosition);
-	float4 color = float4(diffuse, 1) * result;
-    
 	input.sPosition.xyz /= input.sPosition.w;
 
 	[flatten]

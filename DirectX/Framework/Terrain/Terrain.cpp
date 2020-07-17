@@ -1,6 +1,8 @@
-#include "Framework.h"
+﻿#include "Framework.h"
 #include "Terrain.h"
 #include "QuadTree.h"
+#include "TerrainCellClass.h"
+#include "Viewer/Frustum.h"
 
 #include <d3dx10math.h>
 
@@ -10,7 +12,7 @@ using namespace DirectX::TriangleTests;
 
 /*
 TerrainTexture 
-��ó : https://copynull.tistory.com/307?category=649931
+출처 : https://copynull.tistory.com/307?category=649931
 */
 
 Terrain::Terrain()
@@ -42,39 +44,60 @@ bool Terrain::Init(UINT horizontal, UINT vertical, UINT textureDetail)
 	height = vertical;
 	detail = textureDetail;
 
-	LoadHeightMap("");
-
-	CalculateNormals();
-	CalculateTextureCoordinate();
-	InitializeBuffers();
-
-	brushBuffer = new ConstantBuffer(&brushDesc, sizeof(BrushDesc));
-	lineBuffer = new ConstantBuffer(&lineDesc, sizeof(LineDesc));
-
-	m_QuadTree = new QuadTree(this);
-
-	// �ؽ�ó ���÷� ���� ����ü�� �����մϴ�.
-	D3D11_SAMPLER_DESC samplerDesc;
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 1;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	// �ؽ�ó ���÷� ���¸� ����ϴ�.
-	HRESULT hr = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
-	if (FAILED(hr))
+	bool result = LoadSetupFile("");
+	if (!result)
 	{
 		return false;
 	}
+
+	// 원시 파일의 데이터로 지형 높이 맵을 초기화합니다.
+	result = LoadRawHeightMap();
+	if (!result)
+	{
+		return false;
+	}
+
+	// 높이 스케일에 대한 X 및 Z 좌표를 설정하고 높이 스케일 값에 따라 지형 높이를 조정합니다.
+	SetTerrainCoordinates();
+
+	// 지형 데이터의 법선을 계산합니다.
+	result = CalculateNormals();
+	if (!result)
+	{
+		return false;
+	}
+
+	// 지형의 컬러 맵에 로드합니다.
+	result = LoadColorMap();
+	if (!result)
+	{
+		return false;
+	}
+
+	// 이제 지형의 3D 모델을 작성하십시오.
+	result = BuildTerrainModel();
+	if (!result)
+	{
+		return false;
+	}
+
+	// 이제 3D 지형 모델이 만들어지면 더 이상 메모리에 필요하지 않으므로 높이 맵을 릴리즈 할 수 있습니다.
+	ShutdownHeightMap();
+
+	// 지형 모델에 대한 탄젠트 및 바이 노멀을 계산합니다.
+	CalculateTerrainVectors();
+
+	// 렌더링 버퍼를 지형 데이터로 로드합니다.
+	result = LoadTerrainCells();
+	if (!result)
+	{
+		return false;
+	}
+
+	// 렌더링 버퍼가 로드된 지형 모델을 놓습니다.
+	ShutdownTerrainModel();
+
+	return true;
 
 	return true;
 }
@@ -87,7 +110,7 @@ Terrain::~Terrain()
 	SafeDeleteArray(indices);
 	SafeDelete(indexBuffer);
 
-	delete _heightMap;
+	delete m_heightMap;
 	delete brushBuffer;
 	delete lineBuffer;
 
@@ -160,7 +183,7 @@ void Terrain::Update()
 	{
 		float mouseDiff = sqrt(Mouse::Get()->GetMoveValue().x* Mouse::Get()->GetMoveValue().x + Mouse::Get()->GetMoveValue().y* Mouse::Get()->GetMoveValue().y);
 		if (mouseDiff > 0.1f)
-			brushDesc.Location = GetPickedPosition();//GetPickedPosition �� ���� �����Ӱ���
+			brushDesc.Location = GetPickedPosition();//GetPickedPosition 에 의해 프레임감소
 
 		vector<VertexTextureNormal*> vertexVector;
 		switch (brushDesc.Type)
@@ -550,46 +573,186 @@ void Terrain::CopyIndexArray(void* indexList)
 	memcpy(indexList, indices, sizeof(UINT) * indexCount);
 }
 
-bool Terrain::LoadHeightMap(const char * filename)
+
+
+bool Terrain::LoadSetupFile(const char* filename)
 {
-	////���� �ҷ�����
+	// 지형 파일 이름과 색상 맵 파일 이름을 포함할 문자열을 초기화합니다.
+	int stringLength = 256;
+
+	m_terrainFilename = new char[stringLength];
+	if (!m_terrainFilename)
+	{
+		return false;
+	}
+
+	m_colorMapFilename = new char[stringLength];
+	if (!m_colorMapFilename)
+	{
+		return false;
+	}
+
+	//// 설치 파일을 엽니다. 파일을 열 수 없으면 종료합니다.
+	//ifstream fin;
+	//fin.open(filename);
+	//if (fin.fail())
 	//{
-	//	FILE* filePtr = nullptr;
-	//	if (fopen_s(&filePtr, filename, "rb") != 0)
-	//		return false;
+	//	return false;
 	//}
 
-	_heightMap = new HeightMapType[width * height];
-	
-	if (!_heightMap)
-		return false;
+	//// 지형 파일 이름까지 읽습니다.
+	//char input = 0;
+	//fin.get(input);
+	//while (input != ':')
+	//{
+	//	fin.get(input);
+	//}
 
-	int k = 0;
-	
-	for (int j = 0; j < height; j++)
+	//// 지형 파일 이름을 읽습니다.
+	//fin >> m_terrainFilename;
+
+	//// 지형 높이 값을 읽습니다.
+	//fin.get(input);
+	//while (input != ':')
+	//{
+	//	fin.get(input);
+	//}
+
+	//// 지형 높이를 읽습니다.
+	//fin >> m_terrainHeight;
+
+	//// 지형 너비 값을 읽습니다.
+	//fin.get(input);
+	//while (input != ':')
+	//{
+	//	fin.get(input);
+	//}
+
+	//// 지형 폭을 읽습니다.
+	//fin >> m_terrainWidth;
+
+	//// 지형 높이 배율 값을 읽습니다.
+	//fin.get(input);
+	//while (input != ':')
+	//{
+	//	fin.get(input);
+	//}
+
+	//// 지형 높이 스케일링을 읽습니다.
+	//fin >> m_heightScale;
+
+	//// 컬러 맵 파일 이름을 읽습니다.
+	//fin.get(input);
+	//while (input != ':')
+	//{
+	//	fin.get(input);
+	//}
+
+	//// 컬러 맵 파일 이름을 읽습니다.
+	//fin >> m_colorMapFilename;
+
+	//// 설정 파일을 닫습니다.
+	//fin.close();
+
+	return true;
+}
+
+
+bool Terrain::LoadRawHeightMap()
+{
+	// 높이 맵 데이터를 보관할 플로트 배열을 생성합니다.
+	m_heightMap = new HeightMapType[m_terrainWidth * m_terrainHeight];
+	if (!m_heightMap)
 	{
-		for (int i = 0; i < width; i++)
+		return false;
+	}
+
+	// 바이너리로 읽을 수 있도록 16 비트 원시 높이 맵 파일을 엽니다.
+	FILE* filePtr = nullptr;
+	if (fopen_s(&filePtr, m_terrainFilename, "rb") != 0)
+	{
+		return false;
+	}
+
+	// 원시 이미지 데이터의 크기를 계산합니다.
+	int imageSize = m_terrainHeight * m_terrainWidth;
+
+	// 원시 이미지 데이터에 메모리를 할당합니다.
+	unsigned short* rawImage = new unsigned short[imageSize];
+	if (!rawImage)
+	{
+		return false;
+	}
+
+	// 원시 이미지 데이터를 읽습니다.
+	if (fread(rawImage, sizeof(unsigned short), imageSize, filePtr) != imageSize)
+	{
+		return false;
+	}
+
+	// 파일을 닫습니다.
+	if (fclose(filePtr) != 0)
+	{
+		return false;
+	}
+
+	// 이미지 데이터를 높이 맵 배열에 복사합니다.
+	for (int j = 0; j < m_terrainHeight; j++)
+	{
+		for (int i = 0; i < m_terrainWidth; i++)
 		{
-			//UCHAR bitMapheight = bitmapimage[k];
+			int index = (m_terrainWidth * j) + i;
 
-			int index = height * j + i;
-
-			_heightMap[index].x = (float)i;
-			_heightMap[index].y = (float)0;
-			_heightMap[index].z = (float)j;
-
-			k += 3;
+			// 높이 맵 배열에이 지점의 높이를 저장합니다.
+			m_heightMap[index].y = (float)rawImage[index];
 		}
 	}
 
-	//��Ʈ�� �̹��� ������ ����
-	{
+	// 비트 맵 이미지 데이터를 해제합니다.
+	delete[] rawImage;
+	rawImage = 0;
 
-	}
+	// 이제 읽은 지형 파일 이름을 해제합니다.
+	delete[] m_terrainFilename;
+	m_terrainFilename = 0;
 
 	return true;
-
 }
+
+
+void Terrain::ShutdownHeightMap()
+{
+	// 높이 맵 배열을 해제합니다.
+	if (m_heightMap)
+	{
+		delete[] m_heightMap;
+		m_heightMap = 0;
+	}
+}
+
+
+void Terrain::SetTerrainCoordinates()
+{
+	// 높이 맵 배열의 모든 요소를 ​​반복하고 좌표를 올바르게 조정합니다.
+	for (int j = 0; j < m_terrainHeight; j++)
+	{
+		for (int i = 0; i < m_terrainWidth; i++)
+		{
+			int index = (m_terrainWidth * j) + i;
+
+			// X 및 Z 좌표를 설정합니다.
+			m_heightMap[index].x = (float)i;
+			m_heightMap[index].z = -(float)j;
+
+			// 지형 깊이를 양의 범위로 이동합니다. 예를 들어 (0, -256)에서 (256, 0)까지입니다.
+			m_heightMap[index].z += (float)(m_terrainHeight - 1);
+
+			// 높이를 조절합니다.
+			m_heightMap[index].y /= m_heightScale;
+		}
+	}
+}
+
 
 bool Terrain::CalculateNormals()
 {
@@ -598,37 +761,45 @@ bool Terrain::CalculateNormals()
 	int index3 = 0;
 	int index = 0;
 	int count = 0;
-	float vertex1[3] = { 0.0f,0.0f,0.0f };
-	float vertex2[3] = { 0.0f,0.0f,0.0f };
-	float vertex3[3] = { 0.0f,0.0f,0.0f };
-	float vector1[3] = { 0.0f,0.0f,0.0f };
-	float vector2[3] = { 0.0f,0.0f,0.0f };
-	float sum[3] = { 0.0f,0.0f,0.0f };
+	float vertex1[3] = { 0.f, 0.f, 0.f };
+	float vertex2[3] = { 0.f, 0.f, 0.f };
+	float vertex3[3] = { 0.f, 0.f, 0.f };
+	float vector1[3] = { 0.f, 0.f, 0.f };
+	float vector2[3] = { 0.f, 0.f, 0.f };
+	float sum[3] = { 0.f, 0.f, 0.f };
 	float length = 0.0f;
 
-	VectorType* normals = new VectorType[(height - 1) * (width - 1)];
+
+	// 정규화되지 않은 법선 벡터를 저장할 임시 배열을 생성합니다.
+	VectorType* normals = new VectorType[(m_terrainHeight - 1) * (m_terrainWidth - 1)];
 	if (!normals)
-		return false;
-	for (int j = 0; j < height - 1; j++)
 	{
-		for (int i = 0; i < width - 1; i++)
+		return false;
+	}
+
+	// 메쉬의 모든면을 살펴보고 법선을 계산합니다.
+	for (int j = 0; j < (m_terrainHeight - 1); j++)
+	{
+		for (int i = 0; i < (m_terrainWidth - 1); i++)
 		{
-			index1 = (j*height) + i;
-			index2 = (j*height) + (i +1);
-			index3 = ((j+1)*height) + i;
-			
-			vertex1[0] = _heightMap[index1].x;
-			vertex1[1] = _heightMap[index1].y;
-			vertex1[2] = _heightMap[index1].z;
+			index1 = ((j + 1) * m_terrainWidth) + i;      // 왼쪽 아래 꼭지점.
+			index2 = ((j + 1) * m_terrainWidth) + (i + 1);  // 오른쪽 하단 정점.
+			index3 = (j * m_terrainWidth) + i;          // 좌상단의 정점.
 
-			vertex2[0] = _heightMap[index2].x;
-			vertex2[1] = _heightMap[index2].y;
-			vertex2[2] = _heightMap[index2].z;
+			// 표면에서 세 개의 꼭지점을 가져옵니다.
+			vertex1[0] = m_heightMap[index1].x;
+			vertex1[1] = m_heightMap[index1].y;
+			vertex1[2] = m_heightMap[index1].z;
 
-			vertex3[0] = _heightMap[index3].x;
-			vertex3[1] = _heightMap[index3].y;
-			vertex3[2] = _heightMap[index3].z;
+			vertex2[0] = m_heightMap[index2].x;
+			vertex2[1] = m_heightMap[index2].y;
+			vertex2[2] = m_heightMap[index2].z;
 
+			vertex3[0] = m_heightMap[index3].x;
+			vertex3[1] = m_heightMap[index3].y;
+			vertex3[2] = m_heightMap[index3].z;
+
+			// 표면의 두 벡터를 계산합니다.
 			vector1[0] = vertex1[0] - vertex3[0];
 			vector1[1] = vertex1[1] - vertex3[1];
 			vector1[2] = vertex1[2] - vertex3[2];
@@ -636,186 +807,529 @@ bool Terrain::CalculateNormals()
 			vector2[1] = vertex3[1] - vertex2[1];
 			vector2[2] = vertex3[2] - vertex2[2];
 
-			index = (j*(height - 1)) + i;
+			index = (j * (m_terrainWidth - 1)) + i;
 
+			// 이 두 법선에 대한 정규화되지 않은 값을 얻기 위해 두 벡터의 외적을 계산합니다.
 			normals[index].x = (vector1[1] * vector2[2]) - (vector1[2] * vector2[1]);
 			normals[index].y = (vector1[2] * vector2[0]) - (vector1[0] * vector2[2]);
 			normals[index].z = (vector1[0] * vector2[1]) - (vector1[1] * vector2[0]);
+
+			// 길이를 계산합니다.
+			length = (float)sqrt((normals[index].x * normals[index].x) + (normals[index].y * normals[index].y) +
+				(normals[index].z * normals[index].z));
+
+			// 길이를 사용하여이면의 최종 값을 표준화합니다.
+			normals[index].x = (normals[index].x / length);
+			normals[index].y = (normals[index].y / length);
+			normals[index].z = (normals[index].z / length);
 		}
 	}
 
-	//�� ������ ������ ���
-	//������ ��� �� ������ ���� ��հ��� ����
-	for (int j = 0; j < height - 1; j++)
+	// 이제 모든 정점을 살펴보고 각면의 평균을 취합니다. 	
+	// 정점이 닿아 그 정점에 대한 평균 평균값을 얻는다.
+	for (int j = 0; j < m_terrainHeight; j++)
 	{
-		for (int i = 0; i < width - 1; i++)
+		for (int i = 0; i < m_terrainWidth; i++)
 		{
+			// 합계를 초기화합니다.
 			sum[0] = 0.0f;
 			sum[1] = 0.0f;
 			sum[2] = 0.0f;
 
-			count = 0;
-
-			//���ʾƷ���
+			// 왼쪽 아래면.
 			if (((i - 1) >= 0) && ((j - 1) >= 0))
 			{
-				index = ((j - 1)*(height - 1)) + (i - 1);
+				index = ((j - 1) * (m_terrainWidth - 1)) + (i - 1);
 
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
 				sum[2] += normals[index].z;
-				count++;
 			}
 
-			//�����ʾƷ���
-			if ((i < (width -1)) && ((j-1) >= 0))
+			// 오른쪽 아래 면.
+			if ((i < (m_terrainWidth - 1)) && ((j - 1) >= 0))
 			{
-				index = ((j - 1)*(height - 1)) + (i);
+				index = ((j - 1) * (m_terrainWidth - 1)) + i;
 
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
 				sum[2] += normals[index].z;
-				count++;
 			}
 
-			//��������
-			if (((i - 1) >= 0) && (j<(height -1)))
+			// 왼쪽 위 면.
+			if (((i - 1) >= 0) && (j < (m_terrainHeight - 1)))
 			{
-				index = (j*(height - 1)) + (i - 1);
+				index = (j * (m_terrainWidth - 1)) + (i - 1);
 
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
 				sum[2] += normals[index].z;
-				count++;
 			}
 
-			//����������
-			if ((i < (width - 1)) && (j < (height - 1)))
+			// 오른쪽 위 면.
+			if ((i < (m_terrainWidth - 1)) && (j < (m_terrainHeight - 1)))
 			{
-				index = (j*(height - 1)) + i;
+				index = (j * (m_terrainWidth - 1)) + i;
 
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
 				sum[2] += normals[index].z;
-				count++;
 			}
 
-			sum[0] = (sum[0]/(float)count);
-			sum[1] = (sum[1]/(float)count);
-			sum[2] = (sum[2]/(float)count);
-
+			// 이 법선의 길이를 계산합니다.
 			length = (float)sqrt((sum[0] * sum[0]) + (sum[1] * sum[1]) + (sum[2] * sum[2]));
 
-			index = (j * height) + i;
+			// 높이 맵 배열의 정점 위치에 대한 인덱스를 가져옵니다.
+			index = (j * m_terrainWidth) + i;
 
-			_heightMap[index].nx = (sum[0] / length);
-			_heightMap[index].ny = (sum[1] / length);
-			_heightMap[index].nz = (sum[2] / length);
+			// 이 정점의 최종 공유 법선을 표준화하여 높이 맵 배열에 저장합니다.
+			m_heightMap[index].nx = (sum[0] / length);
+			m_heightMap[index].ny = (sum[1] / length);
+			m_heightMap[index].nz = (sum[2] / length);
 		}
 	}
+
+	// 임시 법선을 해제합니다.
 	delete[] normals;
 	normals = 0;
 
 	return true;
-
 }
 
-bool Terrain::InitializeBuffers()
+
+bool Terrain::LoadColorMap()
 {
-	float tu = 0.0f;
-	float tv = 0.0f;
+	//// 바이너리로 컬러 맵 파일을 엽니다.
+	//FILE* filePtr = nullptr;
+	//if (fopen_s(&filePtr, m_colorMapFilename, "rb") != 0)
+	//{
+	//	return false;
+	//}
 
-	vertexCount = (width ) *(height );
-	indexCount = (width - 1) * (height - 1) * 6;
+	//// 파일 헤더를 읽습니다.
+	//BITMAPFILEHEADER bitmapFileHeader;
+	//if (fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr) != 1)
+	//{
+	//	return false;
+	//}
 
-	vertices = new VertexTextureNormal[vertexCount];
-	if (!vertices)
-		return false;
+	//// 비트 맵 정보 헤더를 읽습니다.
+	//BITMAPINFOHEADER bitmapInfoHeader;
+	//if (fread(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr) != 1)
+	//{
+	//	return false;
+	//}
 
-	indices = new UINT[indexCount];
-	if (!indices)
-		return false;
+	//// 컬러 맵 치수가 쉬운 1 : 1 매핑을위한 지형 치수와 동일한 지 확인하십시오.
+	//if ((bitmapInfoHeader.biWidth != m_terrainWidth) || (bitmapInfoHeader.biHeight != m_terrainHeight))
+	//{
+	//	return false;
+	//}
 
-	int index = 0;
+	//// 비트 맵 이미지 데이터의 크기를 계산합니다.
+	//// 이것은 2 차원으로 나눌 수 없으므로 (예 : 257x257) 각 행에 여분의 바이트를 추가해야합니다.
+	//int imageSize = m_terrainHeight * ((m_terrainWidth * 3) + 1);
 
-	for (int j = 0; j < height; j++)
-	{
-		for (int i = 0; i < width; i++)
-		{
-			int index = (width * j) + (i);
+	//// 비트 맵 이미지 데이터에 메모리를 할당합니다.
+	//unsigned char* bitmapImage = new unsigned char[imageSize];
+	//if (!bitmapImage)
+	//{
+	//	return false;
+	//}
 
-			vertices[index].Position = XMFLOAT3(_heightMap[index].x, _heightMap[index].y, _heightMap[index].z);
-			vertices[index].Uv = XMFLOAT2(_heightMap[index].tu, _heightMap[index].tv);
-			vertices[index].Normal = XMFLOAT3(_heightMap[index].nx, _heightMap[index].ny, _heightMap[index].nz);
-		}
-	}
-	index = 0;
-	for (int j = 0; j < height - 1; j++)
-	{
-		for (int i = 0; i < width - 1; i++)
-		{
-			UINT index1 = (height * j) + i;          // ���� �Ʒ�.
-			UINT index2 = (height * j) + (i + 1);      // ������ �Ʒ�.
-			UINT index3 = (height * (j + 1)) + i;      // ���� ��.
-			UINT index4 = (height * (j + 1)) + (i + 1);  // ������ ��.
+	//// 비트 맵 데이터의 시작 부분으로 이동합니다.
+	//fseek(filePtr, bitmapFileHeader.bfOffBits, SEEK_SET);
 
-			indices[index] = index3;
-			index++;
+	//// 비트 맵 이미지 데이터를 읽습니다.
+	//if (fread(bitmapImage, 1, imageSize, filePtr) != imageSize)
+	//{
+	//	return false;
+	//}
 
-			indices[index] = index4;
-			index++;
+	//// 파일을 닫습니다.
+	//if (fclose(filePtr) != 0)
+	//{
+	//	return false;
+	//}
 
-			indices[index] = index1;
-			index++;
-			indices[index] = index1;
-			index++;
+	//// 이미지 데이터 버퍼의 위치를 ​​초기화합니다.
+	//int k = 0;
 
-			indices[index] = index4;
-			index++;
+	//// 이미지 데이터를 높이 맵 구조의 색상 맵 부분으로 읽습니다.
+	//for (int j = 0; j < m_terrainHeight; j++)
+	//{
+	//	for (int i = 0; i < m_terrainWidth; i++)
+	//	{
+	//		// 비트 맵은 거꾸로되어 배열의 맨 아래부터 맨 위로 로드됩니다.
+	//		int index = (m_terrainWidth * (m_terrainHeight - 1 - j)) + i;
 
-			indices[index] = index2;
-			index++;
-		}
-	}
+	//		m_heightMap[index].b = (float)bitmapImage[k] / 255.0f;
+	//		m_heightMap[index].g = (float)bitmapImage[k + 1] / 255.0f;
+	//		m_heightMap[index].r = (float)bitmapImage[k + 2] / 255.0f;
 
+	//		k += 3;
+	//	}
 
-	vertexBuffer = new VertexBuffer(vertices, vertexCount, sizeof(VertexTextureNormal), 0, true);
-	indexBuffer = new IndexBuffer(indices, indexCount);
+	//	// 2 비트 씩 비 - 나누기 (예 : 257x257)의 각 줄 끝에있는 여분의 바이트를 보상합니다.
+	//	k++;
+	//}
+
+	//// 비트 맵 이미지 데이터를 해제합니다.
+	//delete[] bitmapImage;
+	//bitmapImage = 0;
+
+	//// 이제 읽은 색상 맵 파일 이름을 해제합니다.
+	//delete[] m_colorMapFilename;
+	//m_colorMapFilename = 0;
 
 	return true;
 }
 
 
-void Terrain::CalculateTextureCoordinate()
+bool Terrain::BuildTerrainModel()
 {
-	//�ؽ��� ��ǥ ������
-	float incrementValue = (float)detail / (float)width;
+	// 3D 지형 모델에서 정점 수를 계산합니다.
+	vertexCount = (m_terrainHeight - 1) * (m_terrainWidth - 1) * 6;
 
-	//�ؽ��� �ݺ�Ƚ��
-	int incrementCount = width / detail;
-
-	float tuCoordinate = 0.0f;
-	float tvCoordinate = 0.0f;
-
-	int tuCount = 0;
-	int tvCount = 0;
-
-	for (UINT z = 0; z < height; z++)
+	// 3D 지형 모델 배열을 생성합니다.
+	m_terrainModel = new ModelType[vertexCount];
+	if (!m_terrainModel)
 	{
-		for (UINT x = 0; x < width; x++)
+		return false;
+	}
+
+	// 높이 맵 지형 데이터로 지형 모델을 로드합니다.
+	int index = 0;
+
+	for (int j = 0; j < (m_terrainHeight - 1); j++)
+	{
+		for (int i = 0; i < (m_terrainWidth - 1); i++)
 		{
-			UINT index = width * z + x;
+			int index1 = (m_terrainWidth * j) + i;          // 왼쪽 아래.
+			int index2 = (m_terrainWidth * j) + (i + 1);      // 오른쪽 아래.
+			int index3 = (m_terrainWidth * (j + 1)) + i;      // 왼쪽 위.
+			int index4 = (m_terrainWidth * (j + 1)) + (i + 1);  // 오른쪽 위.
 
-			_heightMap[index].tu = tuCoordinate;
-			_heightMap[index].tv = tvCoordinate;
+			// 이제 해당 쿼드에 대해 두 개의 삼각형을 생성합니다.
+			// 삼각형 1 - 왼쪽 위.
+			m_terrainModel[index].x = m_heightMap[index1].x;
+			m_terrainModel[index].y = m_heightMap[index1].y;
+			m_terrainModel[index].z = m_heightMap[index1].z;
+			m_terrainModel[index].tu = 0.0f;
+			m_terrainModel[index].tv = 0.0f;
+			m_terrainModel[index].nx = m_heightMap[index1].nx;
+			m_terrainModel[index].ny = m_heightMap[index1].ny;
+			m_terrainModel[index].nz = m_heightMap[index1].nz;
+			m_terrainModel[index].r = m_heightMap[index1].r;
+			m_terrainModel[index].g = m_heightMap[index1].g;
+			m_terrainModel[index].b = m_heightMap[index1].b;
+			index++;
 
-			tuCoordinate += incrementValue;
+			// 삼각형 1 - 오른쪽 위.
+			m_terrainModel[index].x = m_heightMap[index2].x;
+			m_terrainModel[index].y = m_heightMap[index2].y;
+			m_terrainModel[index].z = m_heightMap[index2].z;
+			m_terrainModel[index].tu = 1.0f;
+			m_terrainModel[index].tv = 0.0f;
+			m_terrainModel[index].nx = m_heightMap[index2].nx;
+			m_terrainModel[index].ny = m_heightMap[index2].ny;
+			m_terrainModel[index].nz = m_heightMap[index2].nz;
+			m_terrainModel[index].r = m_heightMap[index2].r;
+			m_terrainModel[index].g = m_heightMap[index2].g;
+			m_terrainModel[index].b = m_heightMap[index2].b;
+			index++;
+
+			// 삼각형 1 - 왼쪽 맨 아래.
+			m_terrainModel[index].x = m_heightMap[index3].x;
+			m_terrainModel[index].y = m_heightMap[index3].y;
+			m_terrainModel[index].z = m_heightMap[index3].z;
+			m_terrainModel[index].tu = 0.0f;
+			m_terrainModel[index].tv = 1.0f;
+			m_terrainModel[index].nx = m_heightMap[index3].nx;
+			m_terrainModel[index].ny = m_heightMap[index3].ny;
+			m_terrainModel[index].nz = m_heightMap[index3].nz;
+			m_terrainModel[index].r = m_heightMap[index3].r;
+			m_terrainModel[index].g = m_heightMap[index3].g;
+			m_terrainModel[index].b = m_heightMap[index3].b;
+			index++;
+
+			// 삼각형 2 - 왼쪽 아래.
+			m_terrainModel[index].x = m_heightMap[index3].x;
+			m_terrainModel[index].y = m_heightMap[index3].y;
+			m_terrainModel[index].z = m_heightMap[index3].z;
+			m_terrainModel[index].tu = 0.0f;
+			m_terrainModel[index].tv = 1.0f;
+			m_terrainModel[index].nx = m_heightMap[index3].nx;
+			m_terrainModel[index].ny = m_heightMap[index3].ny;
+			m_terrainModel[index].nz = m_heightMap[index3].nz;
+			m_terrainModel[index].r = m_heightMap[index3].r;
+			m_terrainModel[index].g = m_heightMap[index3].g;
+			m_terrainModel[index].b = m_heightMap[index3].b;
+			index++;
+
+			// 삼각형 2 - 오른쪽 위.
+			m_terrainModel[index].x = m_heightMap[index2].x;
+			m_terrainModel[index].y = m_heightMap[index2].y;
+			m_terrainModel[index].z = m_heightMap[index2].z;
+			m_terrainModel[index].tu = 1.0f;
+			m_terrainModel[index].tv = 0.0f;
+			m_terrainModel[index].nx = m_heightMap[index2].nx;
+			m_terrainModel[index].ny = m_heightMap[index2].ny;
+			m_terrainModel[index].nz = m_heightMap[index2].nz;
+			m_terrainModel[index].r = m_heightMap[index2].r;
+			m_terrainModel[index].g = m_heightMap[index2].g;
+			m_terrainModel[index].b = m_heightMap[index2].b;
+			index++;
+
+			// 삼각형 2 - 오른쪽 하단.
+			m_terrainModel[index].x = m_heightMap[index4].x;
+			m_terrainModel[index].y = m_heightMap[index4].y;
+			m_terrainModel[index].z = m_heightMap[index4].z;
+			m_terrainModel[index].tu = 1.0f;
+			m_terrainModel[index].tv = 1.0f;
+			m_terrainModel[index].nx = m_heightMap[index4].nx;
+			m_terrainModel[index].ny = m_heightMap[index4].ny;
+			m_terrainModel[index].nz = m_heightMap[index4].nz;
+			m_terrainModel[index].r = m_heightMap[index4].r;
+			m_terrainModel[index].g = m_heightMap[index4].g;
+			m_terrainModel[index].b = m_heightMap[index4].b;
+			index++;
 		}
+	}
 
-		tvCoordinate += incrementValue;
-		tuCoordinate = 0.0f;
+	return true;
+}
+
+
+void Terrain::ShutdownTerrainModel()
+{
+	// 지형 모델 데이터를 공개합니다.
+	if (m_terrainModel)
+	{
+		delete[] m_terrainModel;
+		m_terrainModel = 0;
 	}
 }
+
+
+void Terrain::CalculateTerrainVectors()
+{
+	//TempVertexType vertex1, vertex2, vertex3;
+	//VectorType tangent, binormal;
+
+
+	//// 지형 모델에서면의 수를 계산합니다.
+	//int faceCount = m_vertexCount / 3;
+
+	//// 모델 데이터에 대한 인덱스를 초기화합니다.
+	//int index = 0;
+
+	//// 모든면을 살펴보고 접선, 비공식 및 법선 벡터를 계산합니다.
+	//for (int i = 0; i < faceCount; i++)
+	//{
+	//	// 지형 모델에서이면에 대한 세 개의 정점을 가져옵니다.
+	//	vertex1.x = m_terrainModel[index].x;
+	//	vertex1.y = m_terrainModel[index].y;
+	//	vertex1.z = m_terrainModel[index].z;
+	//	vertex1.tu = m_terrainModel[index].tu;
+	//	vertex1.tv = m_terrainModel[index].tv;
+	//	vertex1.nx = m_terrainModel[index].nx;
+	//	vertex1.ny = m_terrainModel[index].ny;
+	//	vertex1.nz = m_terrainModel[index].nz;
+	//	index++;
+
+	//	vertex2.x = m_terrainModel[index].x;
+	//	vertex2.y = m_terrainModel[index].y;
+	//	vertex2.z = m_terrainModel[index].z;
+	//	vertex2.tu = m_terrainModel[index].tu;
+	//	vertex2.tv = m_terrainModel[index].tv;
+	//	vertex2.nx = m_terrainModel[index].nx;
+	//	vertex2.ny = m_terrainModel[index].ny;
+	//	vertex2.nz = m_terrainModel[index].nz;
+	//	index++;
+
+	//	vertex3.x = m_terrainModel[index].x;
+	//	vertex3.y = m_terrainModel[index].y;
+	//	vertex3.z = m_terrainModel[index].z;
+	//	vertex3.tu = m_terrainModel[index].tu;
+	//	vertex3.tv = m_terrainModel[index].tv;
+	//	vertex3.nx = m_terrainModel[index].nx;
+	//	vertex3.ny = m_terrainModel[index].ny;
+	//	vertex3.nz = m_terrainModel[index].nz;
+	//	index++;
+
+	//	// 그 얼굴의 탄젠트와 바이 노멀을 계산합니다.
+	//	CalculateTangentBinormal(vertex1, vertex2, vertex3, tangent, binormal);
+
+	//	// 이면에 대한 접선과 binormal을 모델 구조에 다시 저장하십시오.
+	//	m_terrainModel[index - 1].tx = tangent.x;
+	//	m_terrainModel[index - 1].ty = tangent.y;
+	//	m_terrainModel[index - 1].tz = tangent.z;
+	//	m_terrainModel[index - 1].bx = binormal.x;
+	//	m_terrainModel[index - 1].by = binormal.y;
+	//	m_terrainModel[index - 1].bz = binormal.z;
+
+	//	m_terrainModel[index - 2].tx = tangent.x;
+	//	m_terrainModel[index - 2].ty = tangent.y;
+	//	m_terrainModel[index - 2].tz = tangent.z;
+	//	m_terrainModel[index - 2].bx = binormal.x;
+	//	m_terrainModel[index - 2].by = binormal.y;
+	//	m_terrainModel[index - 2].bz = binormal.z;
+
+	//	m_terrainModel[index - 3].tx = tangent.x;
+	//	m_terrainModel[index - 3].ty = tangent.y;
+	//	m_terrainModel[index - 3].tz = tangent.z;
+	//	m_terrainModel[index - 3].bx = binormal.x;
+	//	m_terrainModel[index - 3].by = binormal.y;
+	//	m_terrainModel[index - 3].bz = binormal.z;
+	//}
+}
+
+
+void Terrain::CalculateTangentBinormal(TempVertexType vertex1, TempVertexType vertex2, TempVertexType vertex3, VectorType& tangent, VectorType& binormal)
+{
+	float vector1[3] = { 0.0f, 0.0f, 0.0f };
+	float vector2[3] = { 0.0f, 0.0f, 0.0f };
+	float tuVector[2] = { 0.0f, 0.0f };
+	float tvVector[2] = { 0.0f, 0.0f };
+
+
+	// 이면의 두 벡터를 계산합니다.
+	vector1[0] = vertex2.x - vertex1.x;
+	vector1[1] = vertex2.y - vertex1.y;
+	vector1[2] = vertex2.z - vertex1.z;
+
+	vector2[0] = vertex3.x - vertex1.x;
+	vector2[1] = vertex3.y - vertex1.y;
+	vector2[2] = vertex3.z - vertex1.z;
+
+	// tu 및 tv 텍스처 공간 벡터를 계산합니다.
+	tuVector[0] = vertex2.tu - vertex1.tu;
+	tvVector[0] = vertex2.tv - vertex1.tv;
+
+	tuVector[1] = vertex3.tu - vertex1.tu;
+	tvVector[1] = vertex3.tv - vertex1.tv;
+
+	// 탄젠트 / 바이 노멀 방정식의 분모를 계산합니다.
+	float den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
+
+	// 교차 곱을 계산하고 계수로 곱하여 접선과 비 구식을 얻습니다.
+	tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+	tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+	tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+	binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+	binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+	binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
+
+	// 이 법선의 길이를 계산합니다.
+	float length = (float)sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
+
+	// 법선을 표준화 한 다음 저장합니다.
+	tangent.x = tangent.x / length;
+	tangent.y = tangent.y / length;
+	tangent.z = tangent.z / length;
+
+	// 이 법선의 길이를 계산합니다.
+	length = (float)sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
+
+	// 법선을 표준화 한 다음 저장합니다.
+	binormal.x = binormal.x / length;
+	binormal.y = binormal.y / length;
+	binormal.z = binormal.z / length;
+}
+
+
+bool Terrain::LoadTerrainCells()
+{
+	// 각 지형 셀의 높이와 너비를 고정 33x33 꼭지점 배열로 설정합니다.
+	int cellHeight = 33;
+	int cellWidth = 33;
+
+	// 지형 데이터를 저장하는데 필요한 셀 수를 계산합니다.
+	int cellRowCount = (m_terrainWidth - 1) / (cellWidth - 1);
+	m_cellCount = cellRowCount * cellRowCount;
+
+	// 지형 셀 배열을 생성합니다.
+	m_TerrainCells = new TerrainCellClass[m_cellCount];
+	if (!m_TerrainCells)
+	{
+		return false;
+	}
+
+	// 모든 지형 셀을 반복하고 초기화합니다.
+	for (int j = 0; j < cellRowCount; j++)
+	{
+		for (int i = 0; i < cellRowCount; i++)
+		{
+			int index = (cellRowCount * j) + i;
+
+			if (!m_TerrainCells[index].Initialize(m_terrainModel, i, j, cellHeight, cellWidth, m_terrainWidth))
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+
+void Terrain::ShutdownTerrainCells()
+{
+	// 지형 셀 배열을 해제합니다.
+	if (m_TerrainCells)
+	{
+		for (int i = 0; i < m_cellCount; i++)
+		{
+			m_TerrainCells[i].Shutdown();
+		}
+
+		delete[] m_TerrainCells;
+		m_TerrainCells = 0;
+	}
+}
+
+
+bool Terrain::RenderCell(int cellId, Frustum* Frustum)
+{
+	float maxWidth = 0.0f;
+	float maxHeight = 0.0f;
+	float maxDepth = 0.0f;
+	float minWidth = 0.0f;
+	float minHeight = 0.0f;
+	float minDepth = 0.0f;
+
+	// 지형 셀의 크기를 가져옵니다.
+	m_TerrainCells[cellId].GetCellDimensions(maxWidth, maxHeight, maxDepth, minWidth, minHeight, minDepth);
+
+	// 셀이 표시되는지 확인합니다. 표시되지 않으면 반환하고 렌더링하지 않습니다.
+	//if (!Frustum->CheckRectangle2(maxWidth, maxHeight, maxDepth, minWidth, minHeight, minDepth))
+	//{
+	//	// 추려진 셀의 수를 증가시킵니다.
+	//	m_cellsCulled++;
+
+	//	return false;
+	//}
+
+	// 보이는 경우 렌더링합니다.
+	m_TerrainCells[cellId].Render();
+
+	// 렌더 카운트에 셀의 다각형을 추가합니다.
+	m_renderCount += (m_TerrainCells[cellId].GetVertexCount() / 3);
+
+	// 실제로 그려진 셀의 수를 증가시킵니다.
+	m_cellsDrawn++;
+
+	return true;
+}
+
+void Terrain::RenderCellLines(int cellId)
+{
+	m_TerrainCells[cellId].RenderLineBuffers();
+}
+
+
 
 void Terrain::ReDrawNormal()
 {
@@ -936,7 +1450,7 @@ void Terrain::SlopeHeight(vector<VertexTextureNormal*> vertexVector)
 	}
 	else
 	{
-		//����
+		//계산식
 		for (int i = 0; i < vertexVector.size(); i++)
 		{
 			float totaldx = slopeVector[i]->Position.x - vertexVector[i]->Position.x;
@@ -1024,10 +1538,10 @@ vector<VertexTextureNormal*> Terrain::CircleArea(Vector3 position, UINT type, UI
 	return vertexVector;
 }
 
-///����
-// 1. BrushType -> Sphere Type �߰�
-// 2. ShiftŰ�� ������ Ŭ���ϸ� ���� �ϰ�
-// 3. Noise(����)
-// 4. Smooth(���ȭ)
-// 5. Flat(��źȭ)
-// 6. Slope(�� �������� ���)
+///과제
+// 1. BrushType -> Sphere Type 추가
+// 2. Shift키를 누르고 클릭하면 지면 하강
+// 3. Noise(랜덤)
+// 4. Smooth(평균화)
+// 5. Flat(평탄화)
+// 6. Slope(두 점사이의 경사)

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "MapEditor.h"
 
-#define DEFAULT_HORIZONTAL	128
-#define DEFAULT_VERTICAL	128
+#define DEFAULT_HORIZONTAL	512
+#define DEFAULT_VERTICAL	512
 #define DEFAULT_DISTANCE	DEFAULT_VERTICAL*540/512
 
 MapEditor::MapEditor(Scene* scene):

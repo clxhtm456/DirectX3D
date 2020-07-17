@@ -1,5 +1,6 @@
 #include "RenderingNode.hlsli"
 #include "Shadow.hlsl"
+#include "DefferedRender.hlsl"
 
 #define MAX_BONE 256
 

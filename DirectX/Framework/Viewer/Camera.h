@@ -29,7 +29,7 @@ public:
 	virtual void PostUpdate() override;
 	virtual void LateUpdate() override;
 	void SetUpRender();
-	virtual void ResourceBinding(Camera* viewer) override;
+	virtual void Render(Camera* viewer) override;
 	virtual void PostRender(Camera* viewer) override;
 
 public:
@@ -63,6 +63,11 @@ protected :
 	virtual void Move();
 	virtual void Rotate();
 	virtual void View();
+public:
+	virtual void SetRNShader2Depth(RenderingNode* node);
+	virtual void SetRNShader2Origin(RenderingNode* node);
+private:
+	Shader* psShaderSlot;
 private:
 	XMVECTOR forward = XMVectorSet(0, 0, 1,0);
 	XMVECTOR up = XMVectorSet(0, 1, 0,0);

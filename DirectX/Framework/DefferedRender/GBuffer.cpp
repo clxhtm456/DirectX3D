@@ -10,7 +10,8 @@ GBuffer::GBuffer(UINT width, UINT height)
 	this->height = height < 1 ? (UINT)D3D::Height() : height;
 
 
-	shader = Shader::Add(L"DefferedRender");
+	deffredShader = Shader::PSAdd(L"DefferedRender");
+	gbufferShader = Shader::Add(L"GBufferRender");
 
 	diffuseRTV = new RenderTarget(this->width, this->height, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	specularRTV = new RenderTarget(this->width, this->height, DXGI_FORMAT_R32G32B32A32_FLOAT);
@@ -56,6 +57,13 @@ GBuffer::~GBuffer()
 	delete emissiveRTV;
 	delete normalRTV;
 	delete tangentRTV;
+	delete depthStencil;
+	delete viewport;
+
+	delete RSS;
+	delete packDss;
+	delete noDepthWriteLessDSS;
+	delete noDepthWriteGreaterDSS;
 
 	for (UINT i = 0; i < 6; i++)
 		debug2D[i]->Release();
@@ -167,6 +175,7 @@ void GBuffer::CreateRasterizerState()
 
 void GBuffer::RenderDirectional()
 {
+	gbufferShader->Render();
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	noDepthWriteLessDSS->SetState();

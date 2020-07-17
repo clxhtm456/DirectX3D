@@ -61,6 +61,7 @@
     <ClCompile Include="Systems\Window.cpp" />
     <ClCompile Include="Terrain\QuadTree.cpp" />
     <ClCompile Include="Terrain\Terrain.cpp" />
+    <ClCompile Include="Terrain\TerrainCellClass.cpp" />
     <ClCompile Include="Utilities\BinaryFile.cpp" />
     <ClCompile Include="Utilities\Math.cpp" />
     <ClCompile Include="Utilities\Path.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="Systems\Window.h" />
     <ClInclude Include="Terrain\QuadTree.h" />
     <ClInclude Include="Terrain\Terrain.h" />
+    <ClInclude Include="Terrain\TerrainCellClass.h" />
     <ClInclude Include="Utilities\BinaryFile.h" />
     <ClInclude Include="Utilities\Math.h" />
     <ClInclude Include="Utilities\Path.h" />

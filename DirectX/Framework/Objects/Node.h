@@ -14,7 +14,7 @@ protected:
 	virtual void PostUpdate() = 0;
 	virtual void Update() = 0;
 	virtual void LateUpdate() = 0;
-	virtual void ResourceBinding(class Camera* viewer) = 0;
+	virtual void ResourceBinding(class Camera* viewer);
 	virtual void Render(class Camera* viewr = nullptr);
 	virtual void PostRender(class Camera* viewer) = 0;
 	void Destroy();

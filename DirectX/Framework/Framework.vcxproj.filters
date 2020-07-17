@@ -199,6 +199,9 @@
     <ClCompile Include="Viewer\Frustum.cpp">
       <Filter>Viewer</Filter>
     </ClCompile>
+    <ClCompile Include="Terrain\TerrainCellClass.cpp">
+      <Filter>Terrain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\Keyboard.h">
@@ -378,6 +381,9 @@
     </ClInclude>
     <ClInclude Include="Viewer\Frustum.h">
       <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain\TerrainCellClass.h">
+      <Filter>Terrain</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

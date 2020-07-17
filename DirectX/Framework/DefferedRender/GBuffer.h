@@ -22,6 +22,7 @@ private:
 	void CalcSpotLights(UINT count);
 	void RenderSpotLights();
 public:
+	Shader* GetShader() { return deffredShader; }
 	//void SetDebug(bool val) { bDebug = val; }
 private:
 	/*struct Desc
@@ -57,7 +58,8 @@ private:
 	bool bDrawSpotLights = true;
 
 private:
-	Shader * shader;
+	Shader * deffredShader;
+	Shader * gbufferShader;
 	UINT width, height;
 
 	RenderTarget* diffuseRTV;
