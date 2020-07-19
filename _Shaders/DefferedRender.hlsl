@@ -74,3 +74,4 @@ PixelOutput_PackGBuffer PS(PixelInput input)
 
     return output;
 }
+

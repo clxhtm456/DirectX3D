@@ -41,12 +41,12 @@ GBuffer::GBuffer(UINT width, UINT height)
 		debug2D[i]->SetPosition(75 + (float)i * 150, 75, 0);
 		debug2D[i]->SetScale(150, 150, 0);
 	}
-	debug2D[0]->SetSRV(diffuseRTV->SRV());
-	debug2D[1]->SetSRV(specularRTV->SRV());
-	debug2D[2]->SetSRV(emissiveRTV->SRV());
-	debug2D[3]->SetSRV(normalRTV->SRV());
-	debug2D[4]->SetSRV(tangentRTV->SRV());
-	debug2D[5]->SetSRV(depthStencil->SRV());
+	debug2D[0]->SetSRV(depthStencil->SRV());
+	debug2D[1]->SetSRV(diffuseRTV->SRV());
+	debug2D[2]->SetSRV(specularRTV->SRV());
+	debug2D[3]->SetSRV(emissiveRTV->SRV());
+	debug2D[4]->SetSRV(normalRTV->SRV());
+	debug2D[5]->SetSRV(tangentRTV->SRV());
 
 }
 
@@ -84,7 +84,7 @@ void GBuffer::PackGBuffer()
 	packDss->SetState();
 }
 
-void GBuffer::Render()
+void GBuffer::Render(Camera* viewer)
 {
 	D3D::Get()->SetRenderTarget(NULL, depthStencilReadOnly);
 	D3D::GetDC()->ClearDepthStencilView(depthStencilReadOnly, D3D11_CLEAR_DEPTH, 1, 0);
@@ -99,7 +99,11 @@ void GBuffer::Render()
 		tangentRTV->SRV(),
 	};
 
-	D3D::GetDC()->PSSetShaderResources(GBUFFERMAP, 1, srvs);
+	D3D::GetDC()->PSSetShaderResources(GBUFFERMAP, 6, srvs);
+
+	auto temp = diffuseRTV->SRV();
+	D3D::GetDC()->PSSetShaderResources(7, 1, &temp);
+	D3D::GetDC()->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
 
 	RenderDirectional();
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
@@ -110,8 +114,13 @@ void GBuffer::Render()
 		RenderSpotLights();
 }
 
-void GBuffer::DebugRender()
+void GBuffer::DebugRender(Camera* viewer)
 {
+	for (int i = 0; i < 6; i++)
+	{
+		debug2D[i]->Update();
+		debug2D[i]->PostRender(viewer);
+	}
 }
 
 void GBuffer::CreateDepthStencilView()
@@ -175,10 +184,10 @@ void GBuffer::CreateRasterizerState()
 
 void GBuffer::RenderDirectional()
 {
-	gbufferShader->Render();
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	noDepthWriteLessDSS->SetState();
+	gbufferShader->Render();
 
 	D3D::GetDC()->Draw(4,0);
 }

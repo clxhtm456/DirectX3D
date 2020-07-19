@@ -33,10 +33,6 @@
     <ClCompile Include="Meshes\MeshGrid.cpp" />
     <ClCompile Include="Meshes\MeshQuad.cpp" />
     <ClCompile Include="Meshes\MeshSphere.cpp" />
-    <ClCompile Include="Model\Model.cpp" />
-    <ClCompile Include="Model\ModelAnim.cpp" />
-    <ClCompile Include="Model\ModelData.cpp" />
-    <ClCompile Include="Model\ModelTweener.cpp" />
     <ClCompile Include="Objects\EmptyNode.cpp" />
     <ClCompile Include="Objects\Node.cpp" />
     <ClCompile Include="Objects\ReflectionNode.cpp" />
@@ -90,11 +86,6 @@
     <ClInclude Include="Meshes\MeshGrid.h" />
     <ClInclude Include="Meshes\MeshQuad.h" />
     <ClInclude Include="Meshes\MeshSphere.h" />
-    <ClInclude Include="Model\FbxType.h" />
-    <ClInclude Include="Model\Model.h" />
-    <ClInclude Include="Model\ModelAnim.h" />
-    <ClInclude Include="Model\ModelData.h" />
-    <ClInclude Include="Model\ModelTweener.h" />
     <ClInclude Include="Objects\EmptyNode.h" />
     <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Objects\ReflectionNode.h" />

@@ -89,10 +89,12 @@ void Shader::Delete()
 void Shader::Render()
 {
 	D3D::GetDC()->IASetInputLayout(inputLayout);
-	D3D::GetDC()->PSSetShader(pixelShader, nullptr, 0);
 	D3D::GetDC()->VSSetShader(vertexShader, nullptr, 0);
+
 	if (geometryShader != nullptr)
 		D3D::GetDC()->GSSetShader(geometryShader, nullptr, 0);
+
+	D3D::GetDC()->PSSetShader(pixelShader, nullptr, 0);
 }
 
 void Shader::RenderPS()

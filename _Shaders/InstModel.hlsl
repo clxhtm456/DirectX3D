@@ -1,6 +1,5 @@
 #include "RenderingNode.hlsli"
 #include "Shadow.hlsl"
-#include "DefferedRender.hlsl"
 
 #define MAX_BONE 256
 
@@ -103,35 +102,36 @@ float4 ComputeLight2(float3 normal, float3 viewPos, float4 wPosition)
     float4 output;
     float3 lightDirection = -CB_Light.Direction;
     float NdotL = dot(lightDirection, normalize(normal));
+	NdotL = 1;
 
     float4 Ambient = CB_Light.Ambient * CB_Material.Ambient;
     float3 E = normalize(viewPos - wPosition);
     float4 Diffuse = CB_Material.Diffuse * NdotL;
     float4 Specular = float4(0, 0, 0, 0);
     float4 Emissive = float4(0, 0, 0, 0);
-	//[flatten]
- //   if (NdotL > 0.0f)
- //   {
-	//	[flatten]
- //       if (any(CB_Material.Specular.rgb))
- //       {
- //           float3 R = normalize(reflect(-lightDirection, normal));
- //           float RdotE = saturate(dot(R, E));
+	[flatten]
+    if (NdotL > 0.0f)
+    {
+		[flatten]
+        if (any(CB_Material.Specular.rgb))
+        {
+            float3 R = normalize(reflect(-lightDirection, normal));
+            float RdotE = saturate(dot(R, E));
 
- //           float specularVal = pow(RdotE, CB_Material.Specular.a);
- //           Specular = specularVal * CB_Material.Specular;
- //       }
- //   }
+            float specularVal = pow(RdotE, CB_Material.Specular.a);
+            Specular = specularVal * CB_Material.Specular;
+        }
+    }
 
-	//[flatten]
- //   if (any(CB_Material.Emissive.rgb))
- //   {
- //       float NdotE = dot(E, normalize(normal));
+	[flatten]
+    if (any(CB_Material.Emissive.rgb))
+    {
+        float NdotE = dot(E, normalize(normal));
 
- //       float emissiveVal = smoothstep(1.0f - CB_Material.Emissive.a, 1.0f, 1.0f - saturate(NdotE));
+        float emissiveVal = smoothstep(1.0f - CB_Material.Emissive.a, 1.0f, 1.0f - saturate(NdotE));
 
- //       Emissive = CB_Material.Emissive * emissiveVal;
- //   }
+        Emissive = CB_Material.Emissive * emissiveVal;
+    }
     output = Ambient + Diffuse + Specular + Emissive;
 
     return output;
@@ -140,7 +140,7 @@ float4 ComputeLight2(float3 normal, float3 viewPos, float4 wPosition)
 float4 PS(PixelInput input) : SV_TARGET
 {
 	float3 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv).rgb;
-    float4 result = ComputeLight2(input.Normal, input.ViewPos, input.wPosition);
+	float4 result = ComputeLight(input.Normal, input.ViewPos, input.wPosition);
 	//float4 emissive = ComputeEmissive(input.Normal, input.wPosition);
 	//return float4(1, 1, 0, 1);
 	return float4(diffuse,1) * result;

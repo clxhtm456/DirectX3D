@@ -214,7 +214,10 @@ void RenderingNode::WorldSet()
 void RenderingNode::VPSet(Camera* viewer)
 {
 	if (viewer != nullptr)
+	{
 		viewer->GetVPBuffer()->SetVSBuffer(VS_VPBUFFER);
+		viewer->GetVPBuffer()->SetPSBuffer(VS_VPBUFFER);
+	}
 }
 
 void RenderingNode::LightSet()

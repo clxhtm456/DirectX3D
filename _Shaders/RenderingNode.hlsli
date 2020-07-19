@@ -33,7 +33,7 @@ struct LightDesc
 	matrix LightProjection;
 };
 
-cbuffer Light : register(b0)
+cbuffer Light : register(b1)
 {
 	LightDesc CB_Light;
 }
@@ -45,7 +45,7 @@ struct MaterialDesc
 	float4 Specular;
 	float4 Emissive;
 };
-cbuffer Material : register(b1)
+cbuffer Material : register(b2)
 {
 	MaterialDesc CB_Material;
 }
@@ -78,10 +78,7 @@ void AddMaterial(inout MaterialDesc result, MaterialDesc val)
 	result.Emissive += val.Emissive;
 }
 
-float3 MaterialToColor(MaterialDesc result)
-{
-	return (result.Ambient + result.Diffuse + result.Specular + result.Emissive).rgb;
-}
+
 
 
 float4 WorldPosition(float4 position)

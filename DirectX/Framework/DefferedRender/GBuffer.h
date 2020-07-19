@@ -7,8 +7,8 @@ public:
 	~GBuffer();
 
 	void PackGBuffer();
-	void Render();
-	void DebugRender();
+	void Render(Camera* viewer);
+	void DebugRender(Camera* viewer);
 
 private:
 	void CreateDepthStencilView();

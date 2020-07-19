@@ -39,11 +39,11 @@ XmlExtractor* XmlExtractor::Create()
 }
 
 XmlExtractor::XmlExtractor():
-m_sdkManager(FbxManager::Create()),
 m_cameraArray(),
 m_poseArray(),
 m_supportVBO(true)
 {
+	m_sdkManager = FbxManager::Create();
 }
 
 XmlExtractor::~XmlExtractor()

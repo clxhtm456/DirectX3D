@@ -133,12 +133,6 @@
     <ClCompile Include="Meshes\MeshSphere.cpp">
       <Filter>Meshes</Filter>
     </ClCompile>
-    <ClCompile Include="Model\ModelData.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Model\Model.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
     <ClCompile Include="Light\Light.cpp">
       <Filter>Light</Filter>
     </ClCompile>
@@ -180,12 +174,6 @@
     </ClCompile>
     <ClCompile Include="Objects\ReflectionNode.cpp">
       <Filter>Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="Model\ModelAnim.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Model\ModelTweener.cpp">
-      <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="Objects\EmptyNode.cpp">
       <Filter>Objects</Filter>
@@ -304,15 +292,6 @@
     <ClInclude Include="Meshes\MeshSphere.h">
       <Filter>Meshes</Filter>
     </ClInclude>
-    <ClInclude Include="Model\FbxType.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Model\ModelData.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Model\Model.h">
-      <Filter>Model</Filter>
-    </ClInclude>
     <ClInclude Include="Light\Light.h">
       <Filter>Light</Filter>
     </ClInclude>
@@ -360,12 +339,6 @@
     </ClInclude>
     <ClInclude Include="Systems\IExecute.h">
       <Filter>Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="Model\ModelAnim.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Model\ModelTweener.h">
-      <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="Objects\EmptyNode.h">
       <Filter>Objects</Filter>

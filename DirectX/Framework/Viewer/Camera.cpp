@@ -190,6 +190,8 @@ void Camera::View()
 
 void Camera::SetRNShader2Depth(RenderingNode * node)
 {
+	if (default.useGBuffer == false)
+		return;
 	psShaderSlot = node->GetPSShader();
 	//psShaderSlot = node->GetVSShader();
 	//node->SetShader(depthShader);
@@ -198,6 +200,8 @@ void Camera::SetRNShader2Depth(RenderingNode * node)
 
 void Camera::SetRNShader2Origin(RenderingNode * node)
 {
+	if (default.useGBuffer == false)
+		return;
 	node->SetPSShader(psShaderSlot);
 	//node->SetPSShader(psShaderSlot);
 }
@@ -275,10 +279,13 @@ void Camera::Render(Camera* viewer)
 	viewport->RSSetViewport();
 
 	//renderImage->PostRender(this);
-	gBuffer->Render();
+	gBuffer->Render(viewer);
 }
 
 
 void Camera::PostRender(Camera* viewer)
 {
+	if (default.useGBuffer == false)
+		return;
+	gBuffer->DebugRender(viewer);
 }

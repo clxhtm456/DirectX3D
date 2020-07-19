@@ -3,55 +3,59 @@
 
 Texture2D GBufferMaps[6] : register(t9);
 
-const float2 NDC[4] = { float2(-1, +1), float2(+1, +1), float2(-1, -1), float2(+1, -1) };
 
-//void ComputeLight_Deffered(out MaterialDesc output, MaterialDesc material, float3 normal, float3 wPosition)
-//{
-//    output.Ambient = 0;
-//    output.Diffuse = 0;
-//    output.Specular = 0;
-//    output.Emissive = 0;
+float3 MaterialToColor(MaterialDesc result)
+{
+	return (result.Ambient + result.Diffuse + result.Specular + result.Emissive).rgb;
+}
 
-//    float3 direction = -CB_Light.Direction;
-//    float NdotL = dot(direction, normalize(normal));
+void ComputeLight_Deffered(out MaterialDesc output, MaterialDesc material, float3 normal, float3 wPosition)
+{
+    output.Ambient = 0;
+    output.Diffuse = 0;
+    output.Specular = 0;
+    output.Emissive = 0;
 
-//    output.Ambient = CB_Light.Ambient * material.Ambient;
-//    float3 E = normalize(ViewPosition() - wPosition);
+    float3 direction = -CB_Light.Direction;
+    float NdotL = dot(direction, normalize(normal));
+
+    output.Ambient = CB_Light.Ambient * material.Ambient;
+    float3 E = normalize(ViewPosition() - wPosition);
     
 
-//    [flatten]
-//    if (NdotL > 0.0f)
-//    {
-//        output.Diffuse = NdotL * material.Diffuse;
+    [flatten]
+    if (NdotL > 0.0f)
+    {
+        output.Diffuse = NdotL * material.Diffuse;
 
 
-//        [flatten]
-//        if (any(material.Specular.rgb))
-//        {
-//            float3 R = normalize(reflect(-direction, normal));
-//            float RdotE = saturate(dot(R, E));
+        [flatten]
+        if (any(material.Specular.rgb))
+        {
+            float3 R = normalize(reflect(-direction, normal));
+            float RdotE = saturate(dot(R, E));
 
-//            float specular = pow(RdotE, material.Specular.a);
-//            output.Specular = specular * material.Specular * CB_Light.Specular;
-//        }
-//    }
+            float specular = pow(RdotE, material.Specular.a);
+            output.Specular = specular * material.Specular * CB_Light.Specular;
+        }
+    }
 
-//    [flatten]
-//    if (any(material.Emissive.rgb))
-//    {
-//        float NdotE = dot(E, normalize(normal));
+    [flatten]
+    if (any(material.Emissive.rgb))
+    {
+        float NdotE = dot(E, normalize(normal));
         
-//        float emissive = smoothstep(1.0f - material.Emissive.a, 1.0f, 1.0f - saturate(NdotE));
+        float emissive = smoothstep(1.0f - material.Emissive.a, 1.0f, 1.0f - saturate(NdotE));
             
-//        output.Emissive = material.Emissive * emissive;
-//    }
+        output.Emissive = material.Emissive * emissive;
+    }
 
-//}
+}
 
 struct VertexOutput_PackGBuffer
 {
-    float4 Position : SV_Position;
-    float2 Screen : Position1;
+    float4 Position : SV_POSITION0;
+    float2 Screen : POSITION1;
 };
 
 void UnPackGBuffer(inout float4 position, in float2 screen, out MaterialDesc material, out float3 normal, out float3 tangent)
@@ -86,10 +90,13 @@ void UnPackGBuffer(inout float4 position, in float2 screen, out MaterialDesc mat
 }
 
 
+
 VertexOutput_PackGBuffer VS(uint VertexID : SV_VertexID)
 {
     VertexOutput_PackGBuffer output;
     
+	const float2 NDC[4] = { float2(-1, +1), float2(+1, +1), float2(-1, -1), float2(+1, -1) };
+
     output.Position = float4(NDC[VertexID].xy, 0, 1);
     output.Screen = output.Position.xy;
 
@@ -107,21 +114,19 @@ float4 PS(VertexOutput_PackGBuffer input) : SV_Target0
 
     //float4 color = material.Diffuse * dot(-GlobalLight.Direction, normalize(normal));//램버트 조명공식
 
-    MaterialDesc result = MakeMaterial();
-    //ComputeLight_Deffered(result, material, normal, position.xyz);
+	MaterialDesc result = MakeMaterial();
+    ComputeLight_Deffered(result, material, normal, position.xyz);
 
     float4 sPosition = mul(position, ShadowView);
     sPosition = mul(sPosition, ShadowProjection);
 
     float4 color = float4(MaterialToColor(result), 1.0f);
-    color = float4(1, 0, 0, 1);
-    //color = PS_Shadow(sPosition, color);
 
-    ShadowPixelInput shadowinput = (ShadowPixelInput) 0;
+    /*ShadowPixelInput shadowinput = (ShadowPixelInput) 0;
 
     shadowinput.sPosition = position;
 
-    color = PS_Shadow(shadowinput, color);
+    color = PS_Shadow(shadowinput, color);*/
 
     //if (FogType == 0)
     //    color = LinearFogBlend(color, position);
@@ -146,7 +151,7 @@ float4 PS(VertexOutput_PackGBuffer input) : SV_Target0
 
     //ComputeSpotLight(output, material, normal, position.xyz);
     //AddMaterial(result, output);
-
     return color;
 
 }
+
