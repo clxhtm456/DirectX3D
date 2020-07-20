@@ -7,10 +7,33 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format)
 	this->width = (width < 1) ? (UINT)D3D::Width() : width;
 	this->height = (height < 1) ? (UINT)D3D::Height() : height;
 
+	CreateBuffer(this->width, this->height);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	srvDesc.Format = format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+	Check(D3D::GetDevice()->CreateShaderResourceView(backbuffer, &srvDesc, &srv));
+
+	D3D::Get()->AddViewList(this);
+}
+
+RenderTarget::~RenderTarget()
+{
+	SafeRelease(srv);
+	ReleaseBuffer();
+
+
+	D3D::Get()->DelViewList(this);
+}
+
+void RenderTarget::CreateBuffer(float width, float height)
+{
 	D3D11_TEXTURE2D_DESC textureDesc;
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
-	textureDesc.Width = this->width;
-	textureDesc.Height = this->height;
+	textureDesc.Width = width;
+	textureDesc.Height = height;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = format;
 	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
@@ -25,19 +48,14 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format)
 	rtvDesc.Texture2D.MipSlice = 0;
 	Check(D3D::GetDevice()->CreateRenderTargetView(backbuffer, &rtvDesc, &rtv));
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-	srvDesc.Format = format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
-	Check(D3D::GetDevice()->CreateShaderResourceView(backbuffer, &srvDesc, &srv));
+	
 }
 
-RenderTarget::~RenderTarget()
+void RenderTarget::ReleaseBuffer()
 {
 	SafeRelease(backbuffer);
 	SafeRelease(rtv);
-	SafeRelease(srv);
+	
 }
 
 void RenderTarget::SaveTexture(wstring file)

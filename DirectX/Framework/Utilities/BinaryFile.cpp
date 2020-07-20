@@ -33,6 +33,12 @@ void BinaryWriter::Open(wstring filePath, UINT openOption)
 	assert(isChecked);
 }
 
+void BinaryWriter::Open(string filePath, UINT openOption)
+{
+	wstring tempPath = String::ToWString(filePath);
+	Open(tempPath, openOption);
+}
+
 void BinaryWriter::Close()
 {
 	if (fileHandle != NULL)

@@ -67,12 +67,30 @@ void D3D::ResizeScreen(float width, float height)
 	d3dDesc.Width = width;
 	d3dDesc.Height = height;
 
-	DeleteBackBuffer();
+	DeleteBackBufferList();
 	{
 		HRESULT hr = swapChain->ResizeBuffers(0, (UINT)width, (UINT)height, DXGI_FORMAT_UNKNOWN, 0);
 		assert(SUCCEEDED(hr));
 	}
-	CreateBackBuffer(width, height);
+	CreateBackBufferList(width, height);
+}
+
+void D3D::AddViewList(IRenderObserver * item)
+{
+	viewBufferList.push_back(item);
+}
+
+bool D3D::DelViewList(IRenderObserver * item)
+{
+	for (auto iter = viewBufferList.begin(); iter != viewBufferList.end(); iter++)
+	{
+		if (*iter == item)
+		{
+			viewBufferList.erase(iter);
+			return true;
+		}
+	}
+	return false;
 }
 
 D3D::D3D()
@@ -314,6 +332,17 @@ void D3D::CreateBackBuffer(float width, float height)
 
 		SetRenderTarget(renderTargetView, depthStencilView);
 	}
+
+}
+
+void D3D::CreateBackBufferList(float width, float height)
+{
+	CreateBackBuffer(width, height);
+
+	for (auto viewBuffer : viewBufferList)
+	{
+		viewBuffer->CreateBuffer(width, height);
+	}
 }
 
 void D3D::DeleteBackBuffer()
@@ -321,6 +350,16 @@ void D3D::DeleteBackBuffer()
 	SafeRelease(depthStencilView);
 	SafeRelease(renderTargetView);
 	SafeRelease(backBuffer);
+}
+
+void D3D::DeleteBackBufferList()
+{
+	DeleteBackBuffer();
+
+	for (auto viewBuffer : viewBufferList)
+	{
+		viewBuffer->ReleaseBuffer();
+	}
 }
 
 D3DEnumAdapterInfo::D3DEnumAdapterInfo()

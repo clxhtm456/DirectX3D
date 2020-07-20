@@ -69,6 +69,8 @@ public:
 	void Present();
 
 	void ResizeScreen(float width, float height);
+	void AddViewList(IRenderObserver* item);
+	bool DelViewList(IRenderObserver* item);
 
 	ID3D11DepthStencilView* DSV() { return depthStencilView; }
 
@@ -84,7 +86,9 @@ private:
 	void CreateSwapChainAndDevice();
 
 	void CreateBackBuffer(float width, float height);
+	void CreateBackBufferList(float width, float height);
 	void DeleteBackBuffer();
+	void DeleteBackBufferList();
 
 private:
 	static vector<D3DEnumAdapterInfo *> apapterInfos;
@@ -109,6 +113,8 @@ private:
 	ID3D11Texture2D* backBuffer;
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11RenderTargetView* renderTargetView;
+
+	vector<IRenderObserver*> viewBufferList;
 
 	Vector2 WorldSize;
 };

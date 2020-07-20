@@ -90,6 +90,7 @@
     <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Objects\ReflectionNode.h" />
     <ClInclude Include="Objects\RenderingNode.h" />
+    <ClInclude Include="Observer\IRenderObserver.h" />
     <ClInclude Include="Renders\Buffers.h" />
     <ClInclude Include="Renders\DebugLine.h" />
     <ClInclude Include="Renders\GlobalBuffer.h" />

@@ -10,7 +10,7 @@
     <ClCompile Include="Converter\XmlExtractor.cpp">
       <Filter>Extractor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Downloads\DX11Game\Framework\Converter\AssimpConverter.cpp">
+    <ClCompile Include="AssimpModelLoader\AssimpConverter.cpp">
       <Filter>Assimp</Filter>
     </ClCompile>
   </ItemGroup>
@@ -24,7 +24,7 @@
     <ClInclude Include="Converter\XmlExtractor.h">
       <Filter>Extractor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Downloads\DX11Game\Framework\Converter\AssimpConverter.h">
+    <ClInclude Include="AssimpModelLoader\AssimpConverter.h">
       <Filter>Assimp</Filter>
     </ClInclude>
   </ItemGroup>

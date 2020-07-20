@@ -1,5 +1,12 @@
 #pragma once
 
+//Assimp
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+#pragma comment(lib, "assimp/assimp-vc142-mtd.lib")
+
 class AssimpConverter
 {
 private:
@@ -13,11 +20,11 @@ private:
         XMFLOAT3 scale = { 1.f,1.f,1.f };
         XMMATRIX local = XMMatrixIdentity();
         XMMATRIX world = XMMatrixIdentity();
-        XMFLOAT4X4 offset;
+		XMMATRIX offset;
         int parentID = -1;
         HierarchyNode()
         {
-            XMStoreFloat4x4(&offset, XMMatrixIdentity());
+			offset = XMMatrixIdentity();
         }
     };
 

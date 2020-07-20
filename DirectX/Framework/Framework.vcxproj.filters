@@ -37,6 +37,9 @@
     <Filter Include="Terrain">
       <UniqueIdentifier>{da5ced0a-9ce6-42d2-8a31-ed465b3f69db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Observer">
+      <UniqueIdentifier>{b96a530a-62d3-47cd-be1a-16078e80c582}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Keyboard.cpp">
@@ -357,6 +360,9 @@
     </ClInclude>
     <ClInclude Include="Terrain\TerrainCellClass.h">
       <Filter>Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer\IRenderObserver.h">
+      <Filter>Observer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

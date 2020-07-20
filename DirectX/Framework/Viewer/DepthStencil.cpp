@@ -5,13 +5,49 @@ DepthStencil::DepthStencil(UINT width, UINT height, bool bUseStencil)
 {
 	this->width = (width < 1) ? (UINT)D3D::Width() : width;
 	this->height = (height < 1) ? (UINT)D3D::Height() : height;
+	this->bUseStencil = bUseStencil;
 
+	CreateBuffer(this->width, this->height);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	desc.Format = bUseStencil ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : DXGI_FORMAT_R32_FLOAT;
+	desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	desc.Texture2D.MipLevels = 1;
+	Check(D3D::GetDevice()->CreateShaderResourceView(backBuffer, &desc, &srv));
+
+	D3D::Get()->AddViewList(this);
+}
+
+DepthStencil::~DepthStencil()
+{
+	SafeRelease(srv);
+
+	ReleaseBuffer();
+	D3D::Get()->DelViewList(this);
+}
+
+void DepthStencil::SaveTexture(wstring saveFile)
+{
+	//Check(D3DX11SaveTextureToFile(D3D::GetDC(), backBuffer, D3DX11_IFF_PNG, saveFile.c_str()));
+}
+
+void DepthStencil::ReleaseBuffer()
+{
+	SafeRelease(dsv);
+	SafeRelease(backBuffer);
+
+	
+}
+
+void DepthStencil::CreateBuffer(float width, float height)
+{
 	//Create Texture
 	{
 		D3D11_TEXTURE2D_DESC desc;
 		ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-		desc.Width = this->width;
-		desc.Height = this->height;
+		desc.Width = width;
+		desc.Height = height;
 		desc.MipLevels = 1;
 		desc.ArraySize = 1;
 		desc.Format = bUseStencil ? DXGI_FORMAT_R24G8_TYPELESS : DXGI_FORMAT_R32_TYPELESS;
@@ -28,29 +64,10 @@ DepthStencil::DepthStencil(UINT width, UINT height, bool bUseStencil)
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 		desc.Texture2D.MipSlice = 0;
 
-		Check(D3D::GetDevice()->CreateDepthStencilView(backBuffer, &desc, &dsv));		
+		Check(D3D::GetDevice()->CreateDepthStencilView(backBuffer, &desc, &dsv));
 	}
 
-	//Create SRV
-	{
-		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
-		ZeroMemory(&desc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-		desc.Format = bUseStencil ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : DXGI_FORMAT_R32_FLOAT;
-		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		desc.Texture2D.MipLevels = 1;
-		
-		Check(D3D::GetDevice()->CreateShaderResourceView(backBuffer, &desc, &srv));
-	}
-}
+	
 
-DepthStencil::~DepthStencil()
-{
-	SafeRelease(dsv);
-	SafeRelease(backBuffer);
-	SafeRelease(srv);
-}
-
-void DepthStencil::SaveTexture(wstring saveFile)
-{
-	//Check(D3DX11SaveTextureToFile(D3D::GetDC(), backBuffer, D3DX11_IFF_PNG, saveFile.c_str()));
+	
 }

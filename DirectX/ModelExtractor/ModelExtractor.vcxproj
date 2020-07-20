@@ -126,7 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\Downloads\DX11Game\Framework\Converter\AssimpConverter.cpp" />
+    <ClCompile Include="AssimpModelLoader\AssimpConverter.cpp" />
     <ClCompile Include="Converter\FbxUtility.cpp" />
     <ClCompile Include="Converter\XmlExtractor.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -136,7 +136,7 @@
     <ClCompile Include="ModelExtractor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Downloads\DX11Game\Framework\Converter\AssimpConverter.h" />
+    <ClInclude Include="AssimpModelLoader\AssimpConverter.h" />
     <ClInclude Include="Converter\FbxUtility.h" />
     <ClInclude Include="Converter\XmlExtractor.h" />
     <ClInclude Include="Main.h" />

@@ -102,6 +102,8 @@ typedef enum _TYPEMASK
 #include <ImGui_New/imgui_impl_win32.h>
 #pragma comment(lib, "ImGui_New/imgui.lib")
 
+#include "Observer/IRenderObserver.h"
+
 //D3D
 #include "Systems/D3D.h"
 #include "Systems/Keyboard.h"

@@ -1,4 +1,5 @@
-#include "Framework.h"
+#include "stdafx.h"
+#include "AssimpConverter.h"
 
 AssimpConverter::AssimpConverter()
 {
@@ -12,10 +13,10 @@ AssimpConverter::~AssimpConverter()
 
 void AssimpConverter::ConvertMesh(const string path, const string outPath)
 {
-	assert(ExistFile(path));
+	assert(Path::ExistFile(path));
 	meshPath = path;
-	name = GetFileNameWithoutExt(GetFileName(path));
-	string outName= GetFileNameWithoutExt(GetFileName(outPath));
+	name = Path::GetFileNameWithoutExtension(Path::GetFileName(path));
+	string outName= Path::GetFileNameWithoutExtension(Path::GetFileName(outPath));
 	if (outPath == "")
 	{
 		this->outPath = "Assets/Models/" + name + "/" + name + ".mesh";
@@ -44,7 +45,7 @@ void AssimpConverter::LoadAnimation(const string path)
 	if (!hierarchyNodes.size())
 		return;
 
-	assert(ExistFile(path));
+	assert(Path::ExistFile(path));
 
 	ResetAnimations();
 
@@ -54,7 +55,7 @@ void AssimpConverter::LoadAnimation(const string path)
 
 	if (scene->HasAnimations())
 	{
-		animName = GetFileNameWithoutExt(GetFileName(path));
+		animName = Path::GetFileNameWithoutExtension(Path::GetFileName(path));
 		AddAnimation(scene);
 	}
 }
@@ -72,9 +73,10 @@ void AssimpConverter::SaveAnimation(string path, UINT takeNum)
 			path = "Assets/Models/" + name + "/anims/" + animName + animations[takeNum].name + ".anim";
 	}
 
-	CreateDirectories(GetDirectory(path));
+	Path::CreateFolders(Path::GetDirectoryName(path));
 
-	BinaryWriter* w = DBG_NEW BinaryWriter(path);
+	BinaryWriter* w = new BinaryWriter();
+	w->Open(path);
 
 	w->Float(animations[takeNum].tickPerSec);
 	w->Float(animations[takeNum].duration);
@@ -85,13 +87,13 @@ void AssimpConverter::SaveAnimation(string path, UINT takeNum)
 		w->UInt((UINT)keyframe.size());
 		for (auto key : keyframe)
 		{
-			w->Byte(&key.translate, sizeof(XMFLOAT3));
+			w->BYTE(&key.translate, sizeof(XMFLOAT3));
 			w->Float(key.keyType);
-			w->Byte(&key.quaternion, sizeof(XMFLOAT4));
-			w->Byte(&key.scale, sizeof(XMFLOAT3));
+			w->BYTE(&key.quaternion, sizeof(XMFLOAT4));
+			w->BYTE(&key.scale, sizeof(XMFLOAT3));
 		}
 	}
-	SAFE_DELETE(w);
+	delete w;
 }
 
 
@@ -117,24 +119,24 @@ void AssimpConverter::LoadMesh()
 
 void AssimpConverter::SaveMesh()
 {
-	CreateDirectories(GetDirectory(outPath));
+	Path::CreateFolders(Path::GetDirectoryName(outPath));
 
-	BinaryWriter* w = DBG_NEW BinaryWriter(outPath);
+	BinaryWriter* w = new BinaryWriter();
+	w->Open(outPath);
 
 	w->UInt((UINT)hierarchyNodes.size());
 	for (auto node : hierarchyNodes)
 	{
 		w->String(node.name);
-		w->Byte(&node.translate, sizeof(XMFLOAT3));
-		w->Byte(&node.preQuaternion, sizeof(XMFLOAT4));
-		w->Byte(&node.quaternion, sizeof(XMFLOAT4));
-		w->Byte(&node.scale, sizeof(XMFLOAT3));
-		XMFLOAT4X4 matrix;
-		XMStoreFloat4x4(&matrix, node.local);
-		w->Float4x4(matrix);
-		XMStoreFloat4x4(&matrix, node.world);
-		w->Float4x4(matrix);
-		w->Float4x4(node.offset);
+		w->BYTE(&node.translate, sizeof(XMFLOAT3));
+		w->BYTE(&node.preQuaternion, sizeof(XMFLOAT4));
+		w->BYTE(&node.quaternion, sizeof(XMFLOAT4));
+		w->BYTE(&node.scale, sizeof(XMFLOAT3));
+		Matrix matrix = node.local;
+		w->Matrix(matrix);
+		matrix = node.world;
+		w->Matrix(matrix);
+		w->Matrix(node.offset);
 		w->Int(node.parentID);
 	}
 
@@ -144,9 +146,9 @@ void AssimpConverter::SaveMesh()
 		w->UInt(mesh.ID);
 		w->UInt(mesh.matrialID);
 		w->UInt((UINT)mesh.vertices.size());
-		w->Byte(mesh.vertices.data(), sizeof(VertexType) * (UINT)mesh.vertices.size());
+		w->BYTE(mesh.vertices.data(), sizeof(VertexType) * (UINT)mesh.vertices.size());
 		w->UInt((UINT)mesh.indices.size());
-		w->Byte(mesh.indices.data(), sizeof(UINT) * (UINT)mesh.indices.size());
+		w->BYTE(mesh.indices.data(), sizeof(UINT) * (UINT)mesh.indices.size());
 	}
 
 	w->UInt((UINT)materials.size());
@@ -154,12 +156,12 @@ void AssimpConverter::SaveMesh()
 	{
 		w->String(mat.name);
 
-		w->Byte(&mat.diffuse, sizeof(XMFLOAT3));
-		w->Byte(&mat.ambient, sizeof(XMFLOAT3));
-		w->Byte(&mat.specular, sizeof(XMFLOAT3));
-		w->Byte(&mat.emissive, sizeof(XMFLOAT3));
-		w->Byte(&mat.tranparent, sizeof(XMFLOAT3));
-		w->Byte(&mat.reflective, sizeof(XMFLOAT3));
+		w->BYTE(&mat.diffuse, sizeof(XMFLOAT3));
+		w->BYTE(&mat.ambient, sizeof(XMFLOAT3));
+		w->BYTE(&mat.specular, sizeof(XMFLOAT3));
+		w->BYTE(&mat.emissive, sizeof(XMFLOAT3));
+		w->BYTE(&mat.tranparent, sizeof(XMFLOAT3));
+		w->BYTE(&mat.reflective, sizeof(XMFLOAT3));
 
 		w->Float(mat.opacity);
 		w->Float(mat.transparentfactor);
@@ -188,7 +190,7 @@ void AssimpConverter::SaveMesh()
 		w->String(mat.diffuseroughnessfile);
 		w->String(mat.ambientocculsionfile);
 	}
-	SAFE_DELETE(w);
+	delete w;
 }
 
 void AssimpConverter::ResetMeshs()
@@ -307,7 +309,7 @@ void AssimpConverter::InitBones(const aiScene* scene)
 			if (hierarchyMap.count(name) > 0)
 			{
 				//hierarchyNodes[hierarchyMap[name]].isBone = 1;
-				XMStoreFloat4x4(&hierarchyNodes[hierarchyMap[name]].offset, XMMatrixMultiply(invWorld, XMMatrixTranspose(XMMATRIX(mesh->mBones[i]->mOffsetMatrix[0]))));
+				hierarchyNodes[hierarchyMap[name]].offset = XMMatrixMultiply(invWorld, XMMatrixTranspose(XMMATRIX(mesh->mBones[i]->mOffsetMatrix[0])));
 			}
 		}
 	}
@@ -630,14 +632,16 @@ string AssimpConverter::SaveTexture(const aiScene* scene, string file)
 	string path = "";
 	if (texture)
 	{
-		path = GetDirectory(outPath) + "/Textures/" + GetFileNameWithoutExt(file) + ".png";
+		path = Path::GetDirectoryName(outPath) + "/Textures/" + Path::GetFileNameWithoutExtension(file) + ".png";
 
 		if (texture->mHeight < 1)
 		{
-			CreateDirectories(GetDirectory(path));
+			Path::CreateFolders(Path::GetDirectoryName(path));
 
-			BinaryWriter w(path);
-			w.Byte(texture->pcData, texture->mWidth);
+			BinaryWriter w;
+			w.Open(path);
+
+			w.BYTE(texture->pcData, texture->mWidth);
 		}
 		else
 		{
@@ -651,22 +655,22 @@ string AssimpConverter::SaveTexture(const aiScene* scene, string file)
 
 			image.slicePitch = image.width * image.height * 4;
 
-			CreateDirectories(GetDirectory(path));
+			Path::CreateFolders(Path::GetDirectoryName(path));
 
 			SaveToWICFile(image, WIC_FLAGS_NONE, GetWICCodec(WIC_CODEC_PNG),
-				ToWString(path).c_str());
+				String::ToWString(path).c_str());
 		}
 	}
 	else
 	{
-		file = GetDirectory(meshPath) +"/"+ file;
-		Replace(&file, "\\", "/");
-		if(!ExistFile(file))
+		file = Path::GetDirectoryName(meshPath) +"/"+ file;
+		String::Replace(&file, "\\", "/");
+		if(!Path::ExistFile(file))
 			return "";
 
-		path = GetDirectory(outPath) + "/Textures/" + GetFileName(file);
+		path = Path::GetDirectoryName(outPath) + "/Textures/" + Path::GetFileName(file);
 
-		CreateDirectories(GetDirectory(path));
+		Path::CreateFolders(Path::GetDirectoryName(path));
 
 		CopyFileA(file.c_str(), path.c_str(), FALSE);
 	}

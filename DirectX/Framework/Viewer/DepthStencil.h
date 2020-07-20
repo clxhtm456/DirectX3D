@@ -1,6 +1,6 @@
 #pragma once
 
-class DepthStencil
+class DepthStencil : public IRenderObserver
 {
 public:
 	DepthStencil(UINT width = 0, UINT height = 0, bool bUseStencil = false);
@@ -13,6 +13,9 @@ public:
 
 	ID3D11DepthStencilView* DSV() { return dsv; }
 
+	void ReleaseBuffer() override;
+	void CreateBuffer(float width, float height) override;
+
 private:
 	bool bUseStencil;
 	UINT width, height;
@@ -20,4 +23,5 @@ private:
 	ID3D11Texture2D* backBuffer;
 	ID3D11DepthStencilView* dsv;
 	ID3D11ShaderResourceView* srv;
+
 };

@@ -7,6 +7,7 @@ public:
 	~BinaryWriter();
 
 	void Open(wstring filePath, UINT openOption = CREATE_ALWAYS);
+	void Open(string filePath, UINT openOption = CREATE_ALWAYS);
 	void Close();
 
 	void Bool(bool data);
