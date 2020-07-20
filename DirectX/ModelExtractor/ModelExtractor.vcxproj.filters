@@ -7,9 +7,6 @@
     <ClCompile Include="Converter\FbxUtility.cpp">
       <Filter>Extractor</Filter>
     </ClCompile>
-    <ClCompile Include="Converter\XmlExtractor.cpp">
-      <Filter>Extractor</Filter>
-    </ClCompile>
     <ClCompile Include="AssimpModelLoader\AssimpConverter.cpp">
       <Filter>Assimp</Filter>
     </ClCompile>
@@ -19,9 +16,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ModelExtractor.h" />
     <ClInclude Include="Converter\FbxUtility.h">
-      <Filter>Extractor</Filter>
-    </ClInclude>
-    <ClInclude Include="Converter\XmlExtractor.h">
       <Filter>Extractor</Filter>
     </ClInclude>
     <ClInclude Include="AssimpModelLoader\AssimpConverter.h">

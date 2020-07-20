@@ -33,11 +33,13 @@
     <ClCompile Include="Meshes\MeshGrid.cpp" />
     <ClCompile Include="Meshes\MeshQuad.cpp" />
     <ClCompile Include="Meshes\MeshSphere.cpp" />
+    <ClCompile Include="Model\Model.cpp" />
     <ClCompile Include="Objects\EmptyNode.cpp" />
     <ClCompile Include="Objects\Node.cpp" />
     <ClCompile Include="Objects\ReflectionNode.cpp" />
     <ClCompile Include="Objects\RenderingNode.cpp" />
     <ClCompile Include="Renders\Buffers.cpp" />
+    <ClCompile Include="Renders\CommonStates.cpp" />
     <ClCompile Include="Renders\DebugLine.cpp" />
     <ClCompile Include="Renders\Material.cpp" />
     <ClCompile Include="Renders\Render2D.cpp" />
@@ -86,12 +88,14 @@
     <ClInclude Include="Meshes\MeshGrid.h" />
     <ClInclude Include="Meshes\MeshQuad.h" />
     <ClInclude Include="Meshes\MeshSphere.h" />
+    <ClInclude Include="Model\Model.h" />
     <ClInclude Include="Objects\EmptyNode.h" />
     <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Objects\ReflectionNode.h" />
     <ClInclude Include="Objects\RenderingNode.h" />
     <ClInclude Include="Observer\IRenderObserver.h" />
     <ClInclude Include="Renders\Buffers.h" />
+    <ClInclude Include="Renders\CommonStates.h" />
     <ClInclude Include="Renders\DebugLine.h" />
     <ClInclude Include="Renders\GlobalBuffer.h" />
     <ClInclude Include="Renders\Material.h" />
@@ -137,7 +141,7 @@
     <ProjectGuid>{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Framework</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

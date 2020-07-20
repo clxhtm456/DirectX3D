@@ -1,49 +1,15 @@
 #include "RenderingNode.hlsli"
 
-
-
-void Texture(inout float4 color, Texture2D t, float2 uv, SamplerState samp)
+struct PixelInput
 {
-    float4 sampling = t.Sample(samp, uv);
-    
-    color = color * sampling;
-}
-
-void Texture(inout float4 color, Texture2D t, float2 uv)
-{
-    Texture(color, t, uv, diffuseSamp);
-}
-
-void NormalMapping(inout float4 diffuse ,float2 uv, float3 normal, float3 tangent, SamplerState samp)
-{
-    float4 map = normalMap.Sample(samp, uv);
-    float3 direction = -CB_Light.Direction;
-    float4 result = float4(0,0,0,0);
-
-    [flatten]
-    if (any(map) == false)
-        return;
-
-    float3 N = normalize(normal);
-    float3 T = normalize(tangent - dot(tangent, N) * N);
-    float3 B = cross(N, T);
-    float3x3 TBN = float3x3(T, B, N);
-
-
-    float3 coord = map.rgb * 2.0f - 1.0f;
-
-    coord = mul(coord, TBN);
-    
-    diffuse *= saturate(dot(coord, direction));
-}
-
-void NormalMapping(inout float4 diffuse, float2 uv, float3 normal, float3 tangent)
-{
-    NormalMapping(diffuse,uv, normal, tangent, diffuseSamp);
-
-}
-
-
+	float4 Position : SV_POSITION;
+	float4 wPosition : POSITION1;
+	float2 Uv : UV;
+	float3 Normal : Normal;
+	float3 Tangent : TANGENT;
+	float3 BiNormal : BINORMAL;
+	float3 ViewPos : VIEWPOS;
+};
 
 struct PixelOutput_PackGBuffer
 {

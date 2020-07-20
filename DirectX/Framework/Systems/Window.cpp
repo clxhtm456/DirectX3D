@@ -19,6 +19,7 @@ WPARAM Window::Run(IExecute* main)
 	D3D::Create();
 	Keyboard::Create();
 	Mouse::Create();
+	CommonStates::Create();
 
 	Time::Create();
 	Time::Get()->Start();
@@ -65,6 +66,7 @@ WPARAM Window::Run(IExecute* main)
 	Time::Delete();
 	Mouse::Delete();
 	Keyboard::Delete();
+	CommonStates::Delete();
 	D3D::Delete();
 
 	Destroy();

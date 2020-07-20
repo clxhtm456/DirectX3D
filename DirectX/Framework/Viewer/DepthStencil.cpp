@@ -3,11 +3,11 @@
 
 DepthStencil::DepthStencil(UINT width, UINT height, bool bUseStencil)
 {
-	this->width = (width < 1) ? (UINT)D3D::Width() : width;
-	this->height = (height < 1) ? (UINT)D3D::Height() : height;
+	width = (width < 1) ? (UINT)D3D::Width() : width;
+	height = (height < 1) ? (UINT)D3D::Height() : height;
 	this->bUseStencil = bUseStencil;
 
-	CreateBuffer(this->width, this->height);
+	CreateBuffer(width, height);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 	ZeroMemory(&desc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
@@ -42,6 +42,8 @@ void DepthStencil::ReleaseBuffer()
 
 void DepthStencil::CreateBuffer(float width, float height)
 {
+	this->width = width;
+	this->height = height;
 	//Create Texture
 	{
 		D3D11_TEXTURE2D_DESC desc;

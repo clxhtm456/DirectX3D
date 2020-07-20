@@ -101,8 +101,6 @@ void GBuffer::Render(Camera* viewer)
 
 	D3D::GetDC()->PSSetShaderResources(GBUFFERMAP, 6, srvs);
 
-	auto temp = diffuseRTV->SRV();
-	D3D::GetDC()->PSSetShaderResources(7, 1, &temp);
 	D3D::GetDC()->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
 
 	RenderDirectional();
@@ -187,7 +185,7 @@ void GBuffer::RenderDirectional()
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	noDepthWriteLessDSS->SetState();
-	gbufferShader->Render();
+	gbufferShader->Binding();
 
 	D3D::GetDC()->Draw(4,0);
 }
@@ -302,4 +300,11 @@ void GBuffer::RenderSpotLights()
 
 	//	shader->Draw(0, 10, count);//count*2 = SV_PrimitiveID
 	//}
+}
+
+void GBuffer::Resize(float width, float height)
+{
+	this->width = width;
+	this->height = height;
+	viewport->Set(width, height);
 }

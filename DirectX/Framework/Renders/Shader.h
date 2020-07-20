@@ -10,9 +10,10 @@ private:
 	string psName;
 	string gsName;
 
-	ID3D11VertexShader* vertexShader;
-	ID3D11PixelShader* pixelShader;
-	ID3D11GeometryShader* geometryShader;
+	ID3D11VertexShader* vertexShader = nullptr;
+	ID3D11PixelShader* pixelShader = nullptr;
+	ID3D11GeometryShader* geometryShader = nullptr;
+	ID3D11ComputeShader* computeShader = nullptr;
 
 	ID3D11InputLayout* inputLayout;
 
@@ -31,12 +32,14 @@ public:
 	static Shader* Add(wstring shaderFile, string vsName = "VS", string psName = "PS");
 	static Shader* PSAdd(wstring shaderFile, string psName = "PS");
 	static Shader* VSAdd(wstring shaderFile, string vsName = "VS");
+	static Shader* CSAdd(wstring shaderFile, string csName = "CS");
 	static void Delete();
 
-	void Render();
+	void Binding();
 
-	void RenderPS();
-	void RenderVS();
+	void BindingPS();
+	void BindingVS();
+	void BindingCS();
 
 	void RecompileVS(string vs);
 	void RecompilePS(string ps);
@@ -46,6 +49,7 @@ public:
 	HRESULT CompileShader(_In_ LPCWSTR srcFile, _In_ LPCSTR entryPoint, _In_ LPCSTR profile, _Outptr_ ID3DBlob** blob);
 	void CreateVertexShader();
 	void CreatePixelShader();
+	void CreateComputeShader(wstring csName);
 	void CreateGeometryShader(string gsName = "GS");
 
 	void CreateInputLayout();

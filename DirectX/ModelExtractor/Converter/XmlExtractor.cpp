@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "XmlExtractor.h"
 #include "FbxUtility.h"
-#include "Model/FbxType.h"
 
 #ifdef IOS_REF
 #undef  IOS_REF

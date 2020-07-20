@@ -6,7 +6,7 @@ struct ViewProjection
 	matrix Projection;
 	matrix InvView;
 };
-cbuffer ViewProjection : register(b0)
+cbuffer ViewProjection : register(b0)//VS,PS
 {
 	ViewProjection CB_ViewProjection;
 }
@@ -16,7 +16,7 @@ struct World
 	matrix World;
 };
 
-cbuffer World : register(b1)
+cbuffer World : register(b1)//VS
 {
 	World CB_World;
 }
@@ -33,7 +33,7 @@ struct LightDesc
 	matrix LightProjection;
 };
 
-cbuffer Light : register(b1)
+cbuffer Light : register(b1)//PS
 {
 	LightDesc CB_Light;
 }
@@ -45,7 +45,7 @@ struct MaterialDesc
 	float4 Specular;
 	float4 Emissive;
 };
-cbuffer Material : register(b2)
+cbuffer Material : register(b2)//PS
 {
 	MaterialDesc CB_Material;
 }
@@ -78,7 +78,10 @@ void AddMaterial(inout MaterialDesc result, MaterialDesc val)
 	result.Emissive += val.Emissive;
 }
 
-
+float3 MaterialToColor(MaterialDesc result)
+{
+	return (result.Ambient + result.Diffuse + result.Specular + result.Emissive).rgb;
+}
 
 
 float4 WorldPosition(float4 position)
@@ -98,16 +101,7 @@ float3 ViewPosition()
 }
 
 //////////////////////////////////
-struct PixelInput
-{
-	float4 Position : SV_POSITION;
-	float4 wPosition : POSITION1;
-	float2 Uv : UV;
-	float3 Normal : Normal;
-	float3 Tangent : TANGENT;
-	float3 BiNormal : BINORMAL;
-	float3 ViewPos : VIEWPOS;
-};
+
 
 
 float4 ComputeLight(float3 normal, float3 viewPos, float4 wPosition)
@@ -149,4 +143,88 @@ float4 ComputeLight(float3 normal, float3 viewPos, float4 wPosition)
 	output = Ambient + Diffuse + Specular + Emissive;
 
 	return output;
+}
+
+void ComputeLight_Material(out MaterialDesc output, float3 normal, float3 wPosition)
+{
+	output.Ambient = 0;
+	output.Diffuse = 0;
+	output.Specular = 0;
+	output.Emissive = 0;
+
+	float3 direction = -CB_Light.Direction;
+	float NdotL = dot(direction, normalize(normal));
+
+	output.Ambient = CB_Light.Ambient * CB_Material.Ambient;
+	float3 E = normalize(ViewPosition() - wPosition);
+
+
+	[flatten]
+	if (NdotL > 0.0f)
+	{
+		output.Diffuse = NdotL * CB_Material.Diffuse;
+
+
+		[flatten]
+		if (any(CB_Material.Specular.rgb))
+		{
+			float3 R = normalize(reflect(-direction, normal));
+			float RdotE = saturate(dot(R, E));
+
+			float specular = pow(RdotE, CB_Material.Specular.a);
+			output.Specular = specular * CB_Material.Specular * CB_Light.Specular;
+		}
+	}
+
+	[flatten]
+	if (any(CB_Material.Emissive.rgb))
+	{
+		float NdotE = dot(E, normalize(normal));
+
+		float emissive = smoothstep(1.0f - CB_Material.Emissive.a, 1.0f, 1.0f - saturate(NdotE));
+
+		output.Emissive = CB_Material.Emissive * emissive;
+	}
+
+}
+
+void NormalMapping(inout float4 diffuse, float2 uv, float3 normal, float3 tangent, SamplerState samp)
+{
+	float4 map = normalMap.Sample(samp, uv);
+	float3 direction = -CB_Light.Direction;
+	float4 result = float4(0, 0, 0, 0);
+
+	[flatten]
+	if (any(map) == false)
+		return;
+
+	float3 N = normalize(normal);
+	float3 T = normalize(tangent - dot(tangent, N) * N);
+	float3 B = cross(N, T);
+	float3x3 TBN = float3x3(T, B, N);
+
+
+	float3 coord = map.rgb * 2.0f - 1.0f;
+
+	coord = mul(coord, TBN);
+
+	diffuse *= saturate(dot(coord, direction));
+}
+
+void NormalMapping(inout float4 diffuse, float2 uv, float3 normal, float3 tangent)
+{
+	NormalMapping(diffuse, uv, normal, tangent, diffuseSamp);
+
+}
+
+void Texture(inout float4 color, Texture2D t, float2 uv, SamplerState samp)
+{
+	float4 sampling = t.Sample(samp, uv);
+
+	color = color * sampling;
+}
+
+void Texture(inout float4 color, Texture2D t, float2 uv)
+{
+	Texture(color, t, uv, diffuseSamp);
 }

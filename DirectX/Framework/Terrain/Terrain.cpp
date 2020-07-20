@@ -37,7 +37,7 @@ Terrain * Terrain::Create(UINT horizontal, UINT vertical, UINT textureDetail)
 
 bool Terrain::Init(UINT horizontal, UINT vertical, UINT textureDetail)
 {
-	shader = Shader::Add(L"Terrain");
+	SetShader( Shader::Add(L"Terrain"));
 	//heightMap = Texture::Add(heightFile);
 
 	width = horizontal;
@@ -262,7 +262,7 @@ void Terrain::Render(Camera * viewer)
 {
 	if (vertexBuffer != NULL && indexBuffer != NULL)
 	{
-		vertexBuffer->Render();
+		vertexBuffer->Binding();
 		rasterizerState->SetState();
 	}
 

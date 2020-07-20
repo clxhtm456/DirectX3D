@@ -339,10 +339,10 @@ void D3D::CreateBackBufferList(float width, float height)
 {
 	CreateBackBuffer(width, height);
 
-	for (auto viewBuffer : viewBufferList)
+	/*for (auto viewBuffer : viewBufferList)
 	{
-		viewBuffer->CreateBuffer(width, height);
-	}
+		viewBuffer->CreateBuffer(1280, 720);
+	}*/
 }
 
 void D3D::DeleteBackBuffer()
@@ -356,10 +356,10 @@ void D3D::DeleteBackBufferList()
 {
 	DeleteBackBuffer();
 
-	for (auto viewBuffer : viewBufferList)
+	/*for (auto viewBuffer : viewBufferList)
 	{
 		viewBuffer->ReleaseBuffer();
-	}
+	}*/
 }
 
 D3DEnumAdapterInfo::D3DEnumAdapterInfo()

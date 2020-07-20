@@ -42,7 +42,7 @@ VertexBuffer::~VertexBuffer()
 	SafeRelease(buffer);
 }
 
-void VertexBuffer::Render()
+void VertexBuffer::Binding()
 {
 	UINT offset = 0;
 
@@ -72,7 +72,7 @@ IndexBuffer::~IndexBuffer()
 	SafeRelease(buffer);
 }
 
-void IndexBuffer::Render()
+void IndexBuffer::Binding()
 {
 	UINT offset = 0;
 

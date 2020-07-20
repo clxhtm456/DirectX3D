@@ -19,14 +19,14 @@ void AssimpConverter::ConvertMesh(const string path, const string outPath)
 	string outName= Path::GetFileNameWithoutExtension(Path::GetFileName(outPath));
 	if (outPath == "")
 	{
-		this->outPath = "Assets/Models/" + name + "/" + name + ".mesh";
+		this->outPath = "../../_Assets/Meshes/" + name + "/" + name + ".mesh";
 	}
 	else
 	{
 		if(outName == "")
 			this->outPath = outPath + name + ".mesh";
 		else if(outName == outPath)
-			this->outPath = "Assets/Models/" + outName + "/" + outName + ".mesh";
+			this->outPath = "../../_Assets/Meshes/" + outName + "/" + outName + ".mesh";
 		else
 			this->outPath = outPath;
 	}
@@ -68,9 +68,9 @@ void AssimpConverter::SaveAnimation(string path, UINT takeNum)
 	if (path == "")
 	{
 		if(animations.size() == 1)
-			path = "Assets/Models/" + name + "/anims/" + animName + ".anim";
+			path = "../../_Assets/Meshes/" + name + "/anims/" + animName + ".anim";
 		else
-			path = "Assets/Models/" + name + "/anims/" + animName + animations[takeNum].name + ".anim";
+			path = "../../_Assets/Meshes/" + name + "/anims/" + animName + animations[takeNum].name + ".anim";
 	}
 
 	Path::CreateFolders(Path::GetDirectoryName(path));
@@ -132,11 +132,9 @@ void AssimpConverter::SaveMesh()
 		w->BYTE(&node.preQuaternion, sizeof(XMFLOAT4));
 		w->BYTE(&node.quaternion, sizeof(XMFLOAT4));
 		w->BYTE(&node.scale, sizeof(XMFLOAT3));
-		Matrix matrix = node.local;
-		w->Matrix(matrix);
-		matrix = node.world;
-		w->Matrix(matrix);
-		w->Matrix(node.offset);
+		w->BYTE(&node.local, sizeof(XMMATRIX));
+		w->BYTE(&node.world, sizeof(XMMATRIX));
+		w->BYTE(&node.offset, sizeof(XMMATRIX));
 		w->Int(node.parentID);
 	}
 
@@ -639,9 +637,9 @@ string AssimpConverter::SaveTexture(const aiScene* scene, string file)
 			Path::CreateFolders(Path::GetDirectoryName(path));
 
 			BinaryWriter w;
-			w.Open(path);
-
+			w.Open(String::ToWString(path));
 			w.BYTE(texture->pcData, texture->mWidth);
+			w.Close();
 		}
 		else
 		{

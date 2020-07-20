@@ -130,6 +130,7 @@ typedef enum _TYPEMASK
 #include "Renders/ShaderState/DepthStencilState.h"
 #include "Renders/ShaderState/BlendState.h"
 #include "Renders/ShaderState/SamplerState.h"
+#include "Renders/CommonStates.h"
 
 
 #include "Utilities/Math.h"
@@ -159,6 +160,5 @@ typedef enum _TYPEMASK
 #include "Terrain/Terrain.h"
 
 #include "Model/Model.h"
-#include "Model/ModelAnim.h"
 
 #include "Systems/Scene.h"

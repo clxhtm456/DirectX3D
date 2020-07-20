@@ -86,7 +86,6 @@ private:
 protected:
 	class Perspective* perspective;
 	class Viewport* viewport;
-	class Viewport* renderViewport;
 
 	class Frustum* m_Frustum;
 	

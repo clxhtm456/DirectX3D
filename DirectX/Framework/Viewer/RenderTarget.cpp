@@ -4,10 +4,10 @@
 RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format)
 	: format(format)
 {
-	this->width = (width < 1) ? (UINT)D3D::Width() : width;
-	this->height = (height < 1) ? (UINT)D3D::Height() : height;
+	width = (width < 1) ? (UINT)D3D::Width() : width;
+	height = (height < 1) ? (UINT)D3D::Height() : height;
 
-	CreateBuffer(this->width, this->height);
+	CreateBuffer(width, height);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
@@ -30,6 +30,9 @@ RenderTarget::~RenderTarget()
 
 void RenderTarget::CreateBuffer(float width, float height)
 {
+	this->width = width;
+	this->height = height;
+
 	D3D11_TEXTURE2D_DESC textureDesc;
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 	textureDesc.Width = width;

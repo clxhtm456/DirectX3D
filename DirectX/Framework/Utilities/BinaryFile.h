@@ -22,7 +22,7 @@ public:
 	void Vector4(const Vector4& data);
 	void Color3f(const Color& data);
 	void Color4f(const Color& data);
-	void Matrix(const Matrix& data);
+	void Matrix(const Matrix data);
 
 	void String(const string& data);
 	void BYTE(void* data, UINT dataSize);

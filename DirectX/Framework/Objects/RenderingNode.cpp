@@ -63,16 +63,16 @@ void RenderingNode::Render(Camera * viewer)
 
 	if (vertexBuffer != NULL && indexBuffer != NULL)
 	{
-		vertexBuffer->Render();
-		indexBuffer->Render();
+		vertexBuffer->Binding();
+		indexBuffer->Binding();
 		rasterizerState->SetState();
 
 		if (vsShader == NULL && psShader == NULL)
-			shader->Render();
+			shader->Binding();
 		else
 		{
-			vsShader->RenderVS();
-			psShader->RenderPS();
+			vsShader->BindingVS();
+			psShader->BindingPS();
 		}
 		
 

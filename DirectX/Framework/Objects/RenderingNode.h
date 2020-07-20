@@ -44,10 +44,11 @@ public:
 	void LightSet();
 
 	virtual void CalcWorldMatrix();
-protected:
+private:
 	Shader* shader = NULL;
 	Shader* psShader = NULL;
 	Shader* vsShader = NULL;
+protected:
 	VertexBuffer* vertexBuffer = NULL;
 	IndexBuffer* indexBuffer = NULL;
 

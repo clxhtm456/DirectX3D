@@ -59,7 +59,7 @@ void DebugLine::RenderLine(Vector3 & start, Vector3 & end, Color & color)
 void DebugLine::Render()
 {
 	Context::Get()->GetMainCamera()->GetVPBuffer()->SetVSBuffer(0);
-	shader->Render();
+	shader->Binding();
 
 	/*D3D11_MAPPED_SUBRESOURCE subResource;
 	D3D::GetDC()->Map(vertexBuffer->Buffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
@@ -68,7 +68,7 @@ void DebugLine::Render()
 	}
 	D3D::GetDC()->Unmap(vertexBuffer->Buffer(), 0);*/
 
-	vertexBuffer->Render();
+	vertexBuffer->Binding();
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	D3D::GetDC()->Draw(drawCount * 2,0);
 

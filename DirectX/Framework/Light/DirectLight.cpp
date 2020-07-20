@@ -60,7 +60,7 @@ void DirectionLight::SetRNShader2Origin(RenderingNode* node)
 		return;
 
 	vsShaderSlot->RecompileVS("VS");
-	vsShaderSlot->RecompilePS("PS");
+	psShaderSlot->RecompilePS("PS");
 	node->SetShadowMap(depthStencil->SRV());
 	
 

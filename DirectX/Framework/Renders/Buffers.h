@@ -10,7 +10,7 @@ public:
 	UINT Stride() { return stride; }
 	ID3D11Buffer* Buffer() { return buffer; }
 
-	void Render();
+	void Binding();
 
 private:
 	ID3D11Buffer * buffer;
@@ -35,7 +35,7 @@ public:
 	UINT Count() { return count; }
 	ID3D11Buffer* Buffer() { return buffer; }
 
-	void Render();
+	void Binding();
 
 private:
 	ID3D11Buffer * buffer;

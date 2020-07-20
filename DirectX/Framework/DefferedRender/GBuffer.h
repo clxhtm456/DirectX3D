@@ -23,6 +23,7 @@ private:
 	void RenderSpotLights();
 public:
 	Shader* GetShader() { return deffredShader; }
+	void Resize(float width, float height);
 	//void SetDebug(bool val) { bDebug = val; }
 private:
 	/*struct Desc

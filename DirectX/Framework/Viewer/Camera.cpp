@@ -56,7 +56,6 @@ Camera::~Camera()
 
 	delete renderTarget;
 	delete depthStencil;
-	delete renderViewport;
 	delete gBuffer;
 	renderImage->Release();
 	//delete renderImage;
@@ -64,6 +63,9 @@ Camera::~Camera()
 
 void Camera::Update()
 {
+	if (ImGui::SliderFloat("FOV", &default.fov, 0.1f, 1.0f))
+		perspective->Set(default.Width, default.Height, default.zn, default.zf, default.fov);
+	auto tmatrix = GetViewMatrix();
 	GetVPBuffer()->SetView(GetViewMatrix());
 	GetVPBuffer()->SetProjection(GetProjectionMatrix());
 
@@ -120,8 +122,14 @@ void Camera::SetRotationDegree(float x, float y, float z)
 
 void Camera::Resize()
 {
-	perspective->Set(D3D::Width(), D3D::Height(), default.zn, default.zf, default.fov);
-	viewport->Set(D3D::Width(), D3D::Height(), default.x, default.y, default.minDepth, default.maxDepth);
+	default.Width = D3D::Width();
+	default.Height = D3D::Height();
+	perspective->Set(default.Width, default.Height, default.zn, default.zf, default.fov);
+	viewport->Set(default.Width, default.Height, default.x, default.y, default.minDepth, default.maxDepth);
+
+	if (default.useGBuffer == false)
+		return;
+	gBuffer->Resize(default.Width, default.Height);
 }
 
 
@@ -144,7 +152,6 @@ void Camera::CreateRender2DOption()
 {
 	renderTarget = new RenderTarget();
 	depthStencil = new DepthStencil();
-	renderViewport = new Viewport(D3D::Width(), D3D::Height(), default.x, default.y, default.minDepth, default.maxDepth);
 
 	renderImage = Render2D::Create();
 	renderImage->Retain();
@@ -274,12 +281,13 @@ void Camera::Render(Camera* viewer)
 		return;
 
 	D3D::Get()->SetRenderTarget();
-	D3D::Get()->Clear(Color(0,0,1,1));
+	D3D::Get()->Clear(Color(0.3,0.3,0.3,1));
 
 	viewport->RSSetViewport();
 
 	//renderImage->PostRender(this);
 	gBuffer->Render(viewer);
+	gBuffer->DebugRender(viewer);
 }
 
 
@@ -287,5 +295,5 @@ void Camera::PostRender(Camera* viewer)
 {
 	if (default.useGBuffer == false)
 		return;
-	gBuffer->DebugRender(viewer);
+	//gBuffer->DebugRender(viewer);
 }

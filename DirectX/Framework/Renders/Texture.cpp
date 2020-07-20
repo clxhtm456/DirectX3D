@@ -93,6 +93,9 @@ Texture* Texture::AddAbsPath(wstring file)
 
 ID3D11ShaderResourceView* Texture::LoadSRV(wstring file)
 {
+	if (file.length() == 0)
+		return nullptr;
+
 	ID3D11ShaderResourceView* SRV;
 
 	if (totalSRV.count(file) > 0)
@@ -112,6 +115,11 @@ ID3D11ShaderResourceView* Texture::LoadSRV(wstring file)
 		totalSRV.insert({ file, SRV });
 	}
 	return SRV;
+}
+
+ID3D11ShaderResourceView* Texture::LoadSRV(string file)
+{
+	return LoadSRV(String::ToWString(file));
 }
 
 void Texture::Delete()

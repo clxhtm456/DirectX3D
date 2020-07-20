@@ -36,7 +36,6 @@ private:
 	void StartInstancingMode();
 	void IncreaseInstancing(Node* object);
 	void DecreaseInstancing(Node* object);
-	void UpdateInstancingMatrix();
 	UINT instancingCount;
 
 	VertexBuffer* instancingBuffer;

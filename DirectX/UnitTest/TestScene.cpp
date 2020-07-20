@@ -8,7 +8,7 @@ void TestScene::Initialize()
 {
 	CreateFreedomCamera();
 
-	cube = MeshCube::Create();
+	/*cube = MeshCube::Create();
 	cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
 	cube->GetMaterial()->SetSpecularMap("../../_Textures/Stones_Specular.png");
 	cube->GetMaterial()->SetNormalMap("../../_Textures/Stones_Normal.png");
@@ -66,7 +66,13 @@ void TestScene::Initialize()
 		cylinderInst2->SetScale(5, 5, 5);
 		AddChild(cylinderInst2);
 
-	}
+	}*/
+
+	auto kachujin = Model::Create("../../_Assets/Meshes/kachujin/Kachujin.mesh");
+	kachujin->SetPosition(0, 0, 0);
+	kachujin->SetScale(0.1f, 0.1f, 0.1f);
+	AddChild(kachujin);
+
 
 	/*auto kachujin = ModelAnim::Create("pikachu");
 	kachujin->AddClip("idle");
@@ -123,7 +129,7 @@ void TestScene::CreateFreedomCamera()
 	CameraOption option;
 	option.Width = desc.Width;
 	option.Height = desc.Height;
-	option.useGBuffer = true;
+	//option.useGBuffer = true;
 
 	freedomCam = Freedom::Create(option);
 	freedomCam->SetPosition(0, 32, -67);

@@ -404,7 +404,7 @@ void QuadTree::RenderNode(NodeType* node, Camera* viewer)
 	int indexCount = node->triangleCount * 3;
 
 	
-	shader->Render();
+	shader->Binding();
 
 	ID3D11SamplerState* sampleState = &m_Terrain->GetSampleState();
 	// 픽셀 쉐이더에서 샘플러 상태를 설정합니다.

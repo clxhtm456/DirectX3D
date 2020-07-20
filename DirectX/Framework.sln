@@ -13,24 +13,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4E435F7-7118-4E13-901B-39445234D64D}"
 	ProjectSection(SolutionItems) = preProject
 		..\_Shaders\DebugLine.hlsl = ..\_Shaders\DebugLine.hlsl
-		..\_Shaders\DefferedRender.hlsl = ..\_Shaders\DefferedRender.hlsl
-		..\_Shaders\Depth_InstMesh.hlsl = ..\_Shaders\Depth_InstMesh.hlsl
-		..\_Shaders\Depth_InstModel.hlsl = ..\_Shaders\Depth_InstModel.hlsl
-		..\_Shaders\Depth_Terrain.hlsl = ..\_Shaders\Depth_Terrain.hlsl
-		..\_Shaders\FModel.hlsl = ..\_Shaders\FModel.hlsl
-		..\_Shaders\GbufferRender.hlsl = ..\_Shaders\GbufferRender.hlsl
-		..\_Shaders\InstMesh.hlsl = ..\_Shaders\InstMesh.hlsl
-		..\_Shaders\InstModel.hlsl = ..\_Shaders\InstModel.hlsl
-		..\_Shaders\RedMesh.hlsl = ..\_Shaders\RedMesh.hlsl
 		..\_Shaders\Render2D.hlsl = ..\_Shaders\Render2D.hlsl
 		..\_Shaders\RenderingNode.hlsli = ..\_Shaders\RenderingNode.hlsli
 		..\_Shaders\Shadow.hlsl = ..\_Shaders\Shadow.hlsl
-		..\_Shaders\Terrain.hlsl = ..\_Shaders\Terrain.hlsl
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PS", "PS", "{B36EC4EA-A1A1-4392-AD22-E7436A851463}"
-	ProjectSection(SolutionItems) = preProject
-		..\_Shaders\PSShadow.hlsl = ..\_Shaders\PSShadow.hlsl
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelExtractor", "ModelExtractor\ModelExtractor.vcxproj", "{47D9C802-2089-4722-B18C-F77E22BACD4B}"
@@ -41,6 +26,31 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TerrainEditor", "TerrainEditor\TerrainEditor.vcxproj", "{AB7F9017-0574-4D14-AD96-28560D209193}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5} = {4091DCFB-EBD1-42DA-B7EE-B68A0E0A5EA5}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mesh", "Mesh", "{BDD34A96-883E-4408-9446-A79496CB7D77}"
+	ProjectSection(SolutionItems) = preProject
+		..\_Shaders\Depth_InstMesh.hlsl = ..\_Shaders\Depth_InstMesh.hlsl
+		..\_Shaders\InstMesh.hlsl = ..\_Shaders\InstMesh.hlsl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DefferedRender", "DefferedRender", "{37DE9228-FCF1-4D40-8A1A-2E197005302F}"
+	ProjectSection(SolutionItems) = preProject
+		..\_Shaders\DefferedRender.hlsl = ..\_Shaders\DefferedRender.hlsl
+		..\_Shaders\GbufferRender.hlsl = ..\_Shaders\GbufferRender.hlsl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Model", "Model", "{EA6E4062-591F-420F-8889-01246EC81D4C}"
+	ProjectSection(SolutionItems) = preProject
+		..\_Shaders\Depth_InstModelVS.hlsl = ..\_Shaders\Depth_InstModelVS.hlsl
+		..\_Shaders\InstModelPS.hlsl = ..\_Shaders\InstModelPS.hlsl
+		..\_Shaders\InstModelVS.hlsl = ..\_Shaders\InstModelVS.hlsl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Terrain", "Terrain", "{97A9CAD8-9337-4E1D-B394-C3309218CD3D}"
+	ProjectSection(SolutionItems) = preProject
+		..\_Shaders\Depth_Terrain.hlsl = ..\_Shaders\Depth_Terrain.hlsl
+		..\_Shaders\Terrain.hlsl = ..\_Shaders\Terrain.hlsl
 	EndProjectSection
 EndProject
 Global
@@ -88,7 +98,10 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B36EC4EA-A1A1-4392-AD22-E7436A851463} = {D4E435F7-7118-4E13-901B-39445234D64D}
+		{BDD34A96-883E-4408-9446-A79496CB7D77} = {D4E435F7-7118-4E13-901B-39445234D64D}
+		{37DE9228-FCF1-4D40-8A1A-2E197005302F} = {D4E435F7-7118-4E13-901B-39445234D64D}
+		{EA6E4062-591F-420F-8889-01246EC81D4C} = {D4E435F7-7118-4E13-901B-39445234D64D}
+		{97A9CAD8-9337-4E1D-B394-C3309218CD3D} = {D4E435F7-7118-4E13-901B-39445234D64D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E7C4C6F8-0135-4033-BA25-9F3F90F282CF}

@@ -193,6 +193,12 @@
     <ClCompile Include="Terrain\TerrainCellClass.cpp">
       <Filter>Terrain</Filter>
     </ClCompile>
+    <ClCompile Include="Model\Model.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\CommonStates.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\Keyboard.h">
@@ -363,6 +369,12 @@
     </ClInclude>
     <ClInclude Include="Observer\IRenderObserver.h">
       <Filter>Observer</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\Model.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\CommonStates.h">
+      <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -17,15 +17,7 @@ Shader::Shader(wstring shaderFile, string vsName, string psName)
 	geometryBlob(nullptr)
 {
 	this->shaderFile = L"../../_Shaders/" + shaderFile + L".hlsl";
-	if (vsName != "")
-	{
-		CreateVertexShader();
-		CreateInputLayout();
-	}
-	if (psName != "")
-	{
-		CreatePixelShader();
-	}
+	
 }
 
 Shader::~Shader()
@@ -53,9 +45,22 @@ Shader* Shader::Add(wstring shaderFile, string vsName, string psName)
 		return totalShader[shaderFile];
 	else
 	{
-		totalShader.insert({ shaderFile, new Shader(shaderFile, vsName, psName) });
+		Shader* temp = new Shader(shaderFile, vsName, psName);
+		totalShader.insert({ shaderFile,  temp });
+
+		if (vsName != "")
+		{
+			temp->CreateVertexShader();
+			temp->CreateInputLayout();
+		}
+		if (psName != "")
+		{
+			temp->CreatePixelShader();
+		}
 		return totalShader[shaderFile];
 	}
+
+	
 }
 
 Shader* Shader::PSAdd(wstring shaderFile, string psName)
@@ -64,7 +69,14 @@ Shader* Shader::PSAdd(wstring shaderFile, string psName)
 		return totalShader[shaderFile];
 	else
 	{
-		totalShader.insert({ shaderFile, new Shader(shaderFile, "", psName) });
+		Shader* temp = new Shader(shaderFile, "", psName);
+		totalShader.insert({ shaderFile, temp });
+
+		if (psName != "")
+		{
+			temp->CreatePixelShader();
+		}
+
 		return totalShader[shaderFile];
 	}
 }
@@ -75,7 +87,33 @@ Shader* Shader::VSAdd(wstring shaderFile, string vsName)
 		return totalShader[shaderFile];
 	else
 	{
-		totalShader.insert({ shaderFile, new Shader(shaderFile, vsName, "") });
+		Shader* temp = new Shader(shaderFile, vsName, "");
+		totalShader.insert({ shaderFile, temp });
+
+		if (vsName != "")
+		{
+			temp->CreateVertexShader();
+			temp->CreateInputLayout();
+		}
+
+		return totalShader[shaderFile];
+	}
+}
+
+Shader* Shader::CSAdd(wstring shaderFile, string csName)
+{
+	if (totalShader.count(shaderFile) > 0)
+		return totalShader[shaderFile];
+	else
+	{
+		Shader* temp = new Shader(shaderFile, "", "");
+		totalShader.insert({ shaderFile, temp });
+
+		if (csName != "")
+		{
+			temp->CreateComputeShader(String::ToWString(csName));
+		}
+
 		return totalShader[shaderFile];
 	}
 }
@@ -86,7 +124,7 @@ void Shader::Delete()
 		delete shader.second;
 }
 
-void Shader::Render()
+void Shader::Binding()
 {
 	D3D::GetDC()->IASetInputLayout(inputLayout);
 	D3D::GetDC()->VSSetShader(vertexShader, nullptr, 0);
@@ -97,17 +135,28 @@ void Shader::Render()
 	D3D::GetDC()->PSSetShader(pixelShader, nullptr, 0);
 }
 
-void Shader::RenderPS()
+void Shader::BindingPS()
 {
-	D3D::GetDC()->PSSetShader(pixelShader, nullptr, 0);
+	if (pixelShader != nullptr)
+		D3D::GetDC()->PSSetShader(pixelShader, nullptr, 0);
 }
 
-void Shader::RenderVS()
+void Shader::BindingVS()
 {
-	D3D::GetDC()->IASetInputLayout(inputLayout);
-	D3D::GetDC()->VSSetShader(vertexShader, nullptr, 0);
+	if (vertexShader != nullptr)
+	{
+		D3D::GetDC()->IASetInputLayout(inputLayout);
+		D3D::GetDC()->VSSetShader(vertexShader, nullptr, 0);
+	}
+	
 	if (geometryShader != nullptr)
 		D3D::GetDC()->GSSetShader(geometryShader, nullptr, 0);
+}
+
+void Shader::BindingCS()
+{
+	if(computeShader != nullptr)
+		D3D::GetDC()->CSSetShader(computeShader, nullptr, 0);
 }
 
 void Shader::RecompileVS(string vs)
@@ -201,6 +250,17 @@ void Shader::CreatePixelShader()
 	HRESULT hr = D3D::GetDevice()->CreatePixelShader(pixelBlob->GetBufferPointer(),
 		pixelBlob->GetBufferSize(), nullptr, &pixelShader);
 	Check(hr);
+}
+
+void Shader::CreateComputeShader(wstring csName)
+{
+	ID3DBlob* csBlob;
+	CompileShader(shaderFile.c_str(), psName.c_str(), "cs_5_0", &csBlob);
+
+	HRESULT hr = D3D::GetDevice()->CreateComputeShader(csBlob->GetBufferPointer(),
+		csBlob->GetBufferSize(), nullptr, &computeShader);
+	Check(hr);
+	csBlob->Release();
 }
 
 void Shader::CreateGeometryShader(string gsName)

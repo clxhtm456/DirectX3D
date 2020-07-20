@@ -102,8 +102,8 @@ void Render2D::PostRender(Camera* viewer)
 	vpBuffer->SetVSBuffer(2);
 	worldBuffer->SetVSBuffer(1);
 
-	vertexBuffer->Render();
-	shader->Render();
+	vertexBuffer->Binding();
+	shader->Binding();
 	if (diffuseMap != NULL)
 	{
 		D3D::GetDC()->PSSetShaderResources(0, 1, &diffuseMap);

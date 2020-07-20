@@ -4,10 +4,7 @@
 Texture2D GBufferMaps[6] : register(t9);
 
 
-float3 MaterialToColor(MaterialDesc result)
-{
-	return (result.Ambient + result.Diffuse + result.Specular + result.Emissive).rgb;
-}
+
 
 void ComputeLight_Deffered(out MaterialDesc output, MaterialDesc material, float3 normal, float3 wPosition)
 {
@@ -97,8 +94,11 @@ VertexOutput_PackGBuffer VS(uint VertexID : SV_VertexID)
     
 	const float2 NDC[4] = { float2(-1, +1), float2(+1, +1), float2(-1, -1), float2(+1, -1) };
 
-    output.Position = float4(NDC[VertexID].xy, 0, 1);
-    output.Screen = output.Position.xy;
+	output.Screen = float2((VertexID << 1) & 2, VertexID & 2);
+	output.Position = float4(output.Screen * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f), 0.0f, 1.0f);
+
+    /*output.Position = float4(NDC[VertexID].xy, 0, 1);
+    output.Screen = output.Position.xy;*/
 
     return output;
 }

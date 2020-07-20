@@ -7,7 +7,7 @@
 
 Mesh::Mesh() : RenderingNode()
 {
-	shader = Shader::Add(L"InstMesh");
+	SetShader( Shader::Add(L"InstMesh"));
 	material = new Material();
 
 	instancingCount = 0;
@@ -88,22 +88,18 @@ void Mesh::Render(Camera * viewer)
 
 	if (vertexBuffer != NULL && indexBuffer != NULL)
 	{
-		vertexBuffer->Render();
+		vertexBuffer->Binding();
 		
-		indexBuffer->Render();
+		indexBuffer->Binding();
 
 		rasterizerState->SetState();
-		if (vsShader == NULL && psShader == NULL)
-			shader->Render();
-		else
-		{
-			vsShader->RenderVS();
-			psShader->RenderPS();
-		}
+
+		GetVSShader()->BindingVS();
+		GetPSShader()->BindingPS();
 
 		D3D::GetDC()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		instancingBuffer->Render();
+		instancingBuffer->Binding();
 		D3D::GetDC()->DrawIndexedInstanced(indexCount, instancingCount, 0, 0, 0);
 	}
 }
@@ -184,9 +180,4 @@ void Mesh::DecreaseInstancing(Node* object)
 
 	instanceMatrixList.erase(object);
 	instancingCount--;
-}
-
-void Mesh::UpdateInstancingMatrix()
-{
-	
 }

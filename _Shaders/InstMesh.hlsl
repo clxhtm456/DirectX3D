@@ -21,6 +21,17 @@ struct ShadowVertexInput
     matrix Transform : INSTANCE;
 };
 
+struct PixelInput
+{
+	float4 Position : SV_POSITION;
+	float4 wPosition : POSITION1;
+	float2 Uv : UV;
+	float3 Normal : Normal;
+	float3 Tangent : TANGENT;
+	float3 BiNormal : BINORMAL;
+	float3 ViewPos : VIEWPOS;
+};
+
 
 PixelInput VS(VertexInput input)
 {
@@ -60,11 +71,22 @@ ShadowPixelInput VS_Shadow(ShadowVertexInput input)
 }
 
 
+
 float4 PS(PixelInput input) : SV_TARGET0
 {
-	float3 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv).rgb;
-	float4 result = ComputeLight(input.Normal, input.ViewPos, input.wPosition);
+	float4 diffuse = CB_Material.Diffuse;
+	float4 specular = CB_Material.Specular;
+
+	Texture(diffuse, diffuseMap, input.Uv);
+	NormalMapping(diffuse,input.Uv, input.Normal, input.Tangent);
+	Texture(specular, specularMap, input.Uv);
+
+	MaterialDesc result = MakeMaterial();
+	MaterialDesc output = MakeMaterial();
+
+	ComputeLight_Material(output, input.Normal, input.wPosition);
+	AddMaterial(result, output);
 	//float4 emissive = ComputeEmissive(input.Normal, input.wPosition);
 	//return float4(1, 1, 0, 1);
-	return float4(diffuse,1)*result;
+	return diffuse*float4(MaterialToColor(result), 1.0f);
 }

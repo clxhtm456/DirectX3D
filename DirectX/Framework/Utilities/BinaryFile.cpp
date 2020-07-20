@@ -103,7 +103,7 @@ void BinaryWriter::Color4f(const Color& data)
 	WriteFile(fileHandle, &data, sizeof(Color), &size, NULL);
 }
 
-void BinaryWriter::Matrix(const XMMATRIX& data)
+void BinaryWriter::Matrix(const XMMATRIX data)
 {
 	WriteFile(fileHandle, &data, sizeof(XMMATRIX), &size, NULL);
 }
@@ -259,10 +259,11 @@ XMCOLOR BinaryReader::Color4f()
 XMMATRIX BinaryReader::Matrix()
 {
 	XMMATRIX matrix;
-	matrix.r[0] = { Float(), Float() ,Float() ,Float() };
+	ReadFile(fileHandle, &matrix, sizeof(XMMATRIX), &size, NULL);
+	/*matrix.r[0] = { Float(), Float() ,Float() ,Float() };
 	matrix.r[1] = { Float(), Float() ,Float() ,Float() };
 	matrix.r[2] = { Float(), Float() ,Float() ,Float() };
-	matrix.r[3] = { Float(), Float() ,Float() ,Float() };
+	matrix.r[3] = { Float(), Float() ,Float() ,Float() };*/
 
 	return matrix;
 }

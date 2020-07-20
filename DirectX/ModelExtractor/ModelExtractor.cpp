@@ -2,6 +2,7 @@
 #include "ModelExtractor.h"
 
 #include"Converter/XmlExtractor.h"
+#include "AssimpModelLoader/AssimpConverter.h"
 
 void ModelExtractor::Initialize()
 {
@@ -12,9 +13,8 @@ void ModelExtractor::Initialize()
 	auto& loader = Utility::AssetLoader::GetLoader();
 	loader.LoadFbx("unitychan", extractor);*/
 
-	auto extractor = XmlExtractor::Create();
-	extractor->LoadModel("pikachu");
-	extractor->LoadAnimation(0, "idle");
+	auto extractor = new AssimpConverter();
+	extractor->ConvertMesh("../../_Assets/Models/Kachujin/Kachujin.fbx");
 	delete extractor;
 
 }
