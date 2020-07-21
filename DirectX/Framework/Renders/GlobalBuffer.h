@@ -102,18 +102,81 @@ class MaterialBuffer : public ConstantBuffer
 public:
 	struct Data
 	{
-		Color ambient ;
-		Color diffuse ;
-		Color specular;
-		Color emissive;
+		Vector3 diffuse ;
+		Vector3 ambient ;
+		Vector3 specular;
+		Vector3 emissive;
+		Vector3 transparent;
+		Vector3 reflective;
+
+		FLOAT bumpscaling;
+		FLOAT opacity;
+		FLOAT shininess;
+		FLOAT shininessstrength;
+		FLOAT transparentfactor;
+		FLOAT reflectivity;
+
+		FLOAT refracti;
+		INT opaque;
+		INT reflector;
+
+		INT hasDiffuseMap;
+		INT hasSpecularMap;
+		INT hasAmbientMap;
+		INT hasEmissiveMap;
+		INT hasHeightMap;
+		INT hasNormalMap;
+		INT hasShininessMap;
+		INT hasOpacityMap;
+		INT hasDisplacementMap;
+		INT hasLightMapMap;
+		INT hasReflectionMap;
+		INT hasBasecolorMap;
+		INT hasNormalcameraMap;
+		INT hasEmissioncolorMap;
+		INT hasMetalnessMap;
+		INT hasDiffuseroughnessMap;
+		INT hasAmbientocculsionMap;
 	}data;
 
 	MaterialBuffer() : ConstantBuffer(&data, sizeof(Data))
 	{
-		data.ambient = Color(0, 0, 0, 1);
-		data.diffuse = Color(1, 1, 1, 1);
-		data.specular = Color(0, 0, 0, 1);
-		data.emissive = Color(0, 0, 0, 1);
+		data.diffuse		= Vector3(1, 1, 1);
+		data.ambient		= Vector3(0, 0, 0);
+		data.specular		= Vector3(0, 0, 0);
+		data.emissive		= Vector3(0, 0, 0);
+
+		data.transparent	= Vector3(0, 0, 0);
+		data.reflective		= Vector3(0, 0, 0);
+
+		data.bumpscaling	= 0;
+		data.opacity		= 0;
+		data.shininess		= 0;
+		data.shininessstrength = 0;
+		data.transparentfactor = 0;
+		data.reflectivity	= 0;
+
+		data.refracti		= 0;
+		data.opaque			= 0;
+		data.reflector		= 0;
+
+		data.hasDiffuseMap	= 0;
+		data.hasSpecularMap = 0;
+		data.hasAmbientMap = 0;
+		data.hasEmissiveMap = 0;
+		data.hasHeightMap = 0;
+		data.hasNormalMap = 0;
+		data.hasShininessMap = 0;
+		data.hasOpacityMap = 0;
+		data.hasDisplacementMap = 0;
+		data.hasLightMapMap = 0;
+		data.hasReflectionMap = 0;
+		data.hasBasecolorMap = 0;
+		data.hasNormalcameraMap = 0;
+		data.hasEmissioncolorMap = 0;
+		data.hasMetalnessMap = 0;
+		data.hasDiffuseroughnessMap = 0;
+		data.hasAmbientocculsionMap = 0;
 	}	
 };
 

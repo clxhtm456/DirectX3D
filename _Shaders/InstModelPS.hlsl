@@ -117,96 +117,100 @@ float SimpleCookTorrance(float3 N, float3 L, float3 V, float m)
 
 float4 PS(PixelInput input) : SV_Target
 {
-	float3 tranparentColor = { 1.0f, 1.0f, 1.0f };
-	float alpha = 1.0f;
+    float3 tranparentColor = { 1.0f, 1.0f, 1.0f };
+    float alpha = 1.0f;
 	[flatten]
-	if (!opaque)
-	{
+    if (!opaque)
+    {
 		[flatten]
-		if (hasOpacityMap)
-		{
-			tranparentColor = opacityMap.Sample(samplerstate, input.uv).xyz;
-			tranparentColor = saturate(tranparentColor * transparentfactor);
-		}
-		else
-		{
-			tranparentColor = saturate((opacity - tranparent) * transparentfactor);
-		}
-		alpha = dot(tranparentColor, float3(1.0f, 1.0f, 1.0f));
+        if (hasOpacityMap)
+        {
+            tranparentColor = opacityMap.Sample(samplerstate, input.uv).xyz;
+            tranparentColor = saturate(tranparentColor * transparentfactor);
+        }
+        else
+        {
+            tranparentColor = saturate((opacity - tranparent) * transparentfactor);
+        }
+        alpha = dot(tranparentColor, float3(1.0f, 1.0f, 1.0f));
 		[flatten]
-		if (alpha < 0.1f)
-			discard;
-	}
-	float3 diffuseColor = { 0.f, 0.f, 0.f };
+        if (alpha < 0.1f)
+            discard;
+    }
+    float3 diffuseColor = { 0.f, 0.f, 0.f };
 	[flatten]
-	if (hasDiffuseMap)
-	{
-		diffuseColor = diffuseMap.Sample(samplerstate, input.uv).xyz;
-	}
-	else
-		diffuseColor = diffuse;
+    if (hasDiffuseMap)
+    {
+        diffuseColor = diffuseMap.Sample(samplerstate, input.uv).xyz;
+    }
+    else
+        diffuseColor = diffuse;
 
-	float3 specularColor = { 0.f, 0.f, 0.f };
+    float3 specularColor = { 0.f, 0.f, 0.f };
 	[flatten]
-	if (hasSpecularMap)
-	{
-		specularColor = specularMap.Sample(samplerstate, input.uv).xyz;
-		specularColor = saturate(specularColor * specular);
-	}
-	else
-		specularColor = specular;
+    if (hasSpecularMap)
+    {
+        specularColor = specularMap.Sample(samplerstate, input.uv).xyz;
+        specularColor = saturate(specularColor * specular);
+    }
+    else
+        specularColor = specular;
 
-	float3 ambientColor = { 0.f, 0.f, 0.f };
+    float3 ambientColor = { 0.f, 0.f, 0.f };
 	[flatten]
-	if (hasAmbientMap)
-	{
-		ambientColor = ambientMap.Sample(samplerstate, input.uv).xyz;
-	}
-	else
-		ambientColor = ambient;
+    if (hasAmbientMap)
+    {
+        ambientColor = ambientMap.Sample(samplerstate, input.uv).xyz;
+    }
+    else
+        ambientColor = ambient;
 
-	float3 emissiveColor = { 0.f, 0.f, 0.f };
+    float3 emissiveColor = { 0.f, 0.f, 0.f };
 	[flatten]
-	if (hasEmissiveMap)
-	{
-		emissiveColor = emissiveMap.Sample(samplerstate, input.uv).xyz;
-		emissiveColor = saturate(emissiveColor * emissive);
-	}
-	else
-		emissiveColor = emissive;
+    if (hasEmissiveMap)
+    {
+        emissiveColor = emissiveMap.Sample(samplerstate, input.uv).xyz;
+        emissiveColor = saturate(emissiveColor * emissive);
+    }
+    else
+        emissiveColor = emissive;
 
 	[flatten]
-	if (reflector)
-	{
-		float3 reflectionColor = reflectionMap.Sample(samplerstate, input.uv).xyz;
-		reflectionColor = reflectionColor * reflective;
-	}
+    if (reflector)
+    {
+        float3 reflectionColor = reflectionMap.Sample(samplerstate, input.uv).xyz;
+        reflectionColor = reflectionColor * reflective;
+    }
 
 
-	float4 bumps = normalMap.Sample(samplerstate, input.uv);
-	bumps = float4(2 * bumps.xyz - float3(1, 1, 1), 0);
+    float4 bumps = normalMap.Sample(samplerstate, input.uv);
+    bumps = float4(2 * bumps.xyz - float3(1, 1, 1), 0);
 
 	// lighting
-	float3 Nn = normalize(input.normal);
-	float3 Tn = normalize(input.tangent);
-	float3 Bn = normalize(input.binormal);
+    float3 Nn = normalize(input.normal);
+    float3 Tn = normalize(input.tangent);
+    float3 Bn = normalize(input.binormal);
 
-	float3x3 TangentToWorld = float3x3(Tn, Bn, Nn);
+    float3x3 TangentToWorld = float3x3(Tn, Bn, Nn);
 	//bumps.xy *= bumpscaling;
-	float3 Nb = mul(bumps.xyz, TangentToWorld);
-	Nb = normalize(Nb);
+    float3 Nb = mul(bumps.xyz, TangentToWorld);
+    Nb = normalize(Nb);
 
-	float3 Vn = input.viewDir;
-	float3 Ln = normalize(float3(-1.0f, 1.0f, -1.0f));
-	float3 Hn = normalize(Vn + Ln);
+    float3 Vn = input.viewDir;
+    float3 Ln = normalize(float3(-1.0f, 1.0f, -1.0f));
+    float3 Hn = normalize(Vn + Ln);
 
 
-	float3 textColor = d2dMap.Sample(samplerstate, input.uv).xyz;
+    float3 textColor = d2dMap.Sample(samplerstate, input.uv).xyz;
 
 	//float3 result = diffuseColor * Lit.y + specularColor * Lit.y * Lit.z + ambientColor + emissiveColor;
-	//float3 result = diffuseColor * (max(dot(Ln, Nb), 0.0f) + specularColor * SimpleCookTorrance(Nb, Ln, Vn, float(1.0f / (0.01f + shininess)))) + ambientColor + emissiveColor;
-	float3 result = diffuseColor * diffuse * max(dot(Hn, Nb), 0.1f) * saturate(dot(Vn, Ln) + 1.8f) + specularColor * SimpleCookTorrance(Nb, Ln, Vn, float(1.5f / (0.01f + sqrt(shininess)))) * shininess * 2.0f * saturate(dot(Vn, Ln) + 0.9f) + ambientColor + emissiveColor + textColor;
+	float3 result = diffuseColor * (max(dot(Ln, Nb), 0.0f) + specularColor * SimpleCookTorrance(Nb, Ln, Vn, float(1.0f / (0.01f + shininess)))) + ambientColor + emissiveColor;
+    //float3 result = diffuseColor * diffuse * max(dot(Hn, Nb), 0.1f) * saturate(dot(Vn, Ln) + 1.8f) + specularColor * SimpleCookTorrance(Nb, Ln, Vn, float(1.5f / (0.01f + sqrt(shininess)))) * shininess * 2.0f * saturate(dot(Vn, Ln) + 0.9f) + ambientColor + emissiveColor + textColor;
 
-	result = saturate(result * tranparentColor);
-	return float4(result, alpha);
+    result = saturate(result * tranparentColor);
+
+    
+    return float4(result, alpha);
+
+   // return float4(diffuseMap.Sample(samplerstate, input.uv).xyz, 1.0f);
 }

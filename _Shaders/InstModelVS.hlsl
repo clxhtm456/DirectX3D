@@ -59,31 +59,32 @@ VertexOutput VS(VertexInput input)
 	float3 Normal = input.normal;
 	float3 Tangent = input.tangent;
 
-	Pos = mul(Pos, hierarchyMatrix(meshID, 0, input.instanceID));
+	//Pos = mul(Pos, hierarchyMatrix(meshID, 0, input.instanceID));
 
-	[flatten]
-	if (input.weights.x > 0.0f)
-	{
-		float LastWeight = 1.0f - (input.weights.x + input.weights.y + input.weights.z);
+	//[flatten]
+	//if (input.weights.x > 0.0f)
+	//{
+	//	float LastWeight = 1.0f - (input.weights.x + input.weights.y + input.weights.z);
 
-		matrix skinWorld = hierarchyMatrix(input.boneid.x, 0, input.instanceID) * input.weights.x
-			+ hierarchyMatrix(input.boneid.y, 0, input.instanceID) * input.weights.y
-			+ hierarchyMatrix(input.boneid.z, 0, input.instanceID) * input.weights.z
-			+ hierarchyMatrix(input.boneid.w, 0, input.instanceID) * LastWeight;
+	//	matrix skinWorld = hierarchyMatrix(input.boneid.x, 0, input.instanceID) * input.weights.x
+	//		+ hierarchyMatrix(input.boneid.y, 0, input.instanceID) * input.weights.y
+	//		+ hierarchyMatrix(input.boneid.z, 0, input.instanceID) * input.weights.z
+	//		+ hierarchyMatrix(input.boneid.w, 0, input.instanceID) * LastWeight;
 
-		Pos = mul(Pos, skinWorld);
+	//	Pos = mul(Pos, skinWorld);
 
-		float3x3 normalSkinWorld = float3x3(normalize(skinWorld._11_12_13), normalize(skinWorld._21_22_23), normalize(skinWorld._31_32_33));
-		Normal = mul(Normal, normalSkinWorld);
-		Tangent = mul(Tangent, normalSkinWorld);
-	}
+	//	float3x3 normalSkinWorld = float3x3(normalize(skinWorld._11_12_13), normalize(skinWorld._21_22_23), normalize(skinWorld._31_32_33));
+	//	Normal = mul(Normal, normalSkinWorld);
+	//	Tangent = mul(Tangent, normalSkinWorld);
+	//}
 
-	matrix world = transformMatrix(input.instanceID);
-	Pos = mul(Pos, world);
-
+	//matrix world = transformMatrix(input.instanceID);
+	//Pos = mul(Pos, world);
+    Pos = mul(Pos, input.Transform);
 	output.viewDir = normalize(ViewPosition() - Pos.xyz);
 
-	float3x3 normalWorld = float3x3(normalize(world._11_12_13), normalize(world._21_22_23), normalize(world._31_32_33));
+	//float3x3 normalWorld = float3x3(normalize(world._11_12_13), normalize(world._21_22_23), normalize(world._31_32_33));
+    float3x3 normalWorld = float3x3(normalize(input.Transform._11_12_13), normalize(input.Transform._21_22_23), normalize(input.Transform._31_32_33));
 
 	output.position = mul(Pos, CB_ViewProjection.View);
 	output.position = mul(output.position, CB_ViewProjection.Projection);

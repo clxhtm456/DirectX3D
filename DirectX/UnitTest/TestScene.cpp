@@ -8,7 +8,7 @@ void TestScene::Initialize()
 {
 	CreateFreedomCamera();
 
-	/*cube = MeshCube::Create();
+	cube = MeshCube::Create();
 	cube->GetMaterial()->SetDiffuseMap("../../_Textures/Stones.png");
 	cube->GetMaterial()->SetSpecularMap("../../_Textures/Stones_Specular.png");
 	cube->GetMaterial()->SetNormalMap("../../_Textures/Stones_Normal.png");
@@ -66,17 +66,14 @@ void TestScene::Initialize()
 		cylinderInst2->SetScale(5, 5, 5);
 		AddChild(cylinderInst2);
 
-	}*/
+	}
 
-	auto kachujin = Model::Create("../../_Assets/Meshes/kachujin/Kachujin.mesh");
+	auto kachujin = Model::Create("../../_Assets/Meshes/kachujin/Kachujin");
 	kachujin->SetPosition(0, 0, 0);
 	kachujin->SetScale(0.1f, 0.1f, 0.1f);
 	AddChild(kachujin);
 
 
-	/*auto kachujin = ModelAnim::Create("pikachu");
-	kachujin->AddClip("idle");
-	AddChild(kachujin);
 
 	auto instModel1 = kachujin->CreateInstance();
 	instModel1->SetScale(0.075f, 0.075f, 0.075f);
@@ -96,7 +93,7 @@ void TestScene::Initialize()
 	auto instModel4 = kachujin->CreateInstance();
 	instModel4->SetScale(0.075f, 0.075f, 0.075f);
 	instModel4->SetPosition(25, 0, -30);
-	AddChild(instModel4);*/
+	AddChild(instModel4);
 }
 
 void TestScene::Destroy()

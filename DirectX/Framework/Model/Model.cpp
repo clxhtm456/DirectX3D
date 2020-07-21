@@ -23,7 +23,7 @@ bool Model::Init(string path)
 	if (!Super::Init())
 		return false;
 
-	assert(Path::ExistFile(path));
+	assert(Path::ExistFile(path + ".mesh") && Path::ExistFile(path + ".material"));
 	LoadModel(path);
 	SetVSShader(Shader::VSAdd(L"InstModelVS"));
 	SetPSShader(Shader::PSAdd(L"InstModelPS"));
@@ -77,6 +77,17 @@ Model::~Model()
 	vector<KEYFRAME>().swap(keyFrames);
 	//vector<Matrix>().swap(hierarchyMatrix);
 	delete instancingBuffer;
+
+	vector<Node*> releaseList;
+	for (auto iter = instanceMatrixList.begin(); iter != instanceMatrixList.end(); iter++)
+	{
+		releaseList.push_back((*iter).first);
+	}
+	//메모리 꼬임방지용
+	for (auto object : releaseList)
+	{
+		object->Release();
+	}
 }
 
 Node* Model::CreateInstance()
@@ -194,6 +205,7 @@ void Model::ResourceBinding(Camera* viewer)
 
 	GetVSShader()->BindingVS();
 	GetPSShader()->BindingPS();
+	instancingBuffer->Binding();
 }
 
 void Model::Render(Camera* viewer)
@@ -208,8 +220,7 @@ void Model::Render(Camera* viewer)
 
 			mesh.meshBuffer->SetVSBuffer(3);
 
-			materials[mesh.matrialID].matBuffer->SetPSBuffer(0);
-			//D3D::GetDC()->PSSetConstantBuffers(0, 1, materials[mesh.matrialID].matBuffer.GetAddressOf());
+			materials[mesh.matrialID].matBuffer->SetPSBuffer(3);
 
 			D3D::GetDC()->PSSetShaderResources(0, 1, &materials[mesh.matrialID].diffusesrv);
 			D3D::GetDC()->PSSetShaderResources(1, 1, &materials[mesh.matrialID].specularsrv);
@@ -230,19 +241,19 @@ void Model::Render(Camera* viewer)
 			D3D::GetDC()->PSSetShaderResources(15, 1, &materials[mesh.matrialID].diffuseroughnesssrv);
 			D3D::GetDC()->PSSetShaderResources(16, 1, &materials[mesh.matrialID].ambientocculsionsrv);
 
-			float blendFactor[4] = { 0, 0, 0, 0 };
-			if (materials[mesh.matrialID].matData.opaque)//알파블랜딩 부분만 나중에 그려서 해결
-			{
-				D3D::GetDC()->OMSetDepthStencilState(CommonStates::Get()->DepthDefault(), 1);
-				D3D::GetDC()->OMSetBlendState(CommonStates::Get()->Opaque(), blendFactor, 0xffffffff);
-				D3D::GetDC()->RSSetState(CommonStates::Get()->CullCounterClockwise());
-			}
-			else
-			{
-				D3D::GetDC()->OMSetDepthStencilState(CommonStates::Get()->DepthRead(), 1);
-				D3D::GetDC()->OMSetBlendState(CommonStates::Get()->AlphaBlend(), blendFactor, 0xffffffff);
-				D3D::GetDC()->RSSetState(CommonStates::Get()->CullNone());
-			}
+			//float blendFactor[4] = { 0, 0, 0, 0 };
+			//if (materials[mesh.matrialID].matData.opaque)//알파블랜딩 부분만 나중에 그려서 해결
+			//{
+			//	D3D::GetDC()->OMSetDepthStencilState(CommonStates::Get()->DepthDefault(), 1);
+			//	D3D::GetDC()->OMSetBlendState(CommonStates::Get()->Opaque(), blendFactor, 0xffffffff);
+			//	D3D::GetDC()->RSSetState(CommonStates::Get()->CullCounterClockwise());
+			//}
+			//else
+			//{
+			//	D3D::GetDC()->OMSetDepthStencilState(CommonStates::Get()->DepthRead(), 1);
+			//	D3D::GetDC()->OMSetBlendState(CommonStates::Get()->AlphaBlend(), blendFactor, 0xffffffff);
+			//	D3D::GetDC()->RSSetState(CommonStates::Get()->CullNone());
+			//}
 			mesh.vertexBuffer->Binding();
 			mesh.indexBuffer->Binding();
 			D3D::GetDC()->DrawIndexedInstanced(mesh.indexCount, instancingCount, 0, 0, 0);
@@ -250,10 +261,26 @@ void Model::Render(Camera* viewer)
 	}
 }
 
+void Model::CalcWorldMatrix()
+{
+	if (bInstancingMode == true)
+		return;
+
+	worlds[0] = GetWorld();
+	worlds[0] = XMMatrixTranspose(worlds[0]);
+
+	D3D11_MAPPED_SUBRESOURCE subResource;
+	D3D::GetDC()->Map(instancingBuffer->Buffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
+	{
+		memcpy(subResource.pData, worlds, sizeof(Matrix) * MAX_MESH_INSTANCE);
+	}
+	D3D::GetDC()->Unmap(instancingBuffer->Buffer(), 0);
+}
+
 void Model::LoadModel(const string path)
 {
 	BinaryReader* r = new BinaryReader();
-	r->Open(String::ToWString(path));
+	r->Open(String::ToWString(path + ".mesh"));
 
 	nodeCount = r->UInt();
 
@@ -446,65 +473,158 @@ void Model::LoadModel(const string path)
 		delete[] indices;
 	}
 
-	count = r->UInt();
-	for (UINT i = 0; i < count; i++)
+	delete r;
+
+	Xml::XMLDocument* document = new Xml::XMLDocument();
+	Xml::XMLError error = document->LoadFile((path + ".material").c_str());
+	assert(error == Xml::XML_SUCCESS);
+
+	Xml::XMLElement* root = document->FirstChildElement();
+	Xml::XMLElement* materialNode = root->FirstChildElement();
+
+	int index = 0;
+	do
 	{
-		string name = r->String();
-		materialMap.emplace(name, i);
-
 		Material mat;
-		{
-			void* ptr = (void*)&mat.matData.diffuse;
-			r->BYTE(&ptr, sizeof(XMFLOAT3));
-		}
-		{
-			void* ptr = (void*)&mat.matData.ambient;
-			r->BYTE(&ptr, sizeof(XMFLOAT3));
-		}
-		{
-			void* ptr = (void*)&mat.matData.specular;
-			r->BYTE(&ptr, sizeof(XMFLOAT3));
-		}
-		{
-			void* ptr = (void*)&mat.matData.emissive;
-			r->BYTE(&ptr, sizeof(XMFLOAT3));
-		}
-		{
-			void* ptr = (void*)&mat.matData.tranparent;
-			r->BYTE(&ptr, sizeof(XMFLOAT3));
-		}
-		{
-			void* ptr = (void*)&mat.matData.reflective;
-			r->BYTE(&ptr, sizeof(XMFLOAT3));
-		}
 
-		mat.matData.opacity = r->Float();
-		mat.matData.transparentfactor = r->Float();
-		mat.matData.bumpscaling = r->Float();
-		mat.matData.shininess = r->Float();
-		mat.matData.reflectivity = r->Float();
-		mat.matData.shininessstrength = r->Float();
-		mat.matData.refracti = r->Float();
-		
-		mat.diffusesrv = Texture::LoadSRV(r->String());
-		mat.specularsrv = Texture::LoadSRV(r->String());
-		mat.ambientsrv = Texture::LoadSRV(r->String());
-		mat.emissivesrv = Texture::LoadSRV(r->String());
-		mat.heightsrv = Texture::LoadSRV(r->String());
-		mat.normalsrv = Texture::LoadSRV(r->String());
-		mat.shininesssrv = Texture::LoadSRV(r->String());
-		mat.opacitysrv = Texture::LoadSRV(r->String());
-		mat.displacementsrv = Texture::LoadSRV(r->String());
-		mat.lightMapsrv = Texture::LoadSRV(r->String());
-		mat.reflectionsrv = Texture::LoadSRV(r->String());
-		//pbr
-		mat.basecolorsrv = Texture::LoadSRV(r->String());
-		mat.normalcamerasrv = Texture::LoadSRV(r->String());
-		mat.emissioncolorsrv = Texture::LoadSRV(r->String());
-		mat.metalnesssrv = Texture::LoadSRV(r->String());
-		mat.diffuseroughnesssrv = Texture::LoadSRV(r->String());
-		mat.ambientocculsionsrv = Texture::LoadSRV(r->String());
+		Xml::XMLElement* node = NULL;
 
+		node = materialNode->FirstChildElement();
+
+		string name = node->GetText();
+		materialMap.emplace(name, index);
+
+		//Diffuse
+		node = node->NextSiblingElement();
+		mat.matData.diffuse.x = node->FloatAttribute("R");
+		mat.matData.diffuse.y = node->FloatAttribute("G");
+		mat.matData.diffuse.z = node->FloatAttribute("B");
+
+		//Ambient
+		node = node->NextSiblingElement();
+		mat.matData.ambient.x = node->FloatAttribute("R");
+		mat.matData.ambient.y = node->FloatAttribute("G");
+		mat.matData.ambient.z = node->FloatAttribute("B");
+
+		//Specular
+		node = node->NextSiblingElement();
+		mat.matData.specular.x = node->FloatAttribute("R");
+		mat.matData.specular.y = node->FloatAttribute("G");
+		mat.matData.specular.z = node->FloatAttribute("B");
+
+		//Emissive
+		node = node->NextSiblingElement();
+		mat.matData.emissive.x = node->FloatAttribute("R");
+		mat.matData.emissive.y = node->FloatAttribute("G");
+		mat.matData.emissive.z = node->FloatAttribute("B");
+
+		//Transparent
+		node = node->NextSiblingElement();
+		mat.matData.tranparent.x = node->FloatAttribute("R");
+		mat.matData.tranparent.y = node->FloatAttribute("G");
+		mat.matData.tranparent.z = node->FloatAttribute("B");
+
+		//Reflective
+		node = node->NextSiblingElement();
+		mat.matData.reflective.x = node->FloatAttribute("R");
+		mat.matData.reflective.y = node->FloatAttribute("G");
+		mat.matData.reflective.z = node->FloatAttribute("B");
+
+		//Opacity
+		node = node->NextSiblingElement();
+		mat.matData.opacity = node->FloatText();
+
+		//Transparentfactor
+		node = node->NextSiblingElement();
+		mat.matData.transparentfactor = node->FloatText();
+
+		//Bumpscaling
+		node = node->NextSiblingElement();
+		mat.matData.bumpscaling = node->FloatText();
+
+		//Shininess
+		node = node->NextSiblingElement();
+		mat.matData.shininess = node->FloatText();
+
+		//Reflectivity
+		node = node->NextSiblingElement();
+		mat.matData.reflectivity = node->FloatText();
+
+		//Shininessstrength
+		node = node->NextSiblingElement();
+		mat.matData.shininessstrength = node->FloatText();
+
+		//Refracti
+		node = node->NextSiblingElement();
+		mat.matData.refracti = node->FloatText();
+
+		//DiffuseSRV
+		node = node->NextSiblingElement();
+		mat.diffusesrv = Texture::LoadSRV(node->GetText());
+
+		//SpecularSRV
+		node = node->NextSiblingElement();
+		mat.specularsrv = Texture::LoadSRV(node->GetText());
+
+		//AmbientSRV
+		node = node->NextSiblingElement();
+		mat.ambientsrv = Texture::LoadSRV(node->GetText());
+
+		//EmissiveSRV
+		node = node->NextSiblingElement();
+		mat.emissivesrv = Texture::LoadSRV(node->GetText());
+
+		//HeightSRV
+		node = node->NextSiblingElement();
+		mat.heightsrv = Texture::LoadSRV(node->GetText());
+
+		//NormalSRV
+		node = node->NextSiblingElement();
+		mat.normalsrv = Texture::LoadSRV(node->GetText());
+
+		//ShininessSRV
+		node = node->NextSiblingElement();
+		mat.shininesssrv = Texture::LoadSRV(node->GetText());
+
+		//OpacitySRV
+		node = node->NextSiblingElement();
+		mat.opacitysrv = Texture::LoadSRV(node->GetText());
+
+		//DisplacementSRV
+		node = node->NextSiblingElement();
+		mat.displacementsrv = Texture::LoadSRV(node->GetText());
+
+		//LightMapSRV
+		node = node->NextSiblingElement();
+		mat.lightMapsrv = Texture::LoadSRV(node->GetText());
+
+		//ReflectionSRV
+		node = node->NextSiblingElement();
+		mat.reflectionsrv = Texture::LoadSRV(node->GetText());
+
+		//BaseColorSRV
+		node = node->NextSiblingElement();
+		mat.basecolorsrv = Texture::LoadSRV(node->GetText());
+
+		//NormalCameraSRV
+		node = node->NextSiblingElement();
+		mat.normalcamerasrv = Texture::LoadSRV(node->GetText());
+
+		//EmissionColorSRV
+		node = node->NextSiblingElement();
+		mat.emissioncolorsrv = Texture::LoadSRV(node->GetText());
+
+		//MatalnessSRV
+		node = node->NextSiblingElement();
+		mat.metalnesssrv = Texture::LoadSRV(node->GetText());
+
+		//DiffuseroughtnessSRV
+		node = node->NextSiblingElement();
+		mat.diffuseroughnesssrv = Texture::LoadSRV(node->GetText());
+
+		//AmbientocculsionSRV
+		node = node->NextSiblingElement();
+		mat.ambientocculsionsrv = Texture::LoadSRV(node->GetText());
 
 		if (mat.opacitysrv != NULL || mat.matData.tranparent.x > 0.f || mat.matData.tranparent.y > 0.f || mat.matData.tranparent.z > 0.f)
 			mat.matData.opaque = 0;
@@ -521,13 +641,16 @@ void Model::LoadModel(const string path)
 		if (mat.opacitysrv != NULL)
 			mat.matData.hasOpacityMap = 1;
 
-
 		mat.matBuffer = new ConstantBuffer(&mat.matData, sizeof(MaterialData));
 
 		materials.emplace_back(mat);
-	}
 
-	delete r;
+		materialNode = materialNode->NextSiblingElement();
+		index++;
+	} while (materialNode != NULL);
+
+	delete document;
+	
 }
 
 //void Model::CreateAnimSRV()

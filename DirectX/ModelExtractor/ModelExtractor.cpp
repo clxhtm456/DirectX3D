@@ -15,6 +15,8 @@ void ModelExtractor::Initialize()
 
 	auto extractor = new AssimpConverter();
 	extractor->ConvertMesh("../../_Assets/Models/Kachujin/Kachujin.fbx");
+	extractor->LoadAnimation("../../_Assets/Models/Kachujin/Idle.fbx");
+	extractor->SaveAnimation();
 	delete extractor;
 
 }

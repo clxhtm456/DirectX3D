@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "FbxUtility.h"
 
+
+
 Matrix FbxUtility::Negative()
 {
 	Matrix scaleX;

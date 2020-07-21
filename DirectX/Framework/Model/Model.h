@@ -160,7 +160,7 @@ public:
     void Update()override;
 	void ResourceBinding(Camera* viewer) override;
     void Render(Camera* viewer)override;
-
+	void CalcWorldMatrix() override;
     /*void PlayAni(UINT instanceID, int index, float fadeIn = 0.f, float  fadeOut = 0.f)
     {
         if (inatanceAnims[instanceID].cur.clip == index || keyFrames.size() <= index)

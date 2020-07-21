@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "AssimpConverter.h"
 
+#include "Utilities/Xml.h"
+
 AssimpConverter::AssimpConverter()
 {
 }
@@ -19,14 +21,14 @@ void AssimpConverter::ConvertMesh(const string path, const string outPath)
 	string outName= Path::GetFileNameWithoutExtension(Path::GetFileName(outPath));
 	if (outPath == "")
 	{
-		this->outPath = "../../_Assets/Meshes/" + name + "/" + name + ".mesh";
+		this->outPath = "../../_Assets/Meshes/" + name + "/" + name;
 	}
 	else
 	{
 		if(outName == "")
-			this->outPath = outPath + name + ".mesh";
+			this->outPath = outPath + name;
 		else if(outName == outPath)
-			this->outPath = "../../_Assets/Meshes/" + outName + "/" + outName + ".mesh";
+			this->outPath = "../../_Assets/Meshes/" + outName + "/" + outName;
 		else
 			this->outPath = outPath;
 	}
@@ -122,7 +124,7 @@ void AssimpConverter::SaveMesh()
 	Path::CreateFolders(Path::GetDirectoryName(outPath));
 
 	BinaryWriter* w = new BinaryWriter();
-	w->Open(outPath);
+	w->Open(outPath + ".mesh");
 
 	w->UInt((UINT)hierarchyNodes.size());
 	for (auto node : hierarchyNodes)
@@ -149,46 +151,178 @@ void AssimpConverter::SaveMesh()
 		w->BYTE(mesh.indices.data(), sizeof(UINT) * (UINT)mesh.indices.size());
 	}
 
-	w->UInt((UINT)materials.size());
+	delete w;
+
+	Xml::XMLDocument* document = new Xml::XMLDocument();
+
+	Xml::XMLDeclaration* decl = document->NewDeclaration();
+	document->LinkEndChild(decl);
+
+	Xml::XMLElement* root = document->NewElement("Materials");
+	root->SetAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+	root->SetAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
+	document->LinkEndChild(root);
+
 	for (auto mat : materials)
 	{
-		w->String(mat.name);
+		Xml::XMLElement* node = document->NewElement("Material");
+		root->LinkEndChild(node);
 
-		w->BYTE(&mat.diffuse, sizeof(XMFLOAT3));
-		w->BYTE(&mat.ambient, sizeof(XMFLOAT3));
-		w->BYTE(&mat.specular, sizeof(XMFLOAT3));
-		w->BYTE(&mat.emissive, sizeof(XMFLOAT3));
-		w->BYTE(&mat.tranparent, sizeof(XMFLOAT3));
-		w->BYTE(&mat.reflective, sizeof(XMFLOAT3));
+		Xml::XMLElement* element = NULL;
 
-		w->Float(mat.opacity);
-		w->Float(mat.transparentfactor);
-		w->Float(mat.bumpscaling);
-		w->Float(mat.shininess);
-		w->Float(mat.reflectivity);
-		w->Float(mat.shininessstrength);
-		w->Float(mat.refracti);
+		element = document->NewElement("Name");
+		element->SetText(mat.name.c_str());
+		node->LinkEndChild(element);
 
-		w->String(mat.diffusefile);
-		w->String(mat.specularfile);
-		w->String(mat.ambientfile);
-		w->String(mat.emissivefile);
-		w->String(mat.heightfile);
-		w->String(mat.normalfile);
-		w->String(mat.shininessfile);
-		w->String(mat.opacityfile);
-		w->String(mat.displacementfile);
-		w->String(mat.lightMapfile);
-		w->String(mat.reflectionfile);
-		//pbr
+		element = document->NewElement("Diffuse");
+		element->SetAttribute("R", mat.diffuse.x);
+		element->SetAttribute("G", mat.diffuse.y);
+		element->SetAttribute("B", mat.diffuse.z);
+		element->SetAttribute("A", 0);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Ambient");
+		element->SetAttribute("R", mat.ambient.x);
+		element->SetAttribute("G", mat.ambient.y);
+		element->SetAttribute("B", mat.ambient.z);
+		element->SetAttribute("A", 0);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Specular");
+		element->SetAttribute("R", mat.specular.x);
+		element->SetAttribute("G", mat.specular.y);
+		element->SetAttribute("B", mat.specular.z);
+		element->SetAttribute("A", 0);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Emissive");
+		element->SetAttribute("R", mat.emissive.x);
+		element->SetAttribute("G", mat.emissive.y);
+		element->SetAttribute("B", mat.emissive.z);
+		element->SetAttribute("A", 0);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Tranparent");
+		element->SetAttribute("R", mat.tranparent.x);
+		element->SetAttribute("G", mat.tranparent.y);
+		element->SetAttribute("B", mat.tranparent.z);
+		element->SetAttribute("A", 0);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Reflective");
+		element->SetAttribute("R", mat.reflective.x);
+		element->SetAttribute("G", mat.reflective.y);
+		element->SetAttribute("B", mat.reflective.z);
+		element->SetAttribute("A", 0);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Opacity");
+		element->SetText(mat.opacity);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("TransparentFactor");
+		element->SetText(mat.transparentfactor);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Bumpscaling");
+		element->SetText(mat.bumpscaling);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Shininess");
+		element->SetText(mat.shininess);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Reflectivity");
+		element->SetText(mat.reflectivity);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Shininessstrength");
+		element->SetText(mat.shininessstrength);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Refracti");
+		element->SetText(mat.refracti);
+		node->LinkEndChild(element);
+
+
+		element = document->NewElement("Diffusefile");
+		element->SetText(mat.diffusefile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Specularfile");
+		element->SetText(mat.specularfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Ambientfile");
+		element->SetText(mat.ambientfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Emissivefile");
+		element->SetText(mat.emissivefile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Heightfile");
+		element->SetText(mat.heightfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Normalfile");
+		element->SetText(mat.normalfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Shininessfile");
+		element->SetText(mat.shininessfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Opacityfile");
+		element->SetText(mat.opacityfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Displacementfile");
+		element->SetText(mat.displacementfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("LightMapfile");
+		element->SetText(mat.lightMapfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Reflectionfile");
+		element->SetText(mat.reflectionfile.c_str());
+		node->LinkEndChild(element);
+
 		w->String(mat.basecolorfile);
 		w->String(mat.normalcamerafile);
 		w->String(mat.emissioncolorfile);
 		w->String(mat.metalnessfile);
 		w->String(mat.diffuseroughnessfile);
 		w->String(mat.ambientocculsionfile);
+
+		element = document->NewElement("Basecolorfile");
+		element->SetText(mat.basecolorfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Normalcamerafile");
+		element->SetText(mat.normalcamerafile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Emissioncolorfile");
+		element->SetText(mat.emissioncolorfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Metalnessfile");
+		element->SetText(mat.metalnessfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Diffuseroughnessfile");
+		element->SetText(mat.diffuseroughnessfile.c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Ambientocculsionfile");
+		element->SetText(mat.ambientocculsionfile.c_str());
+		node->LinkEndChild(element);
 	}
-	delete w;
+
+	document->SaveFile((outPath + ".material").c_str());
+	delete document;
 }
 
 void AssimpConverter::ResetMeshs()
@@ -630,7 +764,7 @@ string AssimpConverter::SaveTexture(const aiScene* scene, string file)
 	string path = "";
 	if (texture)
 	{
-		path = Path::GetDirectoryName(outPath) + "/Textures/" + Path::GetFileNameWithoutExtension(file) + ".png";
+		path = Path::GetDirectoryName(outPath) + "Textures/" + Path::GetFileNameWithoutExtension(file) + ".png";
 
 		if (texture->mHeight < 1)
 		{
@@ -666,7 +800,7 @@ string AssimpConverter::SaveTexture(const aiScene* scene, string file)
 		if(!Path::ExistFile(file))
 			return "";
 
-		path = Path::GetDirectoryName(outPath) + "/Textures/" + Path::GetFileName(file);
+		path = Path::GetDirectoryName(outPath) + "Textures/" + Path::GetFileName(file);
 
 		Path::CreateFolders(Path::GetDirectoryName(path));
 
