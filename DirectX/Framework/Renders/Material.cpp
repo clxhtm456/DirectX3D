@@ -36,70 +36,70 @@ void Material::SetName(wstring name)
 	this->name = name;
 }
 
-void Material::SetAmbient(Vector3 color)
+void Material::SetAmbient(Color color)
 {
 	materialBuffer->data.ambient = color;
 }
 
 void Material::SetAmbient(float r, float g, float b, float a)
 {
-	Vector3 temp = Vector3(r, g, b);
+	Color temp = Color(r, g, b,a);
 	SetAmbient(temp);
 }
 
 
-void Material::SetDiffuse(Vector3 color)
+void Material::SetDiffuse(Color color)
 {
 	materialBuffer->data.diffuse = color;
 }
 
 void Material::SetDiffuse(float r, float g, float b, float a)
 {
-	Vector3 temp = Vector3(r, g, b);
+	Color temp = Color(r, g, b,a);
 	SetDiffuse(temp);
 }
 
-void Material::SetSpecular(Vector3 color)
+void Material::SetSpecular(Color color)
 {
 	materialBuffer->data.specular = color;
 }
 
 void Material::SetSpecular(float r, float g, float b, float a)
 {
-	Vector3 temp = Vector3(r, g, b);
+	Color temp = Color(r, g, b,a);
 	SetSpecular(temp);
 }
 
-void Material::SetEmissive(Vector3 color)
+void Material::SetEmissive(Color color)
 {
 	materialBuffer->data.emissive = color;
 }
 
 void Material::SetEmissive(float r, float g, float b, float a)
 {
-	Vector3 temp = Vector3(r, g, b);
+	Color temp = Color(r, g, b,a);
 	SetEmissive(temp);
 }
 
-void Material::SetTransparent(Vector3 color)
+void Material::SetTransparent(Color color)
 {
 	materialBuffer->data.transparent = color;
 }
 
 void Material::SetTransparent(float r, float g, float b, float a)
 {
-	Vector3 temp = Vector3(r, g, b);
+	Color temp = Color(r, g, b,a);
 	SetTransparent(temp);
 }
 
-void Material::SetReflective(Vector3 color)
+void Material::SetReflective(Color color)
 {
 	materialBuffer->data.reflective = color;
 }
 
 void Material::SetReflective(float r, float g, float b, float a)
 {
-	Vector3 temp = Vector3(r, g, b);
+	Color temp = Color(r, g, b,a);
 	SetReflective(temp);
 }
 
@@ -112,7 +112,7 @@ void Material::SetDiffuseMap(string file)
 void Material::SetDiffuseMap(wstring file)
 {
 	diffusesrv = Texture::LoadSRV(file);
-
+	diffuseTexture = Texture::AddAbsPath(file);
 	int result = 0;
 	if (diffusesrv != nullptr)
 		result = 1;
@@ -269,7 +269,10 @@ void Material::SetReflectionMap(wstring file)
 
 	int result = 0;
 	if (reflectionsrv != nullptr)
+	{
+		materialBuffer->data.reflector = 1;
 		result = 1;
+	}
 	materialBuffer->data.hasReflectionMap = result;
 }
 
@@ -365,7 +368,8 @@ void Material::SetAmbientocculsionMap(wstring file)
 
 void Material::Binding()
 {
-	materialBuffer->SetPSBuffer(PS_MATERIALBUFFER);
+	
+	D3D::GetDC()->PSSetSamplers(0, 1, CommonStates::Get()->LinearWrap());
 
 	D3D::GetDC()->PSSetShaderResources(0, 1, &diffusesrv);
 	D3D::GetDC()->PSSetShaderResources(1, 1, &specularsrv);
@@ -378,7 +382,7 @@ void Material::Binding()
 	D3D::GetDC()->PSSetShaderResources(8, 1, &displacementsrv);
 	D3D::GetDC()->PSSetShaderResources(9, 1, &lightMapsrv);
 	D3D::GetDC()->PSSetShaderResources(10, 1,&reflectionsrv);
-	//pbr
+	////pbr
 	D3D::GetDC()->PSSetShaderResources(11, 1, &basecolorsrv);
 	D3D::GetDC()->PSSetShaderResources(12, 1, &normalcamerasrv);
 	D3D::GetDC()->PSSetShaderResources(13, 1, &emissioncolorsrv);
@@ -386,17 +390,7 @@ void Material::Binding()
 	D3D::GetDC()->PSSetShaderResources(15, 1, &diffuseroughnesssrv);
 	D3D::GetDC()->PSSetShaderResources(16, 1, &ambientocculsionsrv);
 
-	if (opacitysrv != nullptr || materialBuffer->data.transparent.x > 0.f || materialBuffer->data.transparent.y > 0.f || materialBuffer->data.transparent.z > 0.f)
-		materialBuffer->data.opaque = 0;
-	if (reflectionsrv != NULL || materialBuffer->data.reflective.x > 0.f || materialBuffer->data.reflective.y > 0.f || materialBuffer->data.reflective.z > 0.f)
-		materialBuffer->data.reflector = 1;
-
-	if (ambientsrv != NULL)
-		materialBuffer->data.hasAmbientMap = 1;
-	if (emissivesrv != NULL)
-		materialBuffer->data.hasEmissiveMap = 1;
-	if (opacitysrv != NULL)
-		materialBuffer->data.hasOpacityMap = 1;
+	materialBuffer->SetPSBuffer(PS_MATERIALBUFFER);
 }
 
 

@@ -19,7 +19,6 @@ struct VertexInput
 	uint4 boneid : BLENDINDICES;
 	float4 weights : BLENDWEIGHTS;
 
-	float4 attr : InstanceAttr;
 	uint instanceID : SV_InstanceID;
 
 	matrix Transform : INSTANCE;

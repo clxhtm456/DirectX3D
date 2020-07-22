@@ -11,28 +11,28 @@ public:
 	wstring GetName() { return name; }
 	void SetName(wstring name);
 public:
-	Vector3 GetDiffuse() { return materialBuffer->data.diffuse; }
-	void SetDiffuse(Vector3 color);
+	Color GetDiffuse() { return materialBuffer->data.diffuse; }
+	void SetDiffuse(Color color);
 	void SetDiffuse(float r, float g, float b, float a = 1.0f);
 
-	Vector3 GetAmbient() { return materialBuffer->data.ambient; }
-	void SetAmbient(Vector3 color);
+	Color GetAmbient() { return materialBuffer->data.ambient; }
+	void SetAmbient(Color color);
 	void SetAmbient(float r, float g, float b, float a = 1.0f);
 
-	Vector3 GetSpecular() { return materialBuffer->data.specular; }
-	void SetSpecular(Vector3 color);
+	Color GetSpecular() { return materialBuffer->data.specular; }
+	void SetSpecular(Color color);
 	void SetSpecular(float r, float g, float b, float a = 1.0f);
 
-	Vector3 GetEmissive() { return materialBuffer->data.emissive; }
-	void SetEmissive(Vector3 color);
+	Color GetEmissive() { return materialBuffer->data.emissive; }
+	void SetEmissive(Color color);
 	void SetEmissive(float r, float g, float b, float a = 1.0f);
 
-	Vector3 GetTransparent() { return materialBuffer->data.transparent; }
-	void SetTransparent(Vector3 color);
+	Color GetTransparent() { return materialBuffer->data.transparent; }
+	void SetTransparent(Color color);
 	void SetTransparent(float r, float g, float b, float a = 1.0f);
 
-	Vector3 GetReflective() { return materialBuffer->data.reflective; }
-	void SetReflective(Vector3 color);
+	Color GetReflective() { return materialBuffer->data.reflective; }
+	void SetReflective(Color color);
 	void SetReflective(float r, float g, float b, float a = 1.0f);
 
 	float GetBumpscaling() { return materialBuffer->data.bumpscaling; }
@@ -46,6 +46,9 @@ public:
 
 	float GetShininessStrength() { return materialBuffer->data.shininessstrength; }
 	void SetShininessStrength(float value) { materialBuffer->data.shininessstrength = value; }
+
+	float GetReflectivity() { return materialBuffer->data.reflectivity; }
+	void SetReflectivity(float value) { materialBuffer->data.reflectivity = value; }
 
 	float GetTransparentFactor() { return materialBuffer->data.transparentfactor; }
 	void SetTransparentFactor(float value) { materialBuffer->data.transparentfactor = value; }
@@ -76,25 +79,6 @@ public:
 	int HasMetalnessMap() { return materialBuffer->data.hasMetalnessMap; }
 	int HasDiffuseroughnessMap() { return materialBuffer->data.hasDiffuseroughnessMap; }
 	int HasAmbientocculsionMap() { return materialBuffer->data.hasAmbientocculsionMap; }
-
-	ID3D11ShaderResourceView* diffusesrv = nullptr;
-	ID3D11ShaderResourceView* specularsrv = nullptr;
-	ID3D11ShaderResourceView* normalsrv = nullptr;
-	ID3D11ShaderResourceView* ambientsrv = nullptr;
-	ID3D11ShaderResourceView* emissivesrv = nullptr;
-	ID3D11ShaderResourceView* heightsrv = nullptr;
-	ID3D11ShaderResourceView* shininesssrv = nullptr;
-	ID3D11ShaderResourceView* opacitysrv = nullptr;
-	ID3D11ShaderResourceView* displacementsrv = nullptr;
-	ID3D11ShaderResourceView* lightMapsrv = nullptr;
-	ID3D11ShaderResourceView* reflectionsrv = nullptr;
-	//PBR Stingray                   
-	ID3D11ShaderResourceView* basecolorsrv = nullptr;
-	ID3D11ShaderResourceView* normalcamerasrv = nullptr;
-	ID3D11ShaderResourceView* emissioncolorsrv = nullptr;
-	ID3D11ShaderResourceView* metalnesssrv = nullptr;
-	ID3D11ShaderResourceView* diffuseroughnesssrv = nullptr;
-	ID3D11ShaderResourceView* ambientocculsionsrv = nullptr;
 
 	ID3D11ShaderResourceView* GetDiffuseMap() { return diffusesrv; }
 	void SetDiffuseMap(string file);
@@ -178,6 +162,7 @@ private:
 private:
 	wstring name;
 
+	Texture* diffuseTexture = nullptr;
 	ID3D11ShaderResourceView* diffusesrv = nullptr;
 	ID3D11ShaderResourceView* specularsrv = nullptr;
 	ID3D11ShaderResourceView* normalsrv = nullptr;

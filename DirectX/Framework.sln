@@ -13,6 +13,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{D4E435F7-7118-4E13-901B-39445234D64D}"
 	ProjectSection(SolutionItems) = preProject
 		..\_Shaders\DebugLine.hlsl = ..\_Shaders\DebugLine.hlsl
+		..\_Shaders\Math.hlsli = ..\_Shaders\Math.hlsli
 		..\_Shaders\Render2D.hlsl = ..\_Shaders\Render2D.hlsl
 		..\_Shaders\RenderingNode.hlsli = ..\_Shaders\RenderingNode.hlsli
 		..\_Shaders\Shadow.hlsl = ..\_Shaders\Shadow.hlsl
@@ -43,6 +44,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Model", "Model", "{EA6E4062-591F-420F-8889-01246EC81D4C}"
 	ProjectSection(SolutionItems) = preProject
 		..\_Shaders\Depth_InstModelVS.hlsl = ..\_Shaders\Depth_InstModelVS.hlsl
+		..\_Shaders\InstModelCS.hlsl = ..\_Shaders\InstModelCS.hlsl
 		..\_Shaders\InstModelPS.hlsl = ..\_Shaders\InstModelPS.hlsl
 		..\_Shaders\InstModelVS.hlsl = ..\_Shaders\InstModelVS.hlsl
 	EndProjectSection

@@ -255,7 +255,7 @@ void Shader::CreatePixelShader()
 void Shader::CreateComputeShader(wstring csName)
 {
 	ID3DBlob* csBlob;
-	CompileShader(shaderFile.c_str(), psName.c_str(), "cs_5_0", &csBlob);
+	CompileShader(shaderFile.c_str(), String::ToString(csName).c_str(), "cs_5_0", &csBlob);
 
 	HRESULT hr = D3D::GetDevice()->CreateComputeShader(csBlob->GetBufferPointer(),
 		csBlob->GetBufferSize(), nullptr, &computeShader);

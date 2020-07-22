@@ -31,11 +31,6 @@ private:
         XMFLOAT4 weight = { 0.f,0.f,0.f,0.f };
     };
 
-    struct InstanceType
-    {
-        XMFLOAT4 attr = { 0.f,0.f,0.f,0.f };
-    };
-
     struct Mesh
     {
         UINT matrialID = 0;
@@ -88,30 +83,6 @@ private:
         //TODO : 메터리얼 변수값 나중에 셰이더마다 필요한것만 네이밍 규칙정해서 일괄로 처리하자
     };
 
-    struct Material
-    {
-        MaterialData matData;
-        ConstantBuffer* matBuffer = nullptr;//다이나믹으로 컨트롤가능 메터리얼 데이터
-
-        ID3D11ShaderResourceView* diffusesrv = nullptr;
-        ID3D11ShaderResourceView* specularsrv = nullptr;
-        ID3D11ShaderResourceView* ambientsrv = nullptr;
-        ID3D11ShaderResourceView* emissivesrv = nullptr;
-        ID3D11ShaderResourceView* heightsrv = nullptr;
-        ID3D11ShaderResourceView* normalsrv = nullptr;
-        ID3D11ShaderResourceView* shininesssrv = nullptr;
-        ID3D11ShaderResourceView* opacitysrv = nullptr;
-        ID3D11ShaderResourceView* displacementsrv = nullptr;
-        ID3D11ShaderResourceView* lightMapsrv = nullptr;
-        ID3D11ShaderResourceView* reflectionsrv = nullptr;
-        //PBR Stingray                   
-        ID3D11ShaderResourceView* basecolorsrv = nullptr;
-        ID3D11ShaderResourceView* normalcamerasrv = nullptr;
-        ID3D11ShaderResourceView* emissioncolorsrv = nullptr;
-        ID3D11ShaderResourceView* metalnesssrv = nullptr;
-        ID3D11ShaderResourceView* diffuseroughnesssrv = nullptr;
-        ID3D11ShaderResourceView* ambientocculsionsrv = nullptr;
-    };
 
     struct KEYFRAME
     {
@@ -155,13 +126,13 @@ public:
 
 public:
 
-    //void LoadAnimation(const string path, float blendLoop = 1.f, bool isLoop = true);
+    void LoadAnimation(const string path, float blendLoop = 1.f, bool isLoop = true);
 
     void Update()override;
 	void ResourceBinding(Camera* viewer) override;
     void Render(Camera* viewer)override;
 	void CalcWorldMatrix() override;
-    /*void PlayAni(UINT instanceID, int index, float fadeIn = 0.f, float  fadeOut = 0.f)
+    void PlayAni(UINT instanceID, int index, float fadeIn = 0.f, float  fadeOut = 0.f)
     {
         if (inatanceAnims[instanceID].cur.clip == index || keyFrames.size() <= index)
             return;
@@ -176,7 +147,7 @@ public:
         inatanceAnimCtrl[instanceID].fadeOut = keyFrames[index].isLoop ? 0.f : (fadeOut < keyFrames[index].duration ? fadeOut : keyFrames[index].duration - 1);
     }
     void StopAni() { }
-    void PauseAni() { }*/
+    void PauseAni() { }
 
     //void SetSpeed(UINT instanceID, float speed) { inatanceAnimCtrl[instanceID].speed = speed; }
 
@@ -187,7 +158,7 @@ public:
 
     ID3D11ShaderResourceView* GetTexture(string name) {
         if (materialMap.count(name))
-            return materials[materialMap[name]].diffusesrv;
+            return materials[materialMap[name]]->GetDiffuseMap();
         return nullptr;
     }
 public:
@@ -204,31 +175,32 @@ private:
 
 	std::map<Node*, Matrix> instanceMatrixList;
 private:
+	Shader* csShader;
     void LoadModel(const string path);
 
-    //void CreateAnimSRV();
+    void CreateAnimSRV();
 
-    //void AnimUpdate();
+    void AnimUpdate();
 
     ////컴퓨트 셰이더용 하이어라키 베이스 파트
     vector<HierarchyNode> hierarchyNodes; //인덱스를 통해서는 직접조작
     map<string,UINT> hierarchyMap;//하이어라키 맵을 이용해서 이름으로 찾아 조작
-    //ComPtr<ID3D11ShaderResourceView> hierarchyBufferSrv = nullptr;//하이어라키버퍼 : preQuat, local(키없이 메트릭스 반환시), world(상위에 키가없을시 월드메트릭스), offset, parentID, enable(컴퓨트 불필요한 스레드계산제거)
+    ID3D11ShaderResourceView* hierarchyBufferSrv = nullptr;//하이어라키버퍼 : preQuat, local(키없이 메트릭스 반환시), world(상위에 키가없을시 월드메트릭스), offset, parentID, enable(컴퓨트 불필요한 스레드계산제거)
     UINT nodeCount;
 
     //메쉬 랜더링 파트
     vector<Model::Mesh> meshs;
-    vector<Model::Material> materials;
+    vector<Material*> materials;
     map<string, UINT> materialMap;
     UINT stride = sizeof(VertexType);
     UINT offset = 0;
 
    
-    ////컴퓨트 셰이더용 인스턴싱 애니메이션 파트
-    //vector<ANIMATIONCTRL> inatanceAnimCtrl;//인스턴스용 애니메이션 컨트롤(스피드,페이드인아웃,이벤트 등)
-    //vector<INSTANCEANIMATION> inatanceAnims;//인스턴스용 애니메이션 데이터
-    //ComPtr<ID3D11Buffer> inatanceAnimBuffer = nullptr;//컴퓨트 셰이더용 버퍼
-    //ComPtr<ID3D11ShaderResourceView> inatanceAnimSRV = nullptr;//위의 텍스쳐를 컴퓨트 셰이더로 보내는 용도
+    //컴퓨트 셰이더용 인스턴싱 애니메이션 파트
+    vector<ANIMATIONCTRL> inatanceAnimCtrl;//인스턴스용 애니메이션 컨트롤(스피드,페이드인아웃,이벤트 등)
+    vector<INSTANCEANIMATION> inatanceAnims;//인스턴스용 애니메이션 데이터
+    ID3D11Buffer* inatanceAnimBuffer = nullptr;//컴퓨트 셰이더용 버퍼
+    ID3D11ShaderResourceView* inatanceAnimSRV = nullptr;//위의 텍스쳐를 컴퓨트 셰이더로 보내는 용도
 
     //애니메이션 키프레임 데이터 파트
     vector<KEYFRAME> keyFrames;//불러들인 전체 애니메이션 저장용 벡터

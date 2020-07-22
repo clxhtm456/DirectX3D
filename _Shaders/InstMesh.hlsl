@@ -86,7 +86,7 @@ float4 PS(PixelInput input) : SV_TARGET0
 
 	ComputeLight_Material(output, input.Normal, input.wPosition);
 	AddMaterial(result, output);
-	//float4 emissive = ComputeEmissive(input.Normal, input.wPosition);
-	//return float4(1, 1, 0, 1);
+
+	//return diffuse;
 	return diffuse*float4(MaterialToColor(result), 1.0f);
 }

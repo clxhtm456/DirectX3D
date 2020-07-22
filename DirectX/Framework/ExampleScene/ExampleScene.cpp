@@ -32,7 +32,7 @@ void ExampleScene::Initialize()
 	sphere->GetMaterial()->SetDiffuseMap("../../_Textures/Wall.png");
 	sphere->GetMaterial()->SetSpecularMap("../../_Textures/Wall_Specular.png");
 	sphere->GetMaterial()->SetNormalMap("../../_Textures/Wall_Normal.png");
-	sphere->GetMaterial()->SetEmissive(Color(1.0f, 0.0f, 0.0f, 1.0f));
+	sphere->GetMaterial()->SetEmissive(1.0f, 0.0f, 0.0f);
 	AddChild(sphere);
 
 	auto cylinder = MeshCylinder::Create(0.5f,3.0f,20,20);

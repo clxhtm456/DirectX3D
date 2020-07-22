@@ -34,6 +34,6 @@ VertexOutput VS(VertexInput input)
 float4 PS(VertexOutput input) : SV_TARGET
 {
 	float4 color = float4(0,1,0,1);
-	float4 diffuse = diffuseMap.Sample(diffuseSamp, input.Uv);;
+	float4 diffuse = diffuseMap.Sample(linearSamp, input.Uv);;
 	return diffuse;
 }

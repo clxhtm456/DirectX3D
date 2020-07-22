@@ -38,25 +38,79 @@ cbuffer Light : register(b1)//PS
 	LightDesc CB_Light;
 }
 
+struct BMaterialDesc
+{
+	float4 Diffuse;
+	float4 Ambient;
+	float4 Specular;
+	float4 Emissive;
+	float4 Transparent;
+	float4 Reflective;
+
+	float Bumpscaling;
+	float Opacity;
+	float Shininess;
+	float Shininessstrength;
+	float Transparentfactor;
+	float Reflectivity;
+
+	float Refracti;
+	int Opaque;
+	int Reflector;
+
+	int HasDiffuseMap;
+	int HasSpecularMap;
+	int HasAmbientMap;
+	int HasEmissiveMap;
+	int HasHeightMap;
+	int HasNormalMap;
+	int HasShininessMap;
+	int HasOpacityMap;
+	int HasDisplacementMap;
+	int HasLightMapMap;
+	int HasReflectionMap;
+	int HasBasecolorMap;
+	int HasNormalcameraMap;
+	int HasEmissioncolorMap;
+	int HasMetalnessMap;
+	int HasDiffuseroughnessMap;
+	int HasAmbientocculsionMap;
+};
+
 struct MaterialDesc
 {
-	float4 Ambient;
 	float4 Diffuse;
+	float4 Ambient;
 	float4 Specular;
 	float4 Emissive;
 };
 cbuffer Material : register(b2)//PS
 {
-	MaterialDesc CB_Material;
+	BMaterialDesc CB_Material;
 }
 Texture2D diffuseMap : register(t0);
-SamplerState diffuseSamp : register(s0);
+SamplerState linearSamp : register(s0);
 
 Texture2D specularMap : register(t1);
-SamplerState specularSamp : register(s1);
 
 Texture2D normalMap : register(t2);
-SamplerState normalSamp : register(s2);
+
+//Pixel Shader Texture
+Texture2D emissiveMap : register(t3);
+Texture2D heightMap : register(t4);
+Texture2D ambientMap : register(t5);
+Texture2D shininessMap : register(t6);
+Texture2D opacityMap : register(t7);
+Texture2D displacementMap : register(t8);
+Texture2D lightMapMap : register(t9);
+Texture2D reflectionMap : register(t10);
+//pbr
+Texture2D basecolorMap : register(t11);
+Texture2D normalcameraMap : register(t12);
+Texture2D emissioncolorMap : register(t13);
+Texture2D metalnessMap : register(t14);
+Texture2D diffuseroughnessMap : register(t15);
+Texture2D ambientocculsionMap : register(t16);
 
 
 MaterialDesc MakeMaterial()
@@ -213,7 +267,7 @@ void NormalMapping(inout float4 diffuse, float2 uv, float3 normal, float3 tangen
 
 void NormalMapping(inout float4 diffuse, float2 uv, float3 normal, float3 tangent)
 {
-	NormalMapping(diffuse, uv, normal, tangent, diffuseSamp);
+	NormalMapping(diffuse, uv, normal, tangent, linearSamp);
 
 }
 
@@ -221,10 +275,10 @@ void Texture(inout float4 color, Texture2D t, float2 uv, SamplerState samp)
 {
 	float4 sampling = t.Sample(samp, uv);
 
-	color = color * sampling;
+	color = sampling;
 }
 
 void Texture(inout float4 color, Texture2D t, float2 uv)
 {
-	Texture(color, t, uv, diffuseSamp);
+	Texture(color, t, uv, linearSamp);
 }

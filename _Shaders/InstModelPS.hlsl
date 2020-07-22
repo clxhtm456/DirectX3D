@@ -1,74 +1,6 @@
 #include "RenderingNode.hlsli"
 #include "Shadow.hlsl"
 
-SamplerState samplerstate : register(s3);
-
-cbuffer colors : register(b3)//PS
-{
-	float3 diffuse; // : packoffset(c0.x);엔비디아 샘플에 있는거 참고해 보자
-	float bumpscaling;
-
-	float3 ambient;
-	float opacity;
-
-	float3 specular;
-	float shininess;
-
-	float3 emissive;
-	float shininessstrength;
-
-	float3 tranparent;
-	float transparentfactor;
-
-	float3 reflective;
-	float reflectivity;
-
-	float refracti;
-
-	int opaque;
-	int reflector;
-
-	int hasDiffuseMap = 0;
-
-	int hasSpecularMap = 0;
-	int hasAmbientMap = 0;
-	int hasEmissiveMap = 0;
-	int hasHeightMap = 0;
-
-	int hasNormalMap = 0;
-	int hasShininessMap = 0;
-	int hasOpacityMap = 0;
-	int hasDisplacementMap = 0;
-
-	int hasLightMapMap = 0;
-	int hasReflectionMap = 0;
-	int hasBasecolorMap = 0;
-	int hasNormalcameraMap = 0;
-
-	int hasEmissioncolorMap = 0;
-	int hasMetalnessMap = 0;
-	int hasDiffuseroughnessMap = 0;
-	int hasAmbientocculsionMap = 0;
-
-}
-
-//Pixel Shader Texture
-Texture2D emissiveMap : register(t3);
-Texture2D heightMap : register(t4);
-Texture2D ambientMap : register(t5);
-Texture2D shininessMap : register(t6);
-Texture2D opacityMap : register(t7);
-Texture2D displacementMap : register(t8);
-Texture2D lightMapMap : register(t9);
-Texture2D reflectionMap : register(t10);
-//pbr
-Texture2D basecolorMap : register(t11);
-Texture2D normalcameraMap : register(t12);
-Texture2D emissioncolorMap : register(t13);
-Texture2D metalnessMap : register(t14);
-Texture2D diffuseroughnessMap : register(t15);
-Texture2D ambientocculsionMap : register(t16);
-
 Texture2D d2dMap : register(t20);
 
 struct PixelInput
@@ -117,73 +49,77 @@ float SimpleCookTorrance(float3 N, float3 L, float3 V, float m)
 
 float4 PS(PixelInput input) : SV_Target
 {
+	float3 lightDirection = -CB_Light.Direction;
+	float NdotL = dot(lightDirection, normalize(input.normal));
+
     float3 tranparentColor = { 1.0f, 1.0f, 1.0f };
     float alpha = 1.0f;
 	[flatten]
-    if (!opaque)
+    if (!CB_Material.Opaque)
     {
 		[flatten]
-        if (hasOpacityMap)
+        if (CB_Material.HasOpacityMap)
         {
-            tranparentColor = opacityMap.Sample(samplerstate, input.uv).xyz;
-            tranparentColor = saturate(tranparentColor * transparentfactor);
+            tranparentColor = opacityMap.Sample(linearSamp, input.uv).xyz;
+            tranparentColor = saturate(tranparentColor * CB_Material.Transparentfactor);
         }
         else
         {
-            tranparentColor = saturate((opacity - tranparent) * transparentfactor);
+            tranparentColor = saturate((CB_Material.Opacity - CB_Material.Transparent) * CB_Material.Transparentfactor);
         }
         alpha = dot(tranparentColor, float3(1.0f, 1.0f, 1.0f));
 		[flatten]
-        if (alpha < 0.1f)
+        if (alpha < 0.001f)
             discard;
     }
     float3 diffuseColor = { 0.f, 0.f, 0.f };
 	[flatten]
-    if (hasDiffuseMap)
+    if (CB_Material.HasDiffuseMap)
     {
-        diffuseColor = diffuseMap.Sample(samplerstate, input.uv).xyz;
+        diffuseColor = diffuseMap.Sample(linearSamp, input.uv).xyz;
     }
     else
-        diffuseColor = diffuse;
+        diffuseColor = CB_Material.Diffuse;
 
+	diffuseColor *= NdotL;
     float3 specularColor = { 0.f, 0.f, 0.f };
 	[flatten]
-    if (hasSpecularMap)
+    if (CB_Material.HasSpecularMap)
     {
-        specularColor = specularMap.Sample(samplerstate, input.uv).xyz;
-        specularColor = saturate(specularColor * specular);
+        specularColor = specularMap.Sample(linearSamp, input.uv).xyz;
+        specularColor = saturate(specularColor * CB_Material.Specular);
     }
     else
-        specularColor = specular;
+        specularColor = CB_Material.Specular;
 
     float3 ambientColor = { 0.f, 0.f, 0.f };
 	[flatten]
-    if (hasAmbientMap)
+    if (CB_Material.HasAmbientMap)
     {
-        ambientColor = ambientMap.Sample(samplerstate, input.uv).xyz;
+        ambientColor = ambientMap.Sample(linearSamp, input.uv).xyz;
     }
     else
-        ambientColor = ambient;
+        ambientColor = CB_Material.Ambient;
 
     float3 emissiveColor = { 0.f, 0.f, 0.f };
 	[flatten]
-    if (hasEmissiveMap)
+    if (CB_Material.HasEmissiveMap)
     {
-        emissiveColor = emissiveMap.Sample(samplerstate, input.uv).xyz;
-        emissiveColor = saturate(emissiveColor * emissive);
+        emissiveColor = emissiveMap.Sample(linearSamp, input.uv).xyz;
+        emissiveColor = saturate(emissiveColor * CB_Material.Emissive);
     }
     else
-        emissiveColor = emissive;
+        emissiveColor = CB_Material.Emissive;
 
 	[flatten]
-    if (reflector)
+    if (CB_Material.Reflector)
     {
-        float3 reflectionColor = reflectionMap.Sample(samplerstate, input.uv).xyz;
-        reflectionColor = reflectionColor * reflective;
+        float3 reflectionColor = reflectionMap.Sample(linearSamp, input.uv).xyz;
+        reflectionColor = reflectionColor * CB_Material.Reflective;
     }
 
 
-    float4 bumps = normalMap.Sample(samplerstate, input.uv);
+    float4 bumps = normalMap.Sample(linearSamp, input.uv);
     bumps = float4(2 * bumps.xyz - float3(1, 1, 1), 0);
 
 	// lighting
@@ -201,16 +137,16 @@ float4 PS(PixelInput input) : SV_Target
     float3 Hn = normalize(Vn + Ln);
 
 
-    float3 textColor = d2dMap.Sample(samplerstate, input.uv).xyz;
+    float3 textColor = d2dMap.Sample(linearSamp, input.uv).xyz;
 
 	//float3 result = diffuseColor * Lit.y + specularColor * Lit.y * Lit.z + ambientColor + emissiveColor;
-	float3 result = diffuseColor * (max(dot(Ln, Nb), 0.0f) + specularColor * SimpleCookTorrance(Nb, Ln, Vn, float(1.0f / (0.01f + shininess)))) + ambientColor + emissiveColor;
-    //float3 result = diffuseColor * diffuse * max(dot(Hn, Nb), 0.1f) * saturate(dot(Vn, Ln) + 1.8f) + specularColor * SimpleCookTorrance(Nb, Ln, Vn, float(1.5f / (0.01f + sqrt(shininess)))) * shininess * 2.0f * saturate(dot(Vn, Ln) + 0.9f) + ambientColor + emissiveColor + textColor;
+	float3 result = diffuseColor * (max(dot(Ln, Nb), 0.0f) + specularColor * SimpleCookTorrance(Nb, Ln, Vn, float(1.0f / (0.01f + CB_Material.Shininess)))) + ambientColor + emissiveColor;
+    //float3 result = diffuseColor * CB_Material.Diffuse * max(dot(Hn, Nb), 0.1f) * saturate(dot(Vn, Ln) + 1.8f) + specularColor * SimpleCookTorrance(Nb, Ln, Vn, float(1.5f / (0.01f + sqrt(CB_Material.Shininess)))) * CB_Material.Shininess * 2.0f * saturate(dot(Vn, Ln) + 0.9f) + ambientColor + emissiveColor + textColor;
+
 
     result = saturate(result * tranparentColor);
 
-    
     return float4(result, alpha);
 
-   // return float4(diffuseMap.Sample(samplerstate, input.uv).xyz, 1.0f);
+   // return float4(diffuseMap.Sample(linearSamp, input.uv).xyz, 1.0f);
 }

@@ -102,12 +102,12 @@ class MaterialBuffer : public ConstantBuffer
 public:
 	struct Data
 	{
-		Vector3 diffuse ;
-		Vector3 ambient ;
-		Vector3 specular;
-		Vector3 emissive;
-		Vector3 transparent;
-		Vector3 reflective;
+		Color diffuse ;
+		Color ambient ;
+		Color specular;
+		Color emissive;
+		Color transparent;
+		Color reflective;
 
 		FLOAT bumpscaling;
 		FLOAT opacity;
@@ -137,17 +137,18 @@ public:
 		INT hasMetalnessMap;
 		INT hasDiffuseroughnessMap;
 		INT hasAmbientocculsionMap;
+		INT padding[2];
 	}data;
 
 	MaterialBuffer() : ConstantBuffer(&data, sizeof(Data))
 	{
-		data.diffuse		= Vector3(1, 1, 1);
-		data.ambient		= Vector3(0, 0, 0);
-		data.specular		= Vector3(0, 0, 0);
-		data.emissive		= Vector3(0, 0, 0);
+		data.diffuse		= Color(1, 1, 1,1);
+		data.ambient		= Color(0, 0, 0,1);
+		data.specular		= Color(0, 0, 0,1);
+		data.emissive		= Color(0, 0, 0,1);
 
-		data.transparent	= Vector3(0, 0, 0);
-		data.reflective		= Vector3(0, 0, 0);
+		data.transparent	= Color(0, 0, 0,1);
+		data.reflective		= Color(0, 0, 0,1);
 
 		data.bumpscaling	= 0;
 		data.opacity		= 0;

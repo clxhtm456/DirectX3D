@@ -74,7 +74,7 @@ void Mesh::ResourceBinding(Camera* viewer)
 {
 	Super::ResourceBinding(viewer);
 
-	material->Render();
+	material->Binding();
 
 	/*auto diffuseMap = material->GetDiffuseMap()->GetSRV();
 	D3D::GetDC()->PSSetShaderResources(3, 1, &diffuseMap);*/
