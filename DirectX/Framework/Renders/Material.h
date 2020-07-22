@@ -77,6 +77,24 @@ public:
 	int HasDiffuseroughnessMap() { return materialBuffer->data.hasDiffuseroughnessMap; }
 	int HasAmbientocculsionMap() { return materialBuffer->data.hasAmbientocculsionMap; }
 
+	ID3D11ShaderResourceView* diffusesrv = nullptr;
+	ID3D11ShaderResourceView* specularsrv = nullptr;
+	ID3D11ShaderResourceView* normalsrv = nullptr;
+	ID3D11ShaderResourceView* ambientsrv = nullptr;
+	ID3D11ShaderResourceView* emissivesrv = nullptr;
+	ID3D11ShaderResourceView* heightsrv = nullptr;
+	ID3D11ShaderResourceView* shininesssrv = nullptr;
+	ID3D11ShaderResourceView* opacitysrv = nullptr;
+	ID3D11ShaderResourceView* displacementsrv = nullptr;
+	ID3D11ShaderResourceView* lightMapsrv = nullptr;
+	ID3D11ShaderResourceView* reflectionsrv = nullptr;
+	//PBR Stingray                   
+	ID3D11ShaderResourceView* basecolorsrv = nullptr;
+	ID3D11ShaderResourceView* normalcamerasrv = nullptr;
+	ID3D11ShaderResourceView* emissioncolorsrv = nullptr;
+	ID3D11ShaderResourceView* metalnesssrv = nullptr;
+	ID3D11ShaderResourceView* diffuseroughnesssrv = nullptr;
+	ID3D11ShaderResourceView* ambientocculsionsrv = nullptr;
 
 	ID3D11ShaderResourceView* GetDiffuseMap() { return diffusesrv; }
 	void SetDiffuseMap(string file);
@@ -86,9 +104,65 @@ public:
 	void SetSpecularMap(string file);
 	void SetSpecularMap(wstring file);
 
-	ID3D11ShaderResourceView* GetNormalMap() { return ambientsrv; }
+	ID3D11ShaderResourceView* GetNormalMap() { return normalsrv; }
 	void SetNormalMap(string file);
 	void SetNormalMap(wstring file);
+
+	ID3D11ShaderResourceView* GetAmbientMap() { return ambientsrv; }
+	void SetAmbientMap(string file);
+	void SetAmbientMap(wstring file);
+
+	ID3D11ShaderResourceView* GetEmissiveMap() { return emissivesrv; }
+	void SetEmissiveMap(string file);
+	void SetEmissiveMap(wstring file);
+
+	ID3D11ShaderResourceView* GetHeightMap() { return heightsrv; }
+	void SetHeightMap(string file);
+	void SetHeightMap(wstring file);
+
+	ID3D11ShaderResourceView* GetShinnessMap() { return shininesssrv; }
+	void SetShinnessMap(string file);
+	void SetShinnessMap(wstring file);
+
+	ID3D11ShaderResourceView* GetOpacityMap() { return opacitysrv; }
+	void SetOpacityMap(string file);
+	void SetOpacityMap(wstring file);
+
+	ID3D11ShaderResourceView* GetDisplacementMap() { return displacementsrv; }
+	void SetDisplacementMap(string file);
+	void SetDisplacementMap(wstring file);
+
+	ID3D11ShaderResourceView* GetLightMap() { return lightMapsrv; }
+	void SetLightMap(string file);
+	void SetLightMap(wstring file);
+
+	ID3D11ShaderResourceView* GetReflectionMap() { return reflectionsrv; }
+	void SetReflectionMap(string file);
+	void SetReflectionMap(wstring file);
+
+	ID3D11ShaderResourceView* GetBaseColorMap() { return basecolorsrv; }
+	void SetBaseColorMap(string file);
+	void SetBaseColorMap(wstring file);
+
+	ID3D11ShaderResourceView* GetNormalCameraMap() { return normalcamerasrv; }
+	void SetNormalCameraMap(string file);
+	void SetNormalCameraMap(wstring file);
+
+	ID3D11ShaderResourceView* GetEmissionColorMap() { return emissioncolorsrv; }
+	void SetEmissionColorMap(string file);
+	void SetEmissionColorMap(wstring file);
+
+	ID3D11ShaderResourceView* GetMetalnessMap() { return metalnesssrv; }
+	void SetMetalnessMap(string file);
+	void SetMetalnessMap(wstring file);
+
+	ID3D11ShaderResourceView* GetDiffuseroughnessMap() { return diffuseroughnesssrv; }
+	void SetDiffuseroughnessMap(string file);
+	void SetDiffuseroughnessMap(wstring file);
+
+	ID3D11ShaderResourceView* GetAmbientocculsionMap() { return ambientocculsionsrv; }
+	void SetAmbientocculsionMap(string file);
+	void SetAmbientocculsionMap(wstring file);
 public:
 
 	MaterialBuffer* GetBuffer() { return materialBuffer; }
@@ -106,10 +180,10 @@ private:
 
 	ID3D11ShaderResourceView* diffusesrv = nullptr;
 	ID3D11ShaderResourceView* specularsrv = nullptr;
+	ID3D11ShaderResourceView* normalsrv = nullptr;
 	ID3D11ShaderResourceView* ambientsrv = nullptr;
 	ID3D11ShaderResourceView* emissivesrv = nullptr;
 	ID3D11ShaderResourceView* heightsrv = nullptr;
-	ID3D11ShaderResourceView* normalsrv = nullptr;
 	ID3D11ShaderResourceView* shininesssrv = nullptr;
 	ID3D11ShaderResourceView* opacitysrv = nullptr;
 	ID3D11ShaderResourceView* displacementsrv = nullptr;
