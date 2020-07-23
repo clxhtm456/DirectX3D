@@ -183,7 +183,7 @@ void Model::LoadAnimation(const string path, float blendLoop, bool isLoop)
 			data._14 = r->Float();
 			{
 				void* ptr = (void*)&data.m[1];
-				r->BYTE(&ptr, sizeof(XMFLOAT3));
+				r->BYTE(&ptr, sizeof(XMFLOAT4));
 			}
 			{
 				void* ptr = (void*)&data.m[2];
@@ -324,8 +324,30 @@ void Model::LoadModel(const string path)
 		hierarchyDatas[i].enable = 1;
 	}
 
-	ConstantBuffer* hierarchyBuffer = nullptr;
-	hierarchyBuffer = new ConstantBuffer(hierarchyDatas.data(),sizeof(HierarchyDATA) * nodeCount);
+	//하이어라키버퍼 : preQuat, local(키없이 메트릭스 반환시), world(상위에 키가없을시 페어런트메트릭스), offset, parentID, enable(컴퓨트 불필요한 스레드계산제거시)
+	D3D11_BUFFER_DESC hierarchyBufferDesc = {};//하이어라키버퍼에서의 위치
+	hierarchyBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;//일단 변경할일 없다 치고 월드나 값을 변경할수도 있음
+	hierarchyBufferDesc.ByteWidth = sizeof(HierarchyDATA) * nodeCount;
+	hierarchyBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	hierarchyBufferDesc.CPUAccessFlags = 0;
+	hierarchyBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	hierarchyBufferDesc.StructureByteStride = sizeof(HierarchyDATA);
+
+	D3D11_SUBRESOURCE_DATA hierarchyBufferData;
+	hierarchyBufferData.pSysMem = hierarchyDatas.data();
+	hierarchyBufferData.SysMemPitch = 0;
+	hierarchyBufferData.SysMemSlicePitch = 0;
+
+	ID3D11Buffer* hierarchyBuffer = nullptr;
+	D3D::GetDevice()->CreateBuffer(&hierarchyBufferDesc, &hierarchyBufferData, &hierarchyBuffer);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC hierarchyBufferSrvDesc = {};
+	hierarchyBufferSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	hierarchyBufferSrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	hierarchyBufferSrvDesc.BufferEx.FirstElement = 0;
+	hierarchyBufferSrvDesc.BufferEx.NumElements = nodeCount;
+
+	D3D::GetDevice()->CreateShaderResourceView(hierarchyBuffer, &hierarchyBufferSrvDesc, &hierarchyBufferSrv);
 
 	//하이어라키 오프셋 결과 매트릭스 생성
 	for (UINT i = 0; i < 10; i++)

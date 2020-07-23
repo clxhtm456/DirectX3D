@@ -5,12 +5,13 @@ Texture2D d2dMap : register(t20);
 
 struct PixelInput
 {
-	float4 position : SV_Position;
-	float2 uv : TEXCOORD;
-	float3 tangent : TANGENT;
-	float3 binormal : BINORMAL;
-	float3 normal : NORMAL;
-	float3 viewDir : VIEWDIR;
+    float4 position : SV_POSITION;
+    float4 wposition : POSITION1;
+    float2 uv : UV;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
+    float3 viewDir : VIEWDIR;
 };
 
 float fresnel(float3 eyeVec, float3 normal, float R0)

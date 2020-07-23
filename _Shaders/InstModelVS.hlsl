@@ -26,13 +26,15 @@ struct VertexInput
 
 struct VertexOutput
 {
-	float4 position : SV_Position;
-	float2 uv : TEXCOORD;
+    float4 position : SV_POSITION;
+    float4 wposition : POSITION1;
+	float2 uv : UV;
+	float3 normal : NORMAL;
 	float3 tangent : TANGENT;
 	float3 binormal : BINORMAL;
-	float3 normal : NORMAL;
 	float3 viewDir : VIEWDIR;
 };
+
 
 float4x4 hierarchyMatrix(uint id, uint frame, uint instanceID)
 {
@@ -87,6 +89,7 @@ VertexOutput VS(VertexInput input)
 
 	output.position = mul(Pos, CB_ViewProjection.View);
 	output.position = mul(output.position, CB_ViewProjection.Projection);
+    output.wposition = output.position;
 
 	output.uv = input.uv;
 

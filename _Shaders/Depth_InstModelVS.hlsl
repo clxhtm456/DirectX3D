@@ -1,70 +1,100 @@
 #include "RenderingNode.hlsli"
 
-cbuffer Bones : register(b2)
+cbuffer meshIDbuffer : register(b3) //VS
 {
-    matrix bones[256];
-
-    int index;
-    int isUseBlend;
-}
-matrix SkinWorld(float4 indices, float4 weights)
-{
-    matrix transform = 0;
-    transform += mul(weights.x, bones[(uint) indices.x]);
-    transform += mul(weights.y, bones[(uint) indices.y]);
-    transform += mul(weights.z, bones[(uint) indices.z]);
-    transform += mul(weights.w, bones[(uint) indices.w]);
-
-    return transform;
+    uint meshID;
 }
 
+Texture1D transformMap : register(t0);
+Texture2DArray animationMap : register(t1);
 
 cbuffer VPBuffer : register(b10)
 {
-	matrix DepthView;
-	matrix DepthProjection;
+    matrix DepthView;
+    matrix DepthProjection;
 }
-//cbuffer WorldBuffer : register(b1)
-//{
-//	matrix DepthWorld;
-//}
 
 struct VertexInput
 {
-	float4 Position : POSITION;
-	float2 Uv : UV;
-	float3 Normal : NORMAL;
-	float3 Tangent : TANGENT;
-	float4 BlendIndices : BLENDINDICES;
-	float4 BlendWeights : BLENDWEIGHTS;
+    float4 position : POSITION;
+    float2 uv : TEXCOORD;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    uint4 boneid : BLENDINDICES;
+    float4 weights : BLENDWEIGHTS;
 
-	matrix Transform : INSTANCE;
+    uint instanceID : SV_InstanceID;
+
+    matrix Transform : INSTANCE;
 };
+
+struct VertexOutput
+{
+    float4 position : SV_Position;
+    float2 uv : TEXCOORD;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
+    float3 normal : NORMAL;
+    float3 viewDir : VIEWDIR;
+};
+
+float4x4 hierarchyMatrix(uint id, uint frame, uint instanceID)
+{
+    return matrix(animationMap.Load(int4(id * 4 + 0, frame, instanceID, 0)),
+		animationMap.Load(int4(id * 4 + 1, frame, instanceID, 0)),
+		animationMap.Load(int4(id * 4 + 2, frame, instanceID, 0)),
+		animationMap.Load(int4(id * 4 + 3, frame, instanceID, 0)));
+}
+
+float4x4 transformMatrix(uint instanceID)
+{
+    return matrix(transformMap.Load(int2(instanceID * 4 + 0, 0)),
+		transformMap.Load(int2(instanceID * 4 + 1, 0)),
+		transformMap.Load(int2(instanceID * 4 + 2, 0)),
+		transformMap.Load(int2(instanceID * 4 + 3, 0)));
+}
 
 struct DepthInput
 {
-	float4 Position : SV_POSITION0;
-	float4 sPosition : POSITION1;
+    float4 Position : SV_POSITION0;
+    float4 sPosition : POSITION1;
 };
-
 
 DepthInput VS(VertexInput input)
 {
-	DepthInput output;
+    DepthInput output;
 
-	input.Position.w = 1.0f;
+    float4 Pos = input.position;
 
-	matrix boneWorld = SkinWorld(input.BlendIndices, input.BlendWeights);
-	boneWorld = mul(boneWorld, input.Transform);
+	//Pos = mul(Pos, hierarchyMatrix(meshID, 0, input.instanceID));
 
-	output.Position = mul(input.Position, boneWorld);
-	//output.Position = mul(input.Position, input.Transform);
-	output.Position = mul(output.Position, DepthView);
-	output.Position = mul(output.Position, DepthProjection);
+	//[flatten]
+	//if (input.weights.x > 0.0f)
+	//{
+	//	float LastWeight = 1.0f - (input.weights.x + input.weights.y + input.weights.z);
 
-	output.sPosition = output.Position;
+	//	matrix skinWorld = hierarchyMatrix(input.boneid.x, 0, input.instanceID) * input.weights.x
+	//		+ hierarchyMatrix(input.boneid.y, 0, input.instanceID) * input.weights.y
+	//		+ hierarchyMatrix(input.boneid.z, 0, input.instanceID) * input.weights.z
+	//		+ hierarchyMatrix(input.boneid.w, 0, input.instanceID) * LastWeight;
 
-	return output;
+	//	Pos = mul(Pos, skinWorld);
+
+	//	float3x3 normalSkinWorld = float3x3(normalize(skinWorld._11_12_13), normalize(skinWorld._21_22_23), normalize(skinWorld._31_32_33));
+	//	Normal = mul(Normal, normalSkinWorld);
+	//	Tangent = mul(Tangent, normalSkinWorld);
+	//}
+
+	//matrix world = transformMatrix(input.instanceID);
+	//Pos = mul(Pos, world);
+    Pos = mul(Pos, input.Transform);
+    
+    output.Position = mul(Pos, DepthView);
+    output.Position = mul(output.Position, DepthProjection);
+
+    output.sPosition = output.Position;
+
+    return output;
 }
 
 void PS(DepthInput input)
