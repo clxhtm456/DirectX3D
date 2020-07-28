@@ -121,6 +121,7 @@ float4 PS(VertexOutput_PackGBuffer input) : SV_Target0
     sPosition = mul(sPosition, ShadowProjection);
 
     float4 color = float4(MaterialToColor(result), 1.0f);
+    //float4 color = result.Diffuse;
 
     /*ShadowPixelInput shadowinput = (ShadowPixelInput) 0;
 

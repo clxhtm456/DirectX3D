@@ -119,6 +119,39 @@ void Model::IncreaseInstancing(Node* object)
 
 	instancingCount++;
 
+	INSTANCEANIMATION anim;
+	if (!keyFrames.empty())
+	{
+		anim.cur.duration = keyFrames.front().duration;
+		anim.cur.blendLoop = keyFrames.front().blendLoop;
+	}
+	inatanceAnims.emplace_back(anim);
+	ANIMATIONCTRL ctrl;
+	inatanceAnimCtrl.emplace_back(ctrl);
+
+	D3D11_BUFFER_DESC inatanceAnimBufferDesc = {};//애니메이션 버퍼
+	inatanceAnimBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	inatanceAnimBufferDesc.ByteWidth = sizeof(INSTANCEANIMATION) * (UINT)inatanceAnims.size();
+	inatanceAnimBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	inatanceAnimBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	inatanceAnimBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	inatanceAnimBufferDesc.StructureByteStride = sizeof(INSTANCEANIMATION);
+
+	D3D11_SUBRESOURCE_DATA inatanceAnimBufferData;
+	inatanceAnimBufferData.pSysMem = inatanceAnims.data();
+	inatanceAnimBufferData.SysMemPitch = 0;
+	inatanceAnimBufferData.SysMemSlicePitch = 0;
+
+	D3D::GetDevice()->CreateBuffer(&inatanceAnimBufferDesc, &inatanceAnimBufferData, &inatanceAnimBuffer);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC inatanceAnimBufferSrvDesc = {};
+	inatanceAnimBufferSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	inatanceAnimBufferSrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	inatanceAnimBufferSrvDesc.BufferEx.FirstElement = 0;
+	inatanceAnimBufferSrvDesc.BufferEx.NumElements = (UINT)inatanceAnims.size();
+
+	D3D::GetDevice()->CreateShaderResourceView(inatanceAnimBuffer, &inatanceAnimBufferSrvDesc, &inatanceAnimSRV);
+
 	object->OnDestroy = std::bind(&Model::DecreaseInstancing, this, std::placeholders::_1);
 	object->OnChangePosition = [&, object](Matrix matrix)->void
 	{
@@ -204,7 +237,7 @@ void Model::Update()
 {
 	Super::Update();
 
-	//AnimUpdate();
+	AnimUpdate();
 }
 
 void Model::ResourceBinding(Camera* viewer)
@@ -699,8 +732,8 @@ void Model::CreateAnimSRV()
 		subResource[anim].SysMemSlicePitch = pageSize;
 	}
 
-	ComPtr<ID3D11Texture2D> animTex = nullptr;
-	D3D::GetDevice()->CreateTexture2D(&tex2Ddesc, subResource, animTex.ReleaseAndGetAddressOf());
+	ID3D11Texture2D* animTex = nullptr;
+	D3D::GetDevice()->CreateTexture2D(&tex2Ddesc, subResource, &animTex);
 	delete[] subResource;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourcedesc = {};
@@ -709,21 +742,20 @@ void Model::CreateAnimSRV()
 	shaderResourcedesc.Texture2DArray.MipLevels = 1;
 	shaderResourcedesc.Texture2DArray.ArraySize = animCount;
 
-	D3D::GetDevice()->CreateShaderResourceView(animTex.Get(), &shaderResourcedesc, &animSRV);
+	D3D::GetDevice()->CreateShaderResourceView(animTex, &shaderResourcedesc, &animSRV);
 }
 
 void Model::AnimUpdate()
 {
-	//TODO : 애니메이션 타임 방식 정리해야함 AddtionalAnim적용 생각해봐야함.
 	if (keyFrames.empty())
 		return;
 
-	for (UINT i = 0; i < inatanceAnims.size(); i++)
+	for (UINT i = 0; i < instancingCount; i++)
 	{
 		inatanceAnims[i].cur.curtime += Time::Delta() * keyFrames[(UINT)inatanceAnims[i].cur.clip].tickPerSec * inatanceAnimCtrl[i].speed;
 		if (inatanceAnims[i].cur.curtime > inatanceAnims[i].cur.duration)
 		{
-			if(keyFrames[(UINT)inatanceAnims[i].cur.clip].isLoop)
+			if (keyFrames[(UINT)inatanceAnims[i].cur.clip].isLoop)
 				inatanceAnims[i].cur.curtime = fmod(inatanceAnims[i].cur.curtime, inatanceAnims[i].cur.duration);
 			else
 			{
@@ -759,6 +791,48 @@ void Model::AnimUpdate()
 		else
 			inatanceAnims[i].next.curtime = 0.f;
 	}
+
+	//for (UINT i = 0; i < inatanceAnims.size(); i++)
+	//{
+	//	inatanceAnims[i].cur.curtime += Time::Delta() * keyFrames[(UINT)inatanceAnims[i].cur.clip].tickPerSec * inatanceAnimCtrl[i].speed;
+	//	if (inatanceAnims[i].cur.curtime > inatanceAnims[i].cur.duration)
+	//	{
+	//		if(keyFrames[(UINT)inatanceAnims[i].cur.clip].isLoop)
+	//			inatanceAnims[i].cur.curtime = fmod(inatanceAnims[i].cur.curtime, inatanceAnims[i].cur.duration);
+	//		else
+	//		{
+	//			//	if(event!=nullptr)
+	//			//		event;
+	//			ANIMATION tmp;
+	//			tmp = inatanceAnims[i].cur;
+	//			inatanceAnims[i].cur = inatanceAnims[i].next;
+	//			inatanceAnims[i].next = tmp;
+	//			inatanceAnimCtrl[i].fadeOut = 0.f;
+	//		}
+	//		inatanceAnimCtrl[i].fadeIn = 0.f;
+	//	}
+	//	if (inatanceAnims[i].cur.curtime < inatanceAnimCtrl[i].fadeIn)
+	//		inatanceAnims[i].blendFactor = 1.f - (inatanceAnims[i].cur.curtime / inatanceAnimCtrl[i].fadeIn);
+	//	else if (inatanceAnims[i].cur.duration - inatanceAnims[i].cur.curtime < inatanceAnimCtrl[i].fadeOut)
+	//	{
+	//		inatanceAnims[i].blendFactor = 1.f - ((inatanceAnims[i].cur.duration - inatanceAnims[i].cur.curtime) / inatanceAnimCtrl[i].fadeOut);
+	//	}
+	//	else
+	//		inatanceAnims[i].blendFactor = 0.f;
+	//	if (inatanceAnims[i].blendFactor > 0.f)
+	//	{
+	//		inatanceAnims[i].next.curtime += Time::Delta() * keyFrames[(UINT)inatanceAnims[i].next.clip].tickPerSec * inatanceAnimCtrl[i].speed;
+	//		if (inatanceAnims[i].next.curtime > inatanceAnims[i].next.duration)
+	//		{
+	//			if (keyFrames[(UINT)inatanceAnims[i].next.clip].isLoop)
+	//				inatanceAnims[i].next.curtime = fmod(inatanceAnims[i].next.curtime, inatanceAnims[i].next.duration);
+	//			else
+	//				inatanceAnims[i].next.curtime = inatanceAnims[i].next.duration;
+	//		}
+	//	}
+	//	else
+	//		inatanceAnims[i].next.curtime = 0.f;
+	//}
 
 	//셰이더 연결 끊고 해줘야함
 	ComPtr<ID3D11ShaderResourceView> emptySRV = nullptr;
