@@ -44,6 +44,10 @@ void Node::Start()
 	_world = S * R * T;
 }
 
+void Node::PostUpdate()
+{
+}
+
 
 void Node::Destroy()
 {
@@ -117,11 +121,19 @@ void Node::AutoPostRender(Camera* viewer)
 		object->AutoPostRender(viewer);
 }
 
+void Node::LateUpdate()
+{
+}
+
 void Node::ResourceBinding(Camera * viewer)
 {
 }
 
 void Node::Render(Camera* viewr)
+{
+}
+
+void Node::PostRender(Camera* viewer)
 {
 }
 
@@ -311,7 +323,7 @@ void Node::DelMask(UINT mask)
 
 void Node::SetDefaultMask()
 {
-	AddMask(TYPEMASK::DEFAULT);
+	AddMask(E_CAMERA_MASK::DEFAULT);
 }
 
 void Node::AutoRelease()

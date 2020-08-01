@@ -20,7 +20,6 @@ public:
 	void Update() override;
 	void ResourceBinding(Camera* viewer) override;
 	void Render(Camera* viewer) override;
-	void CalcWorldMatrix() override;
 public:
 	Node* CreateInstance();
 
@@ -33,15 +32,15 @@ protected:
 	Material* material;
 
 private:
-	void StartInstancingMode();
 	void IncreaseInstancing(Node* object);
 	void DecreaseInstancing(Node* object);
+	void InitInstanceObject();
+	void ReleaseHostObject();
+	
 	UINT instancingCount;
 
 	VertexBuffer* instancingBuffer;
 	Matrix worlds[MAX_MESH_INSTANCE];
 
 	std::map<Node*, Matrix> instanceMatrixList;
-
-	bool bInstancingMode;
 };

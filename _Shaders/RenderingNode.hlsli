@@ -212,13 +212,11 @@ void ComputeLight_Material(out MaterialDesc output, float3 normal, float3 wPosit
 	output.Ambient = CB_Light.Ambient * CB_Material.Ambient;
 	float3 E = normalize(ViewPosition() - wPosition);
 
+	output.Diffuse = NdotL * CB_Material.Diffuse;
 
 	[flatten]
 	if (NdotL > 0.0f)
 	{
-		output.Diffuse = NdotL * CB_Material.Diffuse;
-
-
 		[flatten]
 		if (any(CB_Material.Specular.rgb))
 		{
@@ -226,7 +224,7 @@ void ComputeLight_Material(out MaterialDesc output, float3 normal, float3 wPosit
 			float RdotE = saturate(dot(R, E));
 
 			float specular = pow(RdotE, CB_Material.Specular.a);
-			output.Specular = specular * CB_Material.Specular * CB_Light.Specular;
+			output.Specular = specular*(CB_Material.Specular) * CB_Light.Specular;
 		}
 	}
 
@@ -237,7 +235,7 @@ void ComputeLight_Material(out MaterialDesc output, float3 normal, float3 wPosit
 
 		float emissive = smoothstep(1.0f - CB_Material.Emissive.a, 1.0f, 1.0f - saturate(NdotE));
 
-		output.Emissive = CB_Material.Emissive * emissive;
+		output.Emissive = CB_Material.Emissive* emissive;
 	}
 
 }

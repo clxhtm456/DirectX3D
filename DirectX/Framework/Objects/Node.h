@@ -10,13 +10,41 @@ protected:
 
 	bool Init();
 protected:
+	/*
+	*Start 
+	*Update 실행 직전 처음 한번 실행
+	*/
 	virtual void Start();
-	virtual void PostUpdate() = 0;
+	/*
+	*PostUpdate
+	*Update 실행전에 사전 시행
+	*/
+	virtual void PostUpdate();
+	/*
+	*Update
+	*매 프레임마다 실행
+	*/
 	virtual void Update() = 0;
-	virtual void LateUpdate() = 0;
+	/*
+	*LateUpdate
+	*모든 Update가 실행된후 실행
+	*/
+	virtual void LateUpdate();
+	/*
+	*ResourceBinding
+	*셰이더 리소스 할당시점
+	*/
 	virtual void ResourceBinding(class Camera* viewer);
+	/*
+	*Render
+	*셰이더 랜더링 시점
+	*/
 	virtual void Render(class Camera* viewr = nullptr);
-	virtual void PostRender(class Camera* viewer) = 0;
+	/*
+	*PostRender
+	*모든 랜더링이 끝난이후
+	*/
+	virtual void PostRender(class Camera* viewer);
 	void Destroy();
 private:
 	void AutoPostUpdate();
@@ -71,8 +99,20 @@ protected:
 protected:
 	Scene* _scene;
 public://callbackList
+	/*
+	*OnDestroy
+	*오브젝트 삭제전에 호출됨
+	*/
 	std::function<void(Node* self)> OnDestroy = NULL;
+	/*
+	*OnStart
+	*Start함수 호출시 호출됨
+	*/
 	std::function<void(Node* self)> OnStart = NULL;
+	/*
+	*OnChangePosition
+	*Transform이 변경될시 호출됨
+	*/
 	std::function<void(Matrix)> OnChangePosition = NULL;
 public:
 	Matrix GetWorld() { return _world; }

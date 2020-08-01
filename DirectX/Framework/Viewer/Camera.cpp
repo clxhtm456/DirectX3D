@@ -231,7 +231,7 @@ void Camera::DelMask(UINT mask)
 
 void Camera::SetAllCameraMask()
 {
-	AddMask(TYPEMASK::ALL);
+	AddMask(E_CAMERA_MASK::ALL);
 }
 
 RenderTarget* Camera::GetRenderTarget()

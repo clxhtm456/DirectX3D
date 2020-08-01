@@ -33,6 +33,7 @@ void TestScene::Initialize()
 	cylinder->GetMaterial()->SetNormalMap("../../_Textures/Bricks_Normal.png");
 	cylinder->GetMaterial()->SetSpecularMap("../../_Textures/Bricks_Specular.png");
 	cylinder->GetMaterial()->SetSpecular(1, 1, 1, 20);
+	cylinder->SetScale(0.5, 0.5, 0.5);
 	cylinder->GetMaterial()->SetEmissive(0.3f, 0.3f, 0.3f, 0.3f);
 	AddChild(cylinder);
 
@@ -42,6 +43,7 @@ void TestScene::Initialize()
 	sphere->GetMaterial()->SetNormalMap("../../_Textures/Wall_Normal.png");
 	sphere->GetMaterial()->SetSpecular(1, 1, 1, 20);
 	sphere->GetMaterial()->SetEmissive(0.3f, 1.0f, 0.3f, 0.5f);
+	sphere->SetScale(0.5, 0.5, 0.5);
 	AddChild(sphere);
 	
 	for (UINT i = 0; i < 5; i++)
@@ -56,22 +58,24 @@ void TestScene::Initialize()
 		sphereInst2->SetScale(5, 5, 5);
 		AddChild(sphereInst2);
 
-		auto cylinderInst1 = cylinder->CreateInstance();
-		cylinderInst1->SetPosition(30, 6, -15.0f + (float)i * 15.0f);
-		cylinderInst1->SetScale(5, 5, 5);
-		AddChild(cylinderInst1);
-
 		auto cylinderInst2 = cylinder->CreateInstance();
 		cylinderInst2->SetPosition(-30, 6, -15.0f + (float)i * 15.0f);
 		cylinderInst2->SetScale(5, 5, 5);
 		AddChild(cylinderInst2);
 
+		auto cylinderInst1 = cylinder->CreateInstance();
+		cylinderInst1->SetPosition(30, 6, -15.0f + (float)i * 15.0f);
+		cylinderInst1->SetScale(5, 5, 5);
+		AddChild(cylinderInst1);
+
+
 	}
 
 	auto kachujin = Model::Create("../../_Assets/Meshes/kachujin/Kachujin");
-	kachujin->LoadAnimation("../../_Assets/Meshes/kachujin/anims/Idle");
-	kachujin->SetPosition(0, 0, 0);
+	//kachujin->LoadAnimation("../../_Assets/Meshes/kachujin/anims/Idle");
+	kachujin->SetPosition(-25, 0, -30);
 	kachujin->SetScale(0.1f, 0.1f, 0.1f);
+	
 	AddChild(kachujin);
 
 
@@ -81,6 +85,9 @@ void TestScene::Initialize()
 	instModel1->SetPosition(-25, 0, -30);
 	AddChild(instModel1);
 
+	//kachujin->PlayAni(1, 0);*/
+	//kachujin->PlayAni(0, 0);
+	/*
 	auto instModel2 = kachujin->CreateInstance();
 	instModel2->SetScale(0.075f, 0.075f, 0.075f);
 	instModel2->SetPosition(-10, 0, -30);
@@ -94,7 +101,12 @@ void TestScene::Initialize()
 	auto instModel4 = kachujin->CreateInstance();
 	instModel4->SetScale(0.075f, 0.075f, 0.075f);
 	instModel4->SetPosition(25, 0, -30);
-	AddChild(instModel4);
+	AddChild(instModel4);*/
+
+	/*kachujin->PlayAni(0, 0);
+	kachujin->PlayAni(1, 0);
+	kachujin->PlayAni(2, 0);
+	kachujin->PlayAni(3, 0);*/
 }
 
 void TestScene::Destroy()

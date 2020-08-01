@@ -88,5 +88,6 @@ float4 PS(PixelInput input) : SV_TARGET0
 	AddMaterial(result, output);
 
 	//return diffuse;
+	//return float4(MaterialToColor(result), 1.0f);
 	return diffuse*float4(MaterialToColor(result), 1.0f);
 }
