@@ -34,6 +34,7 @@
     <ClCompile Include="Meshes\MeshQuad.cpp" />
     <ClCompile Include="Meshes\MeshSphere.cpp" />
     <ClCompile Include="Model\Model.cpp" />
+    <ClCompile Include="Model\ModelClip.cpp" />
     <ClCompile Include="Objects\EmptyNode.cpp" />
     <ClCompile Include="Objects\Node.cpp" />
     <ClCompile Include="Objects\ReflectionNode.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="Meshes\MeshQuad.h" />
     <ClInclude Include="Meshes\MeshSphere.h" />
     <ClInclude Include="Model\Model.h" />
+    <ClInclude Include="Model\ModelClip.h" />
     <ClInclude Include="Objects\EmptyNode.h" />
     <ClInclude Include="Objects\Node.h" />
     <ClInclude Include="Objects\ReflectionNode.h" />

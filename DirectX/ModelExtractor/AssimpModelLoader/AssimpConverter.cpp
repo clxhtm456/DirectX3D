@@ -79,20 +79,21 @@ void AssimpConverter::SaveAnimation(string path, UINT takeNum)
 
 	BinaryWriter* w = new BinaryWriter();
 	w->Open(path);
-
+	w->String(animations[takeNum].name);
 	w->Float(animations[takeNum].tickPerSec);
 	w->Float(animations[takeNum].duration);
-
 	w->UInt((UINT)animations[takeNum].keyframes.size());
+
 	for (auto keyframe : animations[takeNum].keyframes)
 	{
-		w->UInt((UINT)keyframe.size());
-		for (auto key : keyframe)
+		w->String(keyframe.boneName);
+		w->UInt((UINT)keyframe.keys.size());
+		for (auto key : keyframe.keys)
 		{
-			w->BYTE(&key.translate, sizeof(XMFLOAT3));
-			w->Float(key.keyType);
+			w->BYTE(&key.translate, sizeof(XMFLOAT4));
 			w->BYTE(&key.quaternion, sizeof(XMFLOAT4));
-			w->BYTE(&key.scale, sizeof(XMFLOAT3));
+			w->BYTE(&key.scale, sizeof(XMFLOAT4));
+			w->Float(key.time);
 		}
 	}
 	delete w;
@@ -366,13 +367,13 @@ void AssimpConverter::NodeHeirarchy(const aiNode* node, int value)
 		XMVECTOR trans, quat, scale;
 		XMMatrixDecompose(&scale, &quat, &trans, XMMatrixTranspose(XMMATRIX(node->mTransformation[0])));
 		if (nodeName.find("$_Translation") > idx && string::npos != nodeName.find("$_Translation"))
-			XMStoreFloat3(&hierarchyNodes[hierarchyMap[subName]].translate, trans);
+			XMStoreFloat4(&hierarchyNodes[hierarchyMap[subName]].translate, trans);
 		if (nodeName.find("$_PreRotation") > idx && string::npos != nodeName.find("$_PreRotation"))
 			XMStoreFloat4(&hierarchyNodes[hierarchyMap[subName]].preQuaternion, quat);
 		if (nodeName.find("$_Rotation") > idx && string::npos != nodeName.find("$_Rotation"))
 			XMStoreFloat4(&hierarchyNodes[hierarchyMap[subName]].quaternion, quat);
 		if (nodeName.find("$_Scaling") > idx && string::npos != nodeName.find("$_Scaling"))
-			XMStoreFloat3(&hierarchyNodes[hierarchyMap[subName]].scale, scale);
+			XMStoreFloat4(&hierarchyNodes[hierarchyMap[subName]].scale, scale);
 	}
 	else
 	{
@@ -383,9 +384,9 @@ void AssimpConverter::NodeHeirarchy(const aiNode* node, int value)
 			newNode.parentID = value;
 			XMVECTOR trans, quat, scale;
 			XMMatrixDecompose(&scale, &quat, &trans, XMMatrixTranspose(XMMATRIX(node->mTransformation[0])));
-			XMStoreFloat3(&newNode.translate, trans);
+			XMStoreFloat4(&newNode.translate, trans);
 			XMStoreFloat4(&newNode.quaternion, quat);
-			XMStoreFloat3(&newNode.scale, scale);
+			XMStoreFloat4(&newNode.scale, scale);
 			hierarchyNodes.emplace_back(newNode);
 			parentID = (int)hierarchyNodes.size() - 1;
 			for (UINT i = 0; i < node->mNumMeshes; i++)
@@ -398,17 +399,17 @@ void AssimpConverter::NodeHeirarchy(const aiNode* node, int value)
 		{
 			XMVECTOR trans, quat, scale, pretrans, prequat, prescale;
 			XMMatrixDecompose(&scale, &quat, &trans, XMMatrixTranspose(XMMATRIX(node->mTransformation[0])));
-			pretrans = XMLoadFloat3(&hierarchyNodes[hierarchyMap[nodeName]].translate);
+			pretrans = XMLoadFloat4(&hierarchyNodes[hierarchyMap[nodeName]].translate);
 			prequat = XMLoadFloat4(&hierarchyNodes[hierarchyMap[nodeName]].quaternion);
-			prescale = XMLoadFloat3(&hierarchyNodes[hierarchyMap[nodeName]].scale);
-			XMStoreFloat3(&hierarchyNodes[hierarchyMap[nodeName]].translate, trans + pretrans);
+			prescale = XMLoadFloat4(&hierarchyNodes[hierarchyMap[nodeName]].scale);
+			XMStoreFloat4(&hierarchyNodes[hierarchyMap[nodeName]].translate, trans + pretrans);
 			XMStoreFloat4(&hierarchyNodes[hierarchyMap[nodeName]].quaternion, XMQuaternionMultiply(quat, prequat));
-			XMStoreFloat3(&hierarchyNodes[hierarchyMap[nodeName]].scale, scale * prescale);
+			XMStoreFloat4(&hierarchyNodes[hierarchyMap[nodeName]].scale, scale * prescale);
 			parentID = (int)hierarchyNodes.size() - 1;
 		}
 		hierarchyNodes[hierarchyMap[nodeName]].local = XMMatrixTransformation(XMVectorZero(), XMQuaternionIdentity(), 
-			XMLoadFloat3(&hierarchyNodes[hierarchyMap[nodeName]].scale), XMVectorZero(), XMQuaternionMultiply(XMLoadFloat4(&hierarchyNodes[hierarchyMap[nodeName]].quaternion),
-			XMLoadFloat4(&hierarchyNodes[hierarchyMap[nodeName]].preQuaternion)), XMLoadFloat3(&hierarchyNodes[hierarchyMap[nodeName]].translate));
+			XMLoadFloat4(&hierarchyNodes[hierarchyMap[nodeName]].scale), XMVectorZero(), XMQuaternionMultiply(XMLoadFloat4(&hierarchyNodes[hierarchyMap[nodeName]].quaternion),
+			XMLoadFloat4(&hierarchyNodes[hierarchyMap[nodeName]].preQuaternion)), XMLoadFloat4(&hierarchyNodes[hierarchyMap[nodeName]].translate));
 		hierarchyNodes[hierarchyMap[nodeName]].world = hierarchyNodes[hierarchyMap[nodeName]].local;
 		if (hierarchyNodes[hierarchyMap[nodeName]].parentID > -1)
 		{
@@ -812,13 +813,13 @@ string AssimpConverter::SaveTexture(const aiScene* scene, string file)
 
 void AssimpConverter::ResetAnimations()
 {
-	for (auto& i : animations)
+	for (auto i : animations)
 	{
 		for (auto j : i.keyframes)
 		{
-			vector<Key>().swap(j);
+			vector<Key>().swap(j.keys);
 		}
-		vector<vector<Key>>().swap(i.keyframes);
+		vector<KeyFrame>().swap(i.keyframes);
 	}
 	vector<Animation>().swap(animations);
 }
@@ -839,28 +840,31 @@ void AssimpConverter::AddAnimation(const aiScene* scene)
 
 		for (UINT t = 0; t < frameCount; t++)
 		{
-			vector<Key> keyframe;
+			KeyFrame keyframe;
+			//vector<Key> keyframe;
 			for (HierarchyNode i : hierarchyNodes)
 			{
 				Key key;
+				keyframe.boneName = i.name;
 				key.translate = i.translate;
 				key.quaternion = i.quaternion;
 				key.scale = i.scale;
-				key.keyType = 0.f;//키프레임맵 생성시 3x4에 대해 트랜슬레이트 3개의 플롯을 쓰고 빈자리에 키타입을 작성 컴퓨트에서 해당 키타입으로 필요없는 계산 예외처리
-				keyframe.emplace_back(key);
+				keyframe.keys.emplace_back(key);
 			}
 			for (UINT i = 0; i < anim->mNumChannels; i++)
 			{
 				const aiNodeAnim* nodeAnim = anim->mChannels[i];
 				string nodeName(nodeAnim->mNodeName.data);
 
+
 				if (hierarchyMap.count(nodeName) > 0)
 				{
 					UINT index = hierarchyMap[nodeName];
-					CalcInterpolatedScaling(nodeAnim, t, keyframe[index].scale);
-					CalcInterpolatedQuaternion(nodeAnim, t, keyframe[index].quaternion);
-					CalcInterpolatedPosition(nodeAnim, t, keyframe[index].translate);
-					keyframe[index].keyType = 2;
+					CalcInterpolatedScaling(nodeAnim, t, keyframe.keys[index].scale);
+					CalcInterpolatedQuaternion(nodeAnim, t, keyframe.keys[index].quaternion);
+					CalcInterpolatedPosition(nodeAnim, t, keyframe.keys[index].translate);
+
+					keyframe.keys[index].time = (float)t;
 				}
 				else {
 					size_t idx = nodeName.find("_$AssimpFbx$_");
@@ -874,45 +878,25 @@ void AssimpConverter::AddAnimation(const aiScene* scene)
 							//UINT index = (UINT)distance(hierarchyNodes.begin(), nodeit);
 							UINT index = hierarchyMap[subName];
 							if (nodeName.find("$_Scaling") > idx && string::npos != nodeName.find("$_Scaling"))
-								CalcInterpolatedScaling(nodeAnim, t, keyframe[index].scale);
+								CalcInterpolatedScaling(nodeAnim, t, keyframe.keys[index].scale);
 
 							if (nodeName.find("$_Rotation") > idx && string::npos != nodeName.find("$_Rotation"))
-								CalcInterpolatedQuaternion(nodeAnim, t, keyframe[index].quaternion);
+								CalcInterpolatedQuaternion(nodeAnim, t, keyframe.keys[index].quaternion);
 
 							if (nodeName.find("$_Translation") > idx && string::npos != nodeName.find("$_Translation"))
-								CalcInterpolatedPosition(nodeAnim, t, keyframe[index].translate);
-							keyframe[index].keyType = 2;
+								CalcInterpolatedPosition(nodeAnim, t, keyframe.keys[index].translate);
 						}
 					}
 				}
 			}
 			ani.keyframes.emplace_back(keyframe);
 		}
-		for (UINT i = 0; i < hierarchyNodes.size(); i++)
-		{
-			int parentID = hierarchyNodes[i].parentID;
-
-			if(ani.keyframes[0][i].keyType == 0)
-				while (parentID > -1)
-				{
-					if (ani.keyframes[0][parentID].keyType > 1.f)
-					{
-						ani.keyframes[0][i].keyType = 1;
-						break;
-					}
-					parentID = hierarchyNodes[parentID].parentID;
-				}
-
-			for (UINT t = 1; t < frameCount; t++)
-			{
-				ani.keyframes[t][i].keyType = ani.keyframes[0][i].keyType;
-			}
-		}
+		
 		animations.emplace_back(ani);
 	}
 }
 
-void AssimpConverter::CalcInterpolatedPosition(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT3& trans)
+void AssimpConverter::CalcInterpolatedPosition(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT4& trans)
 {
 	if (nodeAnim->mNumPositionKeys == 0)
 		return;
@@ -940,7 +924,7 @@ void AssimpConverter::CalcInterpolatedPosition(const aiNodeAnim* nodeAnim, const
 	XMVECTOR Start, End;
 	memcpy_s(&Start, sizeof(Start), &nodeAnim->mPositionKeys[index].mValue, sizeof(nodeAnim->mPositionKeys[index].mValue));
 	memcpy_s(&End, sizeof(End), &nodeAnim->mPositionKeys[index + 1].mValue, sizeof(nodeAnim->mPositionKeys[index + 1].mValue));
-	XMStoreFloat3(&trans, XMVectorLerp(Start, End, Factor));
+	XMStoreFloat4(&trans, XMVectorLerp(Start, End, Factor));
 }
 
 void AssimpConverter::CalcInterpolatedQuaternion(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT4& quat)
@@ -983,7 +967,7 @@ void AssimpConverter::CalcInterpolatedQuaternion(const aiNodeAnim* nodeAnim, con
 	XMStoreFloat4(&quat, XMQuaternionSlerp(Start, End, Factor));
 }
 
-void AssimpConverter::CalcInterpolatedScaling(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT3& scale)
+void AssimpConverter::CalcInterpolatedScaling(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT4& scale)
 {
 	if (nodeAnim->mNumScalingKeys == 0)
 		return;
@@ -1011,5 +995,5 @@ void AssimpConverter::CalcInterpolatedScaling(const aiNodeAnim* nodeAnim, const 
 	XMVECTOR Start, End;
 	memcpy_s(&Start, sizeof(Start), &nodeAnim->mScalingKeys[index].mValue, sizeof(nodeAnim->mScalingKeys[index].mValue));
 	memcpy_s(&End, sizeof(End), &nodeAnim->mScalingKeys[index + 1].mValue, sizeof(nodeAnim->mScalingKeys[index + 1].mValue));
-	XMStoreFloat3(&scale, XMVectorLerp(Start, End, Factor));
+	XMStoreFloat4(&scale, XMVectorLerp(Start, End, Factor));
 }

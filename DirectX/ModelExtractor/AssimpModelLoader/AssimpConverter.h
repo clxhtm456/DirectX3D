@@ -14,10 +14,10 @@ private:
     {
         string name;
 
-        XMFLOAT3 translate = { 0.f,0.f,0.f };
+        XMFLOAT4 translate = { 0.f,0.f,0.f,0.0f };
         XMFLOAT4 preQuaternion = { 0.f,0.f,0.f,1.f };
         XMFLOAT4 quaternion = { 0.f,0.f,0.f,1.f };
-        XMFLOAT3 scale = { 1.f,1.f,1.f };
+        XMFLOAT4 scale = { 1.f,1.f,1.f,1.0f };
         XMMATRIX local = XMMatrixIdentity();
         XMMATRIX world = XMMatrixIdentity();
 		XMMATRIX offset;
@@ -87,11 +87,19 @@ private:
 
     struct Key
     {
-        XMFLOAT3 translate = { 0.f,0.f,0.f };
-        float keyType=0.f;
+		float time = 0.0f;
+
+        XMFLOAT4 translate = { 0.f,0.f,0.f ,0.0f};
         XMFLOAT4 quaternion = { 0.f,0.f,0.f,1.f };
-        XMFLOAT3 scale = { 1.f,1.f,1.f };
+		XMFLOAT4 scale = { 1.f,1.f,1.f ,0.0f};
     };
+
+	struct KeyFrame
+	{
+		string boneName;
+
+		vector<Key> keys;
+	};
 
     struct Animation
     {
@@ -100,9 +108,11 @@ private:
         float tickPerSec = 0.f;
         float duration = 0.f;
 
-        vector<vector<Key>> keyframes;//노드마다 전체 키프레임별 키값을 찍어버리자.어차피 컴퓨트셰이더에서 메트릭스로 키프레임마다 변환 시킬꺼라 프레임은 정확히 떨어지고 소숫점으로 러프시키는게 나음.
+        vector<KeyFrame> keyframes;//노드마다 전체 키프레임별 키값을 찍어버리자.어차피 컴퓨트셰이더에서 메트릭스로 키프레임마다 변환 시킬꺼라 프레임은 정확히 떨어지고 소숫점으로 러프시키는게 나음.
         //바깥쪽은 프레임 카운트의 전체 키프레임, 안쪽은 전체 하이어라키노드 실제 웨이트 본만 계산후 메트릭스 넘기는 것보다는 시간을 걸릴지 몰라도 slerp를 안 쓸순 없다!
     };
+
+	
 public:
     AssimpConverter();
     ~AssimpConverter();
@@ -127,9 +137,9 @@ private:
     void ResetAnimations();
 
     void AddAnimation(const aiScene* scene);
-    void CalcInterpolatedPosition(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT3& trans);
+    void CalcInterpolatedPosition(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT4& trans);
     void CalcInterpolatedQuaternion(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT4& quat);
-    void CalcInterpolatedScaling(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT3& scale);
+    void CalcInterpolatedScaling(const aiNodeAnim* nodeAnim, const UINT frame, XMFLOAT4& scale);
 
 
     //map보다 vector속도가 빠를것 같아 vector만 사용 vector의 서칭은 find_if(nodeList.begin(), nodeList.end(), [bName](const NodeInfo* a)->bool { return a->name == bName; });

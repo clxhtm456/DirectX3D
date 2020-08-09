@@ -72,8 +72,8 @@ void TestScene::Initialize()
 	}
 
 	auto kachujin = Model::Create("../../_Assets/Meshes/kachujin/Kachujin");
-	//kachujin->LoadAnimation("../../_Assets/Meshes/kachujin/anims/Idle");
-	kachujin->SetPosition(-25, 0, -30);
+	kachujin->LoadAnimation("../../_Assets/Meshes/kachujin/anims/Idle");
+	kachujin->SetPosition(25, 0, -30);
 	kachujin->SetScale(0.1f, 0.1f, 0.1f);
 	
 	AddChild(kachujin);

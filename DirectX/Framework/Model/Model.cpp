@@ -2,6 +2,7 @@
 #include "Model.h"
 
 #include "Objects/EmptyNode.h"
+#include "ModelClip.h"
 
 Model* Model::Create(string path)
 {
@@ -23,6 +24,8 @@ bool Model::Init(string path)
 	if (!Super::Init())
 		return false;
 
+	boneBuffer = new BoneBuffer();
+
 	assert(Path::ExistFile(path + ".mesh") && Path::ExistFile(path + ".material"));
 	LoadModel(path);
 	SetVSShader(Shader::VSAdd(L"InstModelVS"));
@@ -39,17 +42,7 @@ Model::Model()
 
 Model::~Model()
 {
-	/*for (auto iter = hierarchyNodes.begin(); iter != hierarchyNodes.end(); iter++)
-	{
-		hierarchyNodes.erase(iter);
-		delete *iter;
-	}*/
-
-	/*for (auto iter = hierarchyMap.begin(); iter != hierarchyMap.end(); iter++)
-	{
-		hierarchyMap.erase(iter);
-		delete *iter;
-	}*/
+	delete boneBuffer;
 
 	for (auto mat : materials)
 		delete mat;
@@ -180,43 +173,62 @@ void Model::LoadAnimation(const string path, float blendLoop, bool isLoop)
 	BinaryReader* r = new BinaryReader();
 	r->Open(String::ToWString(path + ".anim"));
 
-	KEYFRAME clip;
+	ModelClip* clip = new ModelClip();
 
-	clip.tickPerSec = r->Float();
-	clip.duration = r->Float();
-	clip.blendLoop = blendLoop > clip.duration ? clip.duration : blendLoop;
-	clip.isLoop = isLoop;
-	
+	clip->name = String::ToWString(r->String());
+	clip->frameRate = r->Float();
+	clip->duration = r->Float();
+	clip->frameCount = clip->duration + 1;
+
 	UINT keyCount = r->UInt();
 	for (UINT i = 0; i < keyCount; i++)
 	{
+		ModelKeyframe* keyframe = new ModelKeyframe();
+		keyframe->BoneName = String::ToWString(r->String());
+
 		UINT count = r->UInt();
-		vector<XMFLOAT3X4> Key;
-		for (UINT j = 0; j < count; j++)
+		keyframe->Transforms.assign(count, ModelKeyframeData());
+		if (count > 0)
 		{
-			XMFLOAT3X4 data = { 0,0,0,0,0,0,0,1,1,1,1,1 };
-			{
-				void* ptr = (void*)&data.m[0];
-				r->BYTE(&ptr, sizeof(XMFLOAT3));
-			}
-			data._14 = r->Float();
-			{
-				void* ptr = (void*)&data.m[1];
-				r->BYTE(&ptr, sizeof(XMFLOAT4));
-			}
-			{
-				void* ptr = (void*)&data.m[2];
-				r->BYTE(&ptr, sizeof(XMFLOAT3));
-			}
-			Key.emplace_back(data);
+			keyframe->Transforms.resize(count);
+
+			void* ptr = (void*)keyframe->Transforms.data();
+			r->BYTE(&ptr, sizeof(ModelKeyframeData) * count);
 		}
-		clip.keyframes.emplace_back(Key);
+		clip->keyframeMap[keyframe->BoneName] = keyframe;
 	}
 	clips.emplace_back(clip);
 
 	delete r;
 
 	//CreateAnimSRV();
+}
+
+void Model::CopyGlobalBoneTo(vector<Matrix>& transforms)
+{
+	Matrix w;
+	w = XMMatrixIdentity();
+
+	CopyGlobalBoneTo(transforms, w);
+}
+
+void Model::CopyGlobalBoneTo(vector<Matrix>& transforms, Matrix& w)
+{
+	transforms.clear();
+	transforms.resize(bones.size());
+
+	for (UINT i = 0; i < bones.size(); i++)
+	{
+		auto bone = bones[i];
+
+		if (bone->parentID != -1)
+		{
+			int index = bone->parentID;
+			transforms[i] = bone->local * transforms[index];
+		}
+		else
+			transforms[i] = bone->local * w;
+	}
 }
 
 
@@ -230,6 +242,14 @@ void Model::Update()
 void Model::ResourceBinding(Camera* viewer)
 {
 	Super::ResourceBinding(viewer);
+
+	CopyGlobalBoneTo(boneTransforms, GetWorld());
+
+	boneBuffer->Bones(boneTransforms.data(), boneTransforms.size());
+
+	boneBuffer->SetVSBuffer(2);
+
+
 	D3D::GetDC()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	D3D::GetDC()->PSSetSamplers(3, 1, CommonStates::Get()->AnisotropicWrap());
@@ -287,7 +307,8 @@ void Model::LoadModel(const string path)
 	{
 		BoneNode* node = new BoneNode();
 
-		string name = r->String();
+		node->index = i;
+		node->name = r->String();
 		{
 			void* ptr = (void*)&node->translate;
 			r->BYTE(&ptr, sizeof(XMFLOAT3));
@@ -571,14 +592,67 @@ void Model::AnimUpdate()
 	if (clips.empty())
 		return;
 
-	/*vector<ModelBone*>* bones = (modelData->GetBones());
+	
 
-	for (UINT i = 0; i < bones->size(); i++)
+	//for (auto bone : bones)
+	//{
+	//	Matrix matrix;
+	//	if (nextAnim != -1)
+	//	{
+	//		elapsedTime += Time::Delta();
+	//		float t = elapsedTime / blendTime;
+
+	//		if (t > 1.0f)
+	//		{
+	//			clips[nextAnim].keyframes;
+	//			matrix = next->GetKeyFrameMatrix(bone);
+
+	//			currentAnim = nextAnim;
+	//			nextAnim = -1;
+	//		}
+	//		else
+	//		{
+	//			Matrix start = currentAnim->GetKeyFrameMatrix(bone);
+	//			Matrix end = nextAnim->GetKeyFrameMatrix(bone);
+
+	//			//matrix = start * (1 - t) + end * t;
+	//			matrix = LERP(start, end, t);
+	//		}
+	//	}
+	//	else
+	//	{
+	//		matrix = current->GetKeyFrameMatrix(bone);
+	//	}
+
+	//	bone->local = matrix;
+	//}
+
+	
+
+	/*for (UINT i = 0; i < bones.size(); i++)
 	{
-		ModelBone* bone = bones->at(i);
+		auto bone = bones.at(i);
 		tweener->UpdateBlending(bone);
-	}
+	}*/
 
-	CalcWorldMatrix();*/
+	CalcWorldMatrix();
 }
 
+void Model::Play(int clipIndex, bool isRepeat, float blendTime, float speed, float startTime)
+{
+	/*this->blendTime = blendTime;
+	this->elapsedTime = startTime;
+
+	if (currentAnim != -1)
+	{
+		nextAnim = clipIndex;
+		clips[nextAnim].isLoop = isRepeat;
+		clips[nextAnim].tickPerSec = speed;
+	}
+	else
+	{
+		currentAnim = clipIndex;
+		clips[currentAnim].isLoop = isRepeat;
+		clips[currentAnim].tickPerSec = speed;
+	}*/
+}

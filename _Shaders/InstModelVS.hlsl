@@ -1,6 +1,13 @@
 #include "RenderingNode.hlsli"
 #include "Shadow.hlsl"
 
+cbuffer Bones : register(b2)
+{
+	matrix bones[256];
+
+	int index;
+	int isUseBlend;
+}
 
 cbuffer meshIDbuffer : register(b3)//VS
 {
@@ -33,6 +40,16 @@ struct VertexOutput
 	float3 viewDir : VIEWDIR;
 };
 
+matrix SkinWorld(float4 indices, float4 weights)
+{
+	matrix transform = 0;
+	transform += mul(weights.x, bones[(uint) indices.x]);
+	transform += mul(weights.y, bones[(uint) indices.y]);
+	transform += mul(weights.z, bones[(uint) indices.z]);
+	transform += mul(weights.w, bones[(uint) indices.w]);
+
+	return transform;
+}
 
 float4x4 hierarchyMatrix(uint id, uint frame, uint instanceID)
 {
@@ -49,6 +66,10 @@ VertexOutput VS(VertexInput input)
 	float4 Pos = input.position;
 	float3 Normal = input.normal;
 	float3 Tangent = input.tangent;
+
+	matrix boneWorld = SkinWorld(input.boneid, input.weights);
+
+	output.position = mul(input.position, boneWorld);
 
 	//Pos = mul(Pos, hierarchyMatrix(meshID, 0, input.instanceID));
 

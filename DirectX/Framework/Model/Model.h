@@ -1,10 +1,15 @@
 #pragma once
 
+#define MAX_MODEL_KEY	500
+#define MAX_MODEL_INSTANCE	500
+
 class Model : public RenderingNode
 {
 private:
     struct BoneNode
     {
+		int index;
+		string name;
         XMFLOAT3 translate = { 0.f,0.f,0.f };
         XMFLOAT4 preQuaternion = { 0.f,0.f,0.f,1.f };
         XMFLOAT4 quaternion = { 0.f,0.f,0.f,1.f };
@@ -84,37 +89,125 @@ private:
     };
 
 
-    struct KEYFRAME
-    {
-        float tickPerSec = 0.f;
-        float duration = 0.f;
-        float blendLoop = 0.f;
-        bool isLoop = true;
-        vector< vector<XMFLOAT3X4>> keyframes;
-    };
+	struct ClipTransform
+	{
+		Matrix** transform;
 
-    struct ANIMATIONCTRL
-    {
-        float speed = 1.f;
-        float fadeIn = 0.f;
-        float fadeOut = 0.f;
-    };
+		ClipTransform()
+		{
+			transform = new Matrix * [MAX_MODEL_KEY];
 
-    struct ANIMATION
-    {
-        int clip = 0;
-        float curtime = 0.f;
-        float duration = 1.f;
-        float blendLoop = 0.f;
-    };
+			for (UINT i = 0; i < MAX_MODEL_KEY; i++)
+				transform[i] = new Matrix[MAX_MODEL_BONE];
+		}
 
-    struct INSTANCEANIMATION
-    {
-        ANIMATION cur;
-        ANIMATION next;
+		~ClipTransform()
+		{
+			for (UINT i = 0; i < MAX_MODEL_KEY; i++)
+			{
+				delete[] transform[i];
+			}
+			delete[] transform;
+		}
+	};
 
-        float blendFactor = 0.f;
-    };
+	struct KeyFrameDesc
+	{
+		int clip;
+
+		UINT curFrame, nextFrame;
+
+		float time, runningTime;
+
+		float speed;
+
+		float padding[2];
+
+		KeyFrameDesc()
+		{
+			clip = 0;
+			curFrame = 0;
+			nextFrame = 0;
+
+			time = 0.0f;
+			runningTime = 0.0f;
+
+			speed = 1.0f;
+		}
+	};
+
+	struct TweenDesc
+	{
+		float takeTime;
+		float tweenTime;
+		float runningTime;
+		float padding;
+
+		KeyFrameDesc cur;
+		KeyFrameDesc next;
+
+		TweenDesc()
+		{
+			takeTime = 1.0f;
+			tweenTime = 0.0f;
+			runningTime = 0.0f;
+
+			cur.clip = 0;
+			next.clip = -1;
+		}
+	};
+
+	class FrameBuffer : public ConstantBuffer
+	{
+	public:
+		struct Data
+		{
+			TweenDesc tweenDesc[MAX_MODEL_INSTANCE];
+		}data;
+
+		FrameBuffer() : ConstantBuffer(&data, sizeof(Data))
+		{
+		}
+	};
+
+//    struct ANIMATIONCTRL
+//    {
+//        float speed = 1.f;
+//        float fadeIn = 0.f;
+//        float fadeOut = 0.f;
+//    };
+//
+//    struct ANIMATION
+//    {
+//        int clip = 0;
+//        float curtime = 0.f;
+//        float duration = 1.f;
+//        float blendLoop = 0.f;
+//    };
+//
+//    struct INSTANCEANIMATION
+//    {
+//        ANIMATION cur;
+//        ANIMATION next;
+//
+//        float blendFactor = 0.f;
+//    };
+//public:
+//	struct KEYFRAME
+//	{
+//		float tickPerSec = 0.f;
+//		float duration = 0.f;
+//		float blendLoop = 0.f;
+//		bool isLoop = true;
+//		vector< vector<XMFLOAT3X4>> keyframes;
+//		/*
+//		*Translate,
+//		*Quaternion
+//		*Scale
+//		*/
+//
+//		function<void()> EndEvent;
+//	};
 
 public:
 	static Model* Create(string path);
@@ -125,14 +218,14 @@ public:
     ~Model();
 
 public:
-
-    void LoadAnimation(const string path, float blendLoop = 1.f, bool isLoop = true);
-
     void Update()override;
 	void ResourceBinding(Camera* viewer) override;
     void Render(Camera* viewer)override;
-    void StopAni() { }
-    void PauseAni() { }
+
+    void LoadAnimation(const string path, float blendLoop = 1.f, bool isLoop = true);
+
+	void CopyGlobalBoneTo(vector<Matrix>& transforms);
+	void CopyGlobalBoneTo(vector<Matrix>& transforms, Matrix& w);
 
     void SetEndEvent(int index, function<void()> Event) { }
     void SetNextAction(int index, function<void(int)> Event) { }
@@ -174,10 +267,24 @@ private:
 */
 public:
 	void AnimUpdate();
+
+	void Play(int clipIndex, bool isRepeat = false, float blendTime = 10.0f,
+		float speed = 15.0f, float startTime = 0.0f);
 protected:
-	vector<KEYFRAME> clips;//불러들인 전체 애니메이션 저장용 벡터
+
+	vector<Matrix> boneTransforms;
+	vector<class ModelClip*> clips;//불러들인 전체 애니메이션 저장용 벡터
+	BoneBuffer* boneBuffer;
+
 private:
-	class ModelTweener* tweener;
+	int nextAnim = -1;
+	int currentAnim = -1;
+
+	float blendTime = 0.0f;
+	float elapsedTime = 0.0f;
+
+	float frameCount = 0;
+	bool isLockRoot = true;
 
 
 };

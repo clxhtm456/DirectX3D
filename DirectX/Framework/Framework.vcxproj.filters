@@ -199,6 +199,9 @@
     <ClCompile Include="Renders\CommonStates.cpp">
       <Filter>Render</Filter>
     </ClCompile>
+    <ClCompile Include="Model\ModelClip.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Systems\Keyboard.h">
@@ -375,6 +378,9 @@
     </ClInclude>
     <ClInclude Include="Renders\CommonStates.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\ModelClip.h">
+      <Filter>Model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
